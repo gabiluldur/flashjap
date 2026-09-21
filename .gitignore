@@ -1,0 +1,8 @@
+# Vos cartes et fichiers personnels : jamais publiés
+data/
+*.csv
+
+# Divers
+Thumbs.db
+.DS_Store
+*.log
