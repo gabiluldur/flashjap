@@ -19,7 +19,7 @@
         <div class="top-title"><span id="lvlTitle">&nbsp;</span> <span class="tier-name" id="lvlTier"></span></div>
         <div class="bar"><div class="fill" id="lvlFill"></div></div>
       </div>
-      <div class="top-xp" id="lvlXp"></div>
+      <div class="top-xp"><span id="lvlXp"></span> <span id="syncBadge" class="sync-badge" hidden></span></div>
     </div>
   </header>
 
@@ -45,13 +45,20 @@
   <script src="js/csv.js"></script>
   <script src="js/kanji.js"></script>
   <script src="js/store.js"></script>
+  <script src="js/sync-core.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/fx.js"></script>
   <script src="js/app.js"></script>
   <script>
     // Mode hors-ligne + installation sur l'écran d'accueil (uniquement en http/https, pas en ouvrant le fichier)
-    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-      navigator.serviceWorker.register('sw.js').catch(function () { /* facultatif */ });
+    if (/^https?:$/.test(location.protocol)) {
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () { /* facultatif */ });
+      // Synchronisation en ligne (facultative) : si le chargement échoue, l'appli reste locale.
+      import('./js/sync.js').catch(function (e) {
+        console.warn('Synchronisation indisponible :', e);
+        FJ.syncUi = Object.assign(FJ.syncUi || {}, { phase: 'unavailable' });
+        if (FJ.ui && FJ.ui.syncChanged) FJ.ui.syncChanged();
+      });
     }
   </script>
 </body>

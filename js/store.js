@@ -9,11 +9,12 @@
     stats: { reviews: 0, sessions: 0, ms: 0, xp: 0 },
     daily: {}, // 'YYYY-MM-DD' -> { reviews, ms, xp }
     settings: { reverse: false, shuffle: true, newPerSession: 10, sound: true, chartMetric: 'reviews', chartRange: 7 },
+    metaU: 0, // version (horodatage) des compteurs/réglages pour la synchro ; chaque carte porte la sienne dans `_u`
   });
 
-  const store = { state: fresh() };
+  const store = { state: fresh(), onChange: null };
 
-  // Point d'accès unique au stockage : c'est ici qu'on branchera la synchro (Firebase) plus tard.
+  // Point d'accès unique au stockage. La synchro (js/sync-core.js) s'y branche via `onChange`.
   function merge(raw) {
     const base = fresh();
     return {
@@ -22,6 +23,7 @@
       stats: Object.assign(base.stats, raw.stats),
       daily: raw.daily || {},
       settings: Object.assign(base.settings, raw.settings),
+      metaU: raw.metaU || 0,
     };
   }
 
@@ -35,13 +37,21 @@
     store.index();
   };
 
-  store.save = function () {
+  // Écriture locale seule (utilisée aussi par la synchro pour ne pas se rappeler elle-même)
+  store.saveLocal = function () {
     try {
       localStorage.setItem(KEY, JSON.stringify(store.state));
       return true;
     } catch (e) {
       return false;
     }
+  };
+
+  // Sauvegarde immédiate en local, puis prévient la synchro qu'il y a peut-être quelque chose à envoyer.
+  store.save = function () {
+    const ok = store.saveLocal();
+    if (ok && store.onChange) store.onChange();
+    return ok;
   };
 
   store.index = function () {

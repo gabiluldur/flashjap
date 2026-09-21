@@ -23,6 +23,13 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - **Fin de session** : fanfare, confettis, étoiles (selon la réussite), XP qui monte. Le combo tremble au-delà de 10.
 - **Enregistrement** : à chaque carte (localStorage). Rien à sauvegarder à la main.
 
+## Synchronisation (Firebase)
+- Connexion Google + base Firestore (`users/{uid}/cards/{idCarte}` et `users/{uid}/meta/state`). Code : `js/sync.js` (Firebase), `js/sync-core.js` (logique de fusion, indépendante de Firebase), configuration publique dans `js/firebase-config.js`.
+- « Local d'abord » : chaque action est enregistrée tout de suite sur l'appareil, puis envoyée en arrière-plan (cache hors-ligne : les révisions faites sans réseau partent au retour de la connexion).
+- Conflit : le dernier écrit gagne, carte par carte. Réinitialiser ou restaurer une sauvegarde s'applique à tous les appareils.
+- Les règles de sécurité Firestore se publient dans la console Firebase (*Firestore → Règles*) : chaque compte n'accède qu'à `users/{son uid}`, et le site étant public, seul le compte du propriétaire est accepté.
+- Première utilisation : se connecter, puis importer le CSV **sur un seul appareil** ; les autres n'ont qu'à se connecter.
+
 ## Règles
 - Échelle de Leitner : 10 min → 1 j → 2 j → 3 j → 1 sem → 2 sem → 1 mois → 3 mois → **validée**.
   Un échec renvoie à l'étape 1 (10 min). Les intervalles en jours reviennent à 4 h du matin du jour cible.

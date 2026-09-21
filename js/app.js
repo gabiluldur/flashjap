@@ -185,6 +185,51 @@
     if (box) box.innerHTML = chartInner();
   }
 
+  // ---------- Synchronisation (l'état est tenu à jour par js/sync.js) ----------
+  FJ.syncUi = FJ.syncUi || { phase: /^https?:$/.test(location.protocol) ? 'loading' : 'unavailable', status: 'connecting', email: '' };
+
+  function syncInner() {
+    const u = FJ.syncUi;
+    if (u.phase === 'unavailable') return '<p class="muted small">Mode local : vos données restent sur cet appareil. La synchronisation fonctionne depuis l\'adresse en ligne de l\'appli.</p>';
+    if (u.phase === 'loading') return '<p class="muted small">⟳ Chargement du service de synchronisation…</p>';
+    if (u.phase === 'signedout') {
+      return `<div class="sync-row"><div><b>Sauvegarde et synchronisation</b>
+        <p class="muted small">Connectez-vous pour retrouver vos cartes et votre progression sur tous vos appareils. Vos données actuelles sont conservées.</p></div>
+        <button class="btn primary" data-action="sync-signin">Se connecter avec Google</button></div>`;
+    }
+    const label = {
+      connecting: '⟳ Connexion…', syncing: '⟳ Envoi en cours…', synced: '✓ Synchronisé',
+      offline: '⚠ Hors-ligne : les changements partiront au retour du réseau', error: '⚠ ' + (u.error || 'Erreur'),
+    }[u.status] || '';
+    return `<div class="sync-row"><div><b>${esc(u.email || 'Connecté')}</b><p class="muted small sync-${u.status}">${esc(label)}</p></div>
+      <button class="btn" data-action="sync-signout">Se déconnecter</button></div>`;
+  }
+
+  function updateSyncBadge() {
+    const b = $('#syncBadge');
+    const u = FJ.syncUi;
+    if (u.phase !== 'signedin') { b.hidden = true; return; }
+    b.hidden = false;
+    b.textContent = '☁';
+    b.dataset.state = u.status;
+    b.title = { synced: 'Synchronisé', syncing: 'Envoi en cours…', connecting: 'Connexion…', offline: 'Hors-ligne', error: 'Erreur de synchronisation' }[u.status] || '';
+  }
+
+  function syncChanged() {
+    updateSyncBadge();
+    const box = $('#syncBox');
+    if (box) box.innerHTML = syncInner();
+  }
+
+  // Appelé quand des données arrivent d'un autre appareil : rafraîchit l'affichage sans toucher à une session en cours.
+  function refresh() {
+    updateHeader();
+    if (view === 'home') renderHome();
+    else if (view === 'words') renderWordsList();
+  }
+
+  FJ.ui = { refresh, syncChanged, toast };
+
   // ---------- Accueil ----------
   function startBlock(track, counts, label) {
     const now = Date.now();
@@ -231,6 +276,8 @@
     if (c.aside) extras.push(`⏸ ${c.aside} de côté`);
 
     $('#app').innerHTML = `
+      <section class="panel sync-panel" id="syncBox">${syncInner()}</section>
+
       <section class="panel">${startMain}</section>
 
       ${k.total ? `<section class="panel">
@@ -760,9 +807,11 @@
   }
 
   async function importJson(file) {
-    if (!confirm('Remplacer toutes les données actuelles par cette sauvegarde ?')) return;
+    const online = FJ.syncUi.phase === 'signedin';
+    if (!confirm('Remplacer toutes les données actuelles par cette sauvegarde' + (online ? ' (en ligne et sur vos autres appareils aussi)' : '') + ' ?')) return;
     try {
       store.importJson(await readText(file));
+      if (FJ.sync) FJ.sync.replaceAll();
       audio.enabled = store.state.settings.sound;
       updateHeader();
       renderHome();
@@ -808,9 +857,13 @@
     'import-csv': () => $('#csvFile').click(),
     'import-json': () => $('#jsonFile').click(),
     'export-json': exportJson,
+    'sync-signin': () => FJ.sync && FJ.sync.signIn(),
+    'sync-signout': () => FJ.sync && FJ.sync.signOut(),
     reset() {
-      if (!confirm('Effacer toutes les cartes et toute la progression ? Cette action est définitive.')) return;
+      const online = FJ.syncUi.phase === 'signedin';
+      if (!confirm('Effacer toutes les cartes et toute la progression' + (online ? ', y compris en ligne et sur vos autres appareils' : '') + ' ? Cette action est définitive.')) return;
       store.reset();
+      if (FJ.sync) FJ.sync.replaceAll();
       updateHeader();
       renderHome();
     },
@@ -887,5 +940,6 @@
   audio.enabled = store.state.settings.sound;
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* facultatif */ }
   updateHeader();
+  updateSyncBadge();
   renderHome();
 })();
