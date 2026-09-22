@@ -93,6 +93,7 @@
       if (c.rimg) card.rimg = c.rimg;
       if (c.vimg) card.vimg = c.vimg;
       if (c.emoji) card.emoji = c.emoji;
+      if (c.kanjiForce !== undefined) card.kanjiForce = c.kanjiForce; // réglage manuel Kanji Only (true/false)
       store.state.cards.push(card);
       store.map.set(card.id, card);
       added++;

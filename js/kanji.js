@@ -66,8 +66,9 @@
   // Vue "Kanji Only" d'une carte : { front, back } ou null si ce n'est pas un mot avec kanji.
   //  - front : uniquement les kanjis du mot (ni hiragana, ni katakana, ni lecture)   ex. "食"
   //  - back  : la ou les traductions, puis la lecture en hiragana si elle est connue  ex. "Manger" / "たべる"
-  // Les phrases sont exclues.
-  function build(card) {
+  // Les phrases sont exclues, sauf si `forced` (card.kanjiForce === true) : l'utilisateur a alors décidé
+  // lui-même que c'est une carte de kanji, on ne filtre plus sur la forme.
+  function build(card, forced = false) {
     const r = card.recto;
     const v = card.verso;
     const rh = HAN.test(r);
@@ -100,15 +101,18 @@
     lines = [...new Set(lines)];
     if (!lines.length) lines = [firstLine(other)]; // filet de sécurité : jamais de verso vide
 
-    if (looksLikeSentence(frenchHoldsKanji ? null : form, lines[0])) return null;
+    if (!forced && looksLikeSentence(frenchHoldsKanji ? null : form, lines[0])) return null;
     if (reading && !lines.includes(reading)) lines.push(reading); // la prononciation, en dernière ligne
     return { front, back: lines.join('\n') };
   }
 
+  // card.kanjiForce : undefined = détection automatique (par défaut), true = forcé dans Kanji Only,
+  // false = jamais dans Kanji Only, quel que soit le contenu. Réglable à l'ajout d'une carte ou depuis Mes mots.
   const cache = new Map();
   function view(card) {
-    const key = card.id + '|' + card.recto.length + '|' + card.verso.length;
-    if (!cache.has(key)) cache.set(key, build(card));
+    if (card.kanjiForce === false) return null;
+    const key = card.id + '|' + card.recto.length + '|' + card.verso.length + '|' + card.kanjiForce;
+    if (!cache.has(key)) cache.set(key, build(card, card.kanjiForce === true));
     return cache.get(key);
   }
 

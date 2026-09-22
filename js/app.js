@@ -695,9 +695,13 @@
 
   // ---------- Ajouter une carte à la main ----------
   let addedThisSession = []; // {recto, verso} les plus récentes en premier, pour la relecture rapide
+  let addKanjiMode = 'auto'; // 'auto' | 'force' | 'off' — voir card.kanjiForce dans js/kanji.js
+
+  const KANJI_MODES = [['auto', 'Auto'], ['force', 'Kanji'], ['off', 'Classique']];
 
   function renderAddCard() {
     view = 'add';
+    addKanjiMode = 'auto';
     $('#app').innerHTML = `
       <section class="panel">
         <div class="words-head">
@@ -712,12 +716,39 @@
           <p class="muted small">Sur téléphone, le clavier passe en japonais tout seul si vous avez installé un clavier japonais (Gboard : Réglages → Langues → 日本語). Sur PC, basculez votre clavier système (ex. Windows + Barre d'espace, ou l'IME que vous utilisez).</p>
           <label for="addEmoji">Emoji (facultatif)</label>
           <input id="addEmoji" type="text" autocomplete="off" placeholder="🍚" maxlength="8" class="add-emoji">
+          <label>Kanji Only</label>
+          <div class="segment" role="group" aria-label="Présence dans Kanji Only">
+            ${KANJI_MODES.map(([k, l]) => `<button type="button" data-action="add-kanji-mode" data-val="${k}" aria-pressed="${addKanjiMode === k}">${l}</button>`).join('')}
+          </div>
+          <p class="muted small" id="addKanjiHint"></p>
           <button class="btn primary big" type="submit">Ajouter la carte</button>
         </form>
       </section>
       <section class="panel" id="addRecent"></section>`;
     renderAddRecent();
+    updateAddPreview();
     $('#addRecto').focus();
+  }
+
+  const ADD_KANJI_HINTS = {
+    auto: "Elle rejoint Kanji Only toute seule si elle contient un kanji reconnu comme un mot.",
+    force: "Elle sera toujours proposée dans Kanji Only, même si sa forme ressemble à une phrase.",
+    off: "Elle n'apparaîtra jamais dans Kanji Only, même si elle contient un kanji.",
+  };
+
+  // Aperçu en direct de ce que donnerait la carte dans Kanji Only, pour que le choix Auto/Kanji/Classique soit concret.
+  function updateAddPreview() {
+    const box = $('#addKanjiHint');
+    if (!box) return;
+    const recto = $('#addRecto').value.trim();
+    const verso = $('#addVerso').value.trim();
+    let extra = '';
+    if (recto && verso) {
+      const fake = { id: '_preview', recto: FJ.csv.clean(recto), verso: FJ.csv.clean(verso), kanjiForce: addKanjiMode === 'off' ? false : addKanjiMode === 'force' ? true : undefined };
+      const v = kanji.view(fake);
+      extra = v ? ` Aperçu : ${v.front} → ${v.back.split('\n').join(' / ')}` : addKanjiMode === 'off' ? '' : ' Aucun kanji détecté dans cette carte pour le moment.';
+    }
+    box.textContent = ADD_KANJI_HINTS[addKanjiMode] + extra;
   }
 
   function renderAddRecent() {
@@ -732,6 +763,14 @@
     ).join('');
   }
 
+  // Remise à zéro du sélecteur Kanji Only : appelée après tout essai d'ajout (réussi ou non), pour qu'un réglage
+  // "Kanji" ou "Classique" ne reste jamais collé sur la carte suivante par erreur.
+  function resetAddKanjiMode() {
+    addKanjiMode = 'auto';
+    document.querySelectorAll('[data-action="add-kanji-mode"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.val === 'auto')));
+    updateAddPreview();
+  }
+
   function submitAddCard(e) {
     e.preventDefault();
     const recto = FJ.csv.clean($('#addRecto').value);
@@ -740,14 +779,17 @@
     if (!recto || !verso) return toast('Le recto et le verso sont obligatoires.');
     const card = { id: FJ.csv.cardId(recto, verso), recto, verso };
     if (emoji) card.emoji = emoji;
+    if (addKanjiMode === 'force') card.kanjiForce = true;
+    else if (addKanjiMode === 'off') card.kanjiForce = false;
     const { added, duplicates } = store.addCards([card]);
-    if (!added) { toast(duplicates ? 'Cette carte existe déjà.' : 'Carte non ajoutée.'); return; }
+    if (!added) { toast(duplicates ? 'Cette carte existe déjà.' : 'Carte non ajoutée.'); resetAddKanjiMode(); return; }
     addedThisSession.unshift({ recto, verso, emoji });
     renderAddRecent();
     toast('Carte ajoutée ✓');
     $('#addRecto').value = '';
     $('#addVerso').value = '';
     $('#addEmoji').value = '';
+    resetAddKanjiMode();
     $('#addRecto').focus();
   }
 
@@ -808,8 +850,10 @@
       if (c.state === 'removed') buttons = btn('w-restore', '↩ Restaurer');
       else if (c.state === 'mastered') buttons = btn('w-unmaster', '↩ Remettre en révision') + btn('w-remove', '✕ Éliminer', 'danger');
       else {
+        const kanjiLabel = c.kanjiForce === true ? '漢 Kanji Only : forcé' : c.kanjiForce === false ? '漢 Kanji Only : exclu' : '漢 Kanji Only : auto';
         buttons = btn('w-prio', c.prio ? '★ Retirer la priorité' : '☆ Priorité') +
           btn('w-master', '✓ Masterisé') +
+          btn('w-kanji', kanjiLabel) +
           btn('w-aside', c.state === 'aside' ? '↩ Remettre dans le paquet' : '⏸ Mettre de côté') +
           btn('w-remove', '✕ Éliminer', 'danger');
       }
@@ -908,12 +952,21 @@
       renderWordsList();
     },
     'w-unmaster': (el) => wordAction(el.dataset.id, (c) => { c.state = undefined; }, 'Mot remis en révision'),
+    'w-kanji': (el) => wordAction(el.dataset.id, (c) => {
+      // Cycle : auto -> forcé dans Kanji Only -> exclu de Kanji Only -> auto
+      c.kanjiForce = c.kanjiForce === undefined ? true : c.kanjiForce === true ? false : undefined;
+    }, 'Réglage Kanji Only mis à jour'),
     'w-remove': (el) => wordAction(el.dataset.id, (c) => { c.state = 'removed'; }, 'Carte éliminée · récupérable dans « Éliminés »'),
     'w-restore': (el) => wordAction(el.dataset.id, (c) => { c.state = undefined; }, 'Carte restaurée'),
     'chart-metric'(el) { store.state.settings.chartMetric = el.dataset.val; persist(); refreshChart(); },
     'chart-range'(el) { store.state.settings.chartRange = Number(el.dataset.val); persist(); refreshChart(); },
     'set-reverse'(el) { store.state.settings.reverse = el.dataset.val === '1'; persist(); renderHome(); },
     'add-card'() { addedThisSession = []; renderAddCard(); },
+    'add-kanji-mode'(el) {
+      addKanjiMode = el.dataset.val;
+      document.querySelectorAll('[data-action="add-kanji-mode"]').forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
+      updateAddPreview();
+    },
     'import-csv': () => $('#csvFile').click(),
     'import-json': () => $('#jsonFile').click(),
     'export-json': exportJson,
@@ -954,7 +1007,9 @@
   });
 
   document.addEventListener('input', (e) => {
-    if (e.target.id === 'wordsSearch') {
+    if (e.target.id === 'addRecto' || e.target.id === 'addVerso') {
+      updateAddPreview();
+    } else if (e.target.id === 'wordsSearch') {
       wordsQuery = e.target.value;
       renderWordsList();
     }
