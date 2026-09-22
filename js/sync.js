@@ -41,7 +41,7 @@ function setStatus(status, err) {
 
 function explain(err) {
   const code = (err && err.code) || '';
-  if (code.includes('permission-denied')) return "Accès refusé par les règles de sécurité Firestore (voir README : règles à publier).";
+  if (code.includes('permission-denied')) return "Accès refusé : l'application est peut-être temporairement fermée aux nouveaux comptes, ou les règles Firestore ne sont pas encore publiées (voir README).";
   if (code.includes('unavailable')) return 'Serveur injoignable pour le moment.';
   return (err && err.message) || 'Erreur inconnue.';
 }

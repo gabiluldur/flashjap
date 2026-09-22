@@ -46,6 +46,44 @@
     toast("⚠ Enregistrement impossible dans ce navigateur. Exportez une sauvegarde (Accueil > Données).");
   }
 
+  // ---------- Lecture audio (voix du navigateur, gratuite) ----------
+  // On précharge la liste des voix : sur Chrome elle arrive de façon asynchrone (événement voiceschanged),
+  // et sans ça le premier clic sur 🔊 risque de ne pas trouver de voix japonaise installée.
+  let jaVoice = null;
+  function pickJaVoice() {
+    if (!('speechSynthesis' in window)) return;
+    const voices = speechSynthesis.getVoices();
+    jaVoice = voices.find((v) => v.lang && v.lang.toLowerCase().startsWith('ja')) || null;
+  }
+  if ('speechSynthesis' in window) {
+    pickJaVoice();
+    speechSynthesis.addEventListener('voiceschanged', pickJaVoice);
+  }
+
+  // Nettoie le texte avant de le lire : retire la lecture entre parenthèses en double, ex. "空港 (くうこう)" -> "空港"
+  // (sinon la voix lit parfois le mot deux fois de suite).
+  function speakJapanese(text) {
+    if (!('speechSynthesis' in window)) return toast("Ce navigateur ne sait pas lire de texte à voix haute.");
+    const clean = text.replace(/[（(][^）)]*[）)]\s*$/, '').trim();
+    if (!clean) return;
+    try {
+      speechSynthesis.cancel(); // interrompt une lecture en cours plutôt que de les superposer
+      const u = new SpeechSynthesisUtterance(clean);
+      u.lang = 'ja-JP';
+      u.rate = 0.95;
+      if (jaVoice) u.voice = jaVoice;
+      speechSynthesis.speak(u);
+    } catch (e) {
+      toast('Lecture audio impossible.');
+    }
+  }
+
+  function speakBtn(text) {
+    const first = text.split('\n')[0];
+    if (!hasCjk(first)) return '';
+    return `<button type="button" class="speak" data-action="speak" data-text="${esc(first)}" aria-label="Écouter la prononciation" title="Écouter">🔊</button>`;
+  }
+
   // ---------- Fenêtre de confirmation ----------
   let modalResolve = null;
 
@@ -392,6 +430,7 @@
   }
 
   function renderSession() {
+    if ('speechSynthesis' in window) speechSynthesis.cancel(); // pas de lecture qui continue sur la carte suivante
     if (sess.idx >= sess.queue.length) return sess.done.size ? renderSummary() : (sess = null, renderHome());
     view = 'session';
     sess.flipped = false;
@@ -415,8 +454,8 @@
         <div class="bar thin"><div class="fill" style="width:${pct}%"></div></div>
         <div class="scene" id="scene">
           <div class="fcard${sess.track === 'kanji' ? ' kanji' : ''}" id="fcard" role="button" tabindex="0" aria-label="Retourner la carte" data-action="flip">
-            <div class="face front"><span class="tag">${tag}</span>${imgHtml(qi)}${textBlock(q)}</div>
-            <div class="face back">${card.emoji ? `<div class="card-emoji" aria-hidden="true">${esc(card.emoji)}</div>` : ''}${imgHtml(ai)}${textBlock(a)}</div>
+            <div class="face front"><span class="tag">${tag}</span>${speakBtn(q)}${imgHtml(qi)}${textBlock(q)}</div>
+            <div class="face back">${speakBtn(a)}${card.emoji ? `<div class="card-emoji" aria-hidden="true">${esc(card.emoji)}</div>` : ''}${imgHtml(ai)}${textBlock(a)}</div>
           </div>
         </div>
         <div class="controls" id="controls"></div>
@@ -639,6 +678,7 @@
   }
 
   function quitSession() {
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
     // Le temps de la carte en cours compte : il n'y a de "temps passé" que pendant une session.
     if (sess && view === 'session' && !sess.busy) { addTime(Date.now() - sess.cardStart); persist(); }
     if (sess && sess.done.size) return renderSummary();
@@ -931,6 +971,7 @@
     ok: () => grade('ok'),
     ko: () => grade('ko'),
     skip: () => grade('skip'),
+    speak: (el) => speakJapanese(el.dataset.text),
     aside: setAside,
     master: masterFromSession,
     prio: togglePrio,
