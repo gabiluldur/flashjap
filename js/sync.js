@@ -145,7 +145,7 @@ FJ.sync = {
   async sendFeedback({ text, mood, anonymous }) {
     const user = auth.currentUser;
     if (!user) return false;
-    const clean = (text || '').trim().slice(0, 300);
+    const clean = (text || '').trim().slice(0, 100);
     if (!clean && !mood) return false;
     try {
       await addDoc(collection(db, 'feedback'), {

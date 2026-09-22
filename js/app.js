@@ -269,7 +269,7 @@
         </div>
         <form id="feedbackForm" class="add-form">
           <label for="fbText">Votre message (facultatif)</label>
-          <textarea id="fbText" rows="3" maxlength="300" placeholder="Un merci, un bug, une idée…"></textarea>
+          <textarea id="fbText" rows="3" maxlength="100" placeholder="Un merci, un bug, une idée…"></textarea>
           <label>Comment ça se passe ? (facultatif)</label>
           <div class="mood-row">
             ${MOODS.map((m) => `<button type="button" class="mood" data-action="fb-mood" data-val="${m}" aria-pressed="false">${m}</button>`).join('')}

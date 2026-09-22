@@ -33,7 +33,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Première utilisation : se connecter, puis importer le CSV **sur un seul appareil** ; les autres n'ont qu'à se connecter.
 
 ## Petits mots des amis (feedback)
-- Tout compte connecté voit un bouton « ✉️ Envoyer un mot au créateur » : message court (300 caractères) + un smiley au choix (😍 🙂 😐 🐛 💡), avec une case « envoyer anonymement » (le prénom Google est alors omis à l'affichage, mais le compte reste techniquement associé côté base pour la modération).
+- Tout compte connecté voit un bouton « ✉️ Envoyer un mot au créateur » : message court (100 caractères) + un smiley au choix (😍 🙂 😐 🐛 💡), avec une case « envoyer anonymement » (le prénom Google est alors omis à l'affichage, mais le compte reste techniquement associé côté base pour la modération).
 - Collection Firestore à part (`feedback`, hors de `users/{uid}`) : n'importe qui de connecté peut y déposer un mot (create seul, jamais modifiable après coup), seul le compte propriétaire (défini dans les règles, voir `data/firestore.rules`) peut les lire ou les supprimer.
 - Visible uniquement sur le compte propriétaire, en haut de l'accueil (« 💌 Petits mots »), avec suppression individuelle. Rien d'imposé côté amis (pas de pop-up).
 - Aucune adresse e-mail codée dans `js/sync.js` (le code est public) : le statut "propriétaire" se déduit du succès ou de l'échec de la lecture Firestore elle-même, jamais d'une comparaison client-side.
