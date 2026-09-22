@@ -413,3 +413,11 @@ details .actions { margin-top: 8px; }
 .sync-badge[data-state="synced"] { color: var(--ok); }
 .sync-badge[data-state="syncing"], .sync-badge[data-state="connecting"] { color: var(--xp); }
 .sync-badge[data-state="offline"], .sync-badge[data-state="error"] { color: var(--ko); }
+
+/* ---------- Ajouter une carte ---------- */
+.add-form { display: grid; gap: 6px; }
+.add-form label { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+.add-form label:first-child { margin-top: 0; }
+.add-form input[type="text"] { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; font-size: 1rem; }
+.add-form input.add-emoji { width: 90px; font-size: 1.3rem; text-align: center; }
+.add-form .btn { margin-top: 14px; }

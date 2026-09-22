@@ -38,16 +38,18 @@
 
   const translations = (text) => text.split('\n').map(translationOnly).filter(Boolean);
   const kanjiOnly = (line) => (line.match(HAN_RUNS) || []).join('');
+  const isPureKana = (s) => { const t = s.replace(/[\s　]/g, ''); return t.length > 0 && [...t].every((ch) => KANA.test(ch)); };
 
-  // La forme écrite avec kanjis quand la lecture est donnée à côté : "はれ (晴れ)" -> "晴れ", "経済 - けいざい" -> "経済"
-  function kanjiForm(line) {
+  // Sépare la forme kanji de sa lecture quand les deux sont données côte à côte :
+  // "はれ (晴れ)" -> kanji "晴れ" / lecture "はれ" ; "経済 - けいざい" -> kanji "経済" / lecture "けいざい"
+  function splitForm(line) {
     const m = line.match(/^(.+?)\s*[（(]([^）)]+)[）)]\s*$/) || line.match(/^(.+?)\s+[-–]\s+(.+)$/);
     if (m) {
       const [, a, b] = m;
-      if (HAN.test(b) && !HAN.test(a)) return b;
-      if (HAN.test(a) && !HAN.test(b)) return a;
+      if (HAN.test(b) && !HAN.test(a)) return { kanjiForm: b, reading: isPureKana(a) ? a.trim() : '' };
+      if (HAN.test(a) && !HAN.test(b)) return { kanjiForm: a, reading: isPureKana(b) ? b.trim() : '' };
     }
-    return line;
+    return { kanjiForm: line, reading: '' };
   }
 
   // Phrase = ponctuation, plusieurs mots séparés, trop de hiragana, ou traduction qui ressemble à une phrase.
@@ -63,7 +65,7 @@
 
   // Vue "Kanji Only" d'une carte : { front, back } ou null si ce n'est pas un mot avec kanji.
   //  - front : uniquement les kanjis du mot (ni hiragana, ni katakana, ni lecture)   ex. "食"
-  //  - back  : uniquement les traductions                                             ex. "Manger"
+  //  - back  : la ou les traductions, puis la lecture en hiragana si elle est connue  ex. "Manger" / "たべる"
   // Les phrases sont exclues.
   function build(card) {
     const r = card.recto;
@@ -80,7 +82,14 @@
     else if (LATIN.test(r) && !LATIN.test(v)) { [jp, other] = [r, v]; frenchHoldsKanji = true; } // "Pas pratique 不便" / "ふべん"
     else [jp, other] = [r, v];
 
-    const form = frenchHoldsKanji ? firstLine(jp).match(HAN_RUNS).join('') : kanjiForm(firstLine(jp));
+    let form, reading;
+    if (frenchHoldsKanji) {
+      form = firstLine(jp).match(HAN_RUNS).join('');
+      // Ici "other" (le verso) est souvent la lecture pure, ex. "Pas pratique 不便" / "ふべん"
+      reading = isPureKana(firstLine(other)) ? firstLine(other).trim() : '';
+    } else {
+      ({ kanjiForm: form, reading } = splitForm(firstLine(jp)));
+    }
     const front = kanjiOnly(form);
     if (!front) return null;
 
@@ -92,6 +101,7 @@
     if (!lines.length) lines = [firstLine(other)]; // filet de sécurité : jamais de verso vide
 
     if (looksLikeSentence(frenchHoldsKanji ? null : form, lines[0])) return null;
+    if (reading && !lines.includes(reading)) lines.push(reading); // la prononciation, en dernière ligne
     return { front, back: lines.join('\n') };
   }
 

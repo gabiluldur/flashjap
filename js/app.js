@@ -335,6 +335,7 @@
       <section class="panel">
         <h2>Cartes</h2>
         <div class="actions">
+          <button class="btn" data-action="add-card">＋ Ajouter une carte</button>
           <button class="btn" data-action="import-csv">Importer un CSV</button>
           <button class="btn" data-action="words">Voir mes mots (${fmtN(c.total + c.aside)})</button>
         </div>
@@ -692,6 +693,64 @@
     setTimeout(() => { const f = $('#sumFill'); if (f) f.style.width = to.pct + '%'; }, 80);
   }
 
+  // ---------- Ajouter une carte à la main ----------
+  let addedThisSession = []; // {recto, verso} les plus récentes en premier, pour la relecture rapide
+
+  function renderAddCard() {
+    view = 'add';
+    $('#app').innerHTML = `
+      <section class="panel">
+        <div class="words-head">
+          <button class="btn ghost" data-action="home">← Accueil</button>
+          <h2 style="margin:0">Ajouter une carte</h2>
+        </div>
+        <form id="addForm" class="add-form">
+          <label for="addRecto">Recto (français)</label>
+          <input id="addRecto" type="text" lang="fr" autocomplete="off" autocapitalize="sentences" placeholder="Ex. Manger">
+          <label for="addVerso">Verso (japonais)</label>
+          <input id="addVerso" type="text" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ex. たべる">
+          <p class="muted small">Sur téléphone, le clavier passe en japonais tout seul si vous avez installé un clavier japonais (Gboard : Réglages → Langues → 日本語). Sur PC, basculez votre clavier système (ex. Windows + Barre d'espace, ou l'IME que vous utilisez).</p>
+          <label for="addEmoji">Emoji (facultatif)</label>
+          <input id="addEmoji" type="text" autocomplete="off" placeholder="🍚" maxlength="8" class="add-emoji">
+          <button class="btn primary big" type="submit">Ajouter la carte</button>
+        </form>
+      </section>
+      <section class="panel" id="addRecent"></section>`;
+    renderAddRecent();
+    $('#addRecto').focus();
+  }
+
+  function renderAddRecent() {
+    const box = $('#addRecent');
+    if (!box) return;
+    if (!addedThisSession.length) { box.innerHTML = '<p class="muted small" style="text-align:center">Les cartes que vous ajoutez apparaissent ici.</p>'; return; }
+    box.innerHTML = '<h2>Ajoutées à l\'instant</h2>' + addedThisSession.slice(0, 12).map((c) =>
+      `<div class="word"><div class="word-main" style="cursor:default"><div class="w-text">
+        <div class="w-a" lang="${lang(c.recto)}">${c.emoji ? esc(c.emoji) + ' ' : ''}${esc(c.recto)}</div>
+        <div class="w-b" lang="${lang(c.verso)}">${esc(c.verso)}</div>
+      </div></div></div>`
+    ).join('');
+  }
+
+  function submitAddCard(e) {
+    e.preventDefault();
+    const recto = FJ.csv.clean($('#addRecto').value);
+    const verso = FJ.csv.clean($('#addVerso').value);
+    const emoji = FJ.csv.clean($('#addEmoji').value);
+    if (!recto || !verso) return toast('Le recto et le verso sont obligatoires.');
+    const card = { id: FJ.csv.cardId(recto, verso), recto, verso };
+    if (emoji) card.emoji = emoji;
+    const { added, duplicates } = store.addCards([card]);
+    if (!added) { toast(duplicates ? 'Cette carte existe déjà.' : 'Carte non ajoutée.'); return; }
+    addedThisSession.unshift({ recto, verso, emoji });
+    renderAddRecent();
+    toast('Carte ajoutée ✓');
+    $('#addRecto').value = '';
+    $('#addVerso').value = '';
+    $('#addEmoji').value = '';
+    $('#addRecto').focus();
+  }
+
   // ---------- Liste des mots ----------
   const FILTERS = [
     ['all', 'Tous'], ['fresh', 'Nouveaux'], ['learning', 'En cours'], ['validated', 'Validés'],
@@ -854,6 +913,7 @@
     'chart-metric'(el) { store.state.settings.chartMetric = el.dataset.val; persist(); refreshChart(); },
     'chart-range'(el) { store.state.settings.chartRange = Number(el.dataset.val); persist(); refreshChart(); },
     'set-reverse'(el) { store.state.settings.reverse = el.dataset.val === '1'; persist(); renderHome(); },
+    'add-card'() { addedThisSession = []; renderAddCard(); },
     'import-csv': () => $('#csvFile').click(),
     'import-json': () => $('#jsonFile').click(),
     'export-json': exportJson,
@@ -887,6 +947,10 @@
       el.value = '';
       if (file) (el.id === 'csvFile' ? importCsv : importJson)(file);
     }
+  });
+
+  document.addEventListener('submit', (e) => {
+    if (e.target.id === 'addForm') submitAddCard(e);
   });
 
   document.addEventListener('input', (e) => {
