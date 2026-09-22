@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.9.0/firebas
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js';
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-  collection, doc, onSnapshot, writeBatch,
+  collection, doc, onSnapshot, writeBatch, addDoc, deleteDoc, query, orderBy, limit,
 } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
 
@@ -81,6 +81,7 @@ function startSync(user) {
   store.onChange = () => core.notifyChange();
   FJ.sync.replaceAll = () => core.replaceAll();
   core.start();
+  startFeedbackInbox();
   publish();
 }
 
@@ -89,6 +90,36 @@ function stopSync() {
   core = null;
   store.onChange = null;
   FJ.sync.replaceAll = () => Promise.resolve();
+  stopFeedbackInbox();
+}
+
+// ---------- Petits mots des amis ("feedback") ----------
+// Collection à part (hors de users/{uid}) : n'importe qui de connecté peut y déposer un mot (règle "create" seule),
+// mais seul le compte propriétaire peut les lire ou les supprimer. On ne code aucune adresse e-mail ici (ça
+// l'exposerait dans le code public) : on tente simplement la lecture, et ce sont les règles Firestore, côté
+// serveur, qui décident si ça passe. Ça réussit -> on est le propriétaire ; ça échoue -> on n'affiche rien.
+const fb = (FJ.feedbackUi = FJ.feedbackUi || {});
+Object.assign(fb, { isOwner: false, items: [] });
+let unsubFeedback = null;
+
+function startFeedbackInbox() {
+  const q = query(collection(db, 'feedback'), orderBy('createdAt', 'desc'), limit(100));
+  unsubFeedback = onSnapshot(q, (snap) => {
+    fb.isOwner = true;
+    fb.items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    if (ui().feedbackChanged) ui().feedbackChanged();
+  }, () => {
+    fb.isOwner = false; // accès refusé par les règles : ce n'est pas le compte propriétaire
+    fb.items = [];
+    if (ui().feedbackChanged) ui().feedbackChanged();
+  });
+}
+
+function stopFeedbackInbox() {
+  fb.isOwner = false;
+  fb.items = [];
+  if (unsubFeedback) unsubFeedback();
+  unsubFeedback = null;
 }
 
 FJ.sync = {
@@ -109,6 +140,29 @@ FJ.sync = {
   },
   async signOut() {
     await signOut(auth);
+  },
+  // Envoie un petit mot au créateur. Ne fonctionne que connecté (le bouton n'est de toute façon proposé qu'à ce moment-là).
+  async sendFeedback({ text, mood, anonymous }) {
+    const user = auth.currentUser;
+    if (!user) return false;
+    const clean = (text || '').trim().slice(0, 300);
+    if (!clean && !mood) return false;
+    try {
+      await addDoc(collection(db, 'feedback'), {
+        uid: user.uid,
+        text: clean,
+        mood: mood || null,
+        name: anonymous ? null : (user.displayName || null),
+        createdAt: Date.now(),
+      });
+      return true;
+    } catch (e) {
+      if (ui().toast) ui().toast("Envoi impossible pour le moment.");
+      return false;
+    }
+  },
+  async deleteFeedback(id) {
+    try { await deleteDoc(doc(db, 'feedback', id)); } catch (e) { /* tant pis, réessayable */ }
   },
 };
 

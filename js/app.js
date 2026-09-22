@@ -240,7 +240,75 @@
       offline: '⚠ Hors-ligne : les changements partiront au retour du réseau', error: '⚠ ' + (u.error || 'Erreur'),
     }[u.status] || '';
     return `<div class="sync-row"><div><b>${esc(u.email || 'Connecté')}</b><p class="muted small sync-${u.status}">${esc(label)}</p></div>
-      <button class="btn" data-action="sync-signout">Se déconnecter</button></div>`;
+        <button class="btn" data-action="sync-signout">Se déconnecter</button>
+      </div>
+      <button class="btn ghost small-text" data-action="feedback" style="margin-top:8px">✉️ Envoyer un mot au créateur</button>`;
+  }
+
+  // Distance en français pour un horodatage passé (petits mots des amis)
+  function agoText(ts) {
+    const min = Math.round((Date.now() - ts) / 60000);
+    if (min < 1) return "à l'instant";
+    if (min < 60) return `il y a ${min} min`;
+    const h = Math.round(min / 60);
+    if (h < 24) return `il y a ${h} h`;
+    return `il y a ${Math.round(h / 24)} j`;
+  }
+
+  const MOODS = ['😍', '🙂', '😐', '🐛', '💡'];
+  let feedbackMood = null;
+
+  function renderFeedbackForm() {
+    view = 'feedback';
+    feedbackMood = null;
+    $('#app').innerHTML = `
+      <section class="panel">
+        <div class="words-head">
+          <button class="btn ghost" data-action="home">← Accueil</button>
+          <h2 style="margin:0">Un mot pour le créateur</h2>
+        </div>
+        <form id="feedbackForm" class="add-form">
+          <label for="fbText">Votre message (facultatif)</label>
+          <textarea id="fbText" rows="3" maxlength="300" placeholder="Un merci, un bug, une idée…"></textarea>
+          <label>Comment ça se passe ? (facultatif)</label>
+          <div class="mood-row">
+            ${MOODS.map((m) => `<button type="button" class="mood" data-action="fb-mood" data-val="${m}" aria-pressed="false">${m}</button>`).join('')}
+          </div>
+          <label class="checkbox-row"><input type="checkbox" id="fbAnon"> Envoyer anonymement (votre prénom ne sera pas affiché)</label>
+          <button class="btn primary big" type="submit">Envoyer</button>
+        </form>
+      </section>`;
+    $('#fbText').focus();
+  }
+
+  async function submitFeedback(e) {
+    e.preventDefault();
+    const text = $('#fbText').value.trim();
+    const anonymous = $('#fbAnon').checked;
+    if (!text && !feedbackMood) return toast('Ajoutez un message ou choisissez un smiley.');
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    const ok = await (FJ.sync && FJ.sync.sendFeedback({ text, mood: feedbackMood, anonymous }));
+    btn.disabled = false;
+    if (ok) { toast('Message envoyé, merci !', true); sess = null; renderHome(); }
+    else toast('Envoi impossible : vérifiez votre connexion.');
+  }
+
+  // Boîte de réception des petits mots : uniquement construite/affichée pour le compte propriétaire
+  // (FJ.feedbackUi.isOwner n'est mis à true par js/sync.js qu'après vérification de l'e-mail connecté).
+  function feedbackInner() {
+    const items = (FJ.feedbackUi && FJ.feedbackUi.items) || [];
+    if (!items.length) return '<p class="muted small" style="text-align:center">Rien pour l\'instant.</p>';
+    return items.map((it) => `
+      <div class="fb-item">
+        <div class="fb-head">
+          ${it.mood ? `<span class="fb-mood">${esc(it.mood)}</span>` : ''}
+          <b>${esc(it.name || 'Anonyme')}</b>
+          <span class="muted small">${agoText(it.createdAt)}</span>
+          <button class="btn ghost small-text" data-action="fb-delete" data-id="${it.id}" aria-label="Supprimer">✕</button>
+        </div>
+        ${it.text ? `<p class="fb-text">${esc(it.text)}</p>` : ''}
+      </div>`).join('');
   }
 
   function updateSyncBadge() {
@@ -266,7 +334,11 @@
     else if (view === 'words') renderWordsList();
   }
 
-  FJ.ui = { refresh, syncChanged, toast };
+  function feedbackChanged() {
+    if (view === 'home') renderHome();
+  }
+
+  FJ.ui = { refresh, syncChanged, feedbackChanged, toast };
 
   // ---------- Accueil ----------
   function startBlock(track, counts, label) {
@@ -313,8 +385,14 @@
     if (c.mastered) extras.push(`✓ ${plural(c.mastered, 'mot masterisé', 'mots masterisés')}`);
     if (c.aside) extras.push(`⏸ ${c.aside} de côté`);
 
+    const showFeedback = FJ.feedbackUi && FJ.feedbackUi.isOwner;
     $('#app').innerHTML = `
       <section class="panel sync-panel" id="syncBox">${syncInner()}</section>
+
+      ${showFeedback ? `<section class="panel" id="feedbackBox">
+        <h2>💌 Petits mots${FJ.feedbackUi.items.length ? ` (${FJ.feedbackUi.items.length})` : ''}</h2>
+        ${feedbackInner()}
+      </section>` : ''}
 
       <section class="panel">${startMain}</section>
 
@@ -1012,6 +1090,12 @@
     'import-json': () => $('#jsonFile').click(),
     'export-json': exportJson,
     'sync-signin': () => FJ.sync && FJ.sync.signIn(),
+    feedback: renderFeedbackForm,
+    'fb-mood'(el) {
+      feedbackMood = feedbackMood === el.dataset.val ? null : el.dataset.val;
+      document.querySelectorAll('[data-action="fb-mood"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.val === feedbackMood)));
+    },
+    'fb-delete': (el) => FJ.sync && FJ.sync.deleteFeedback(el.dataset.id),
     'sync-signout': () => FJ.sync && FJ.sync.signOut(),
     reset() {
       const online = FJ.syncUi.phase === 'signedin';
@@ -1045,6 +1129,7 @@
 
   document.addEventListener('submit', (e) => {
     if (e.target.id === 'addForm') submitAddCard(e);
+    else if (e.target.id === 'feedbackForm') submitFeedback(e);
   });
 
   document.addEventListener('input', (e) => {

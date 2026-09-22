@@ -439,3 +439,18 @@ details .actions { margin-top: 8px; }
   place-items: center;
 }
 .face .speak:active { transform: scale(.92); }
+
+/* ---------- Petits mots (feedback) ---------- */
+.mood-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.mood-row .mood { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; width: 48px; height: 48px; font-size: 1.4rem; cursor: pointer; display: grid; place-items: center; }
+.mood-row .mood[aria-pressed="true"] { background: var(--accent); border-color: transparent; box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent); }
+.checkbox-row { display: flex; align-items: center; gap: 8px; font-size: .92rem; color: var(--ink); margin-top: 10px; }
+.checkbox-row input { width: 18px; height: 18px; }
+textarea { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; font-size: 1rem; resize: vertical; width: 100%; }
+
+.fb-item { border-bottom: 1px solid var(--line); padding: 10px 0; }
+.fb-item:last-child { border-bottom: 0; }
+.fb-head { display: flex; align-items: center; gap: 8px; }
+.fb-head b { flex: 1; min-width: 0; }
+.fb-mood { font-size: 1.2rem; }
+.fb-text { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
