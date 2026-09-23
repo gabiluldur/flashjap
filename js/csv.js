@@ -81,7 +81,8 @@
     const ri = head.findIndex((h) => RECTO_HEADERS.includes(h));
     const vi = head.findIndex((h) => VERSO_HEADERS.includes(h));
     if (ri < 0 || vi < 0) {
-      return { cards: [], skipped: 0, error: 'Colonnes introuvables : il faut au moins "recto_texte" et "verso_texte".' };
+      // needsMapping : format inconnu (autre site) -> l'appli propose l'assistant d'import pour choisir les colonnes
+      return { cards: [], skipped: 0, needsMapping: true, error: 'Colonnes introuvables : il faut au moins "recto_texte" et "verso_texte".' };
     }
 
     // Colonnes d'images facultatives : URL https ou chemin relatif (ex. images/chien.jpg)
@@ -134,5 +135,8 @@
     return v;
   }
 
-  FJ.csv = { parseCards, parseRows, clean, cleanCategory, cardId };
+  FJ.csv = {
+    parseCards, parseRows, clean, cleanCategory, cleanEmoji, cardId,
+    HEADERS: { recto: RECTO_HEADERS, verso: VERSO_HEADERS, cat: CAT_HEADERS },
+  };
 })();

@@ -502,6 +502,7 @@
         <div class="actions">
           <button class="btn" data-action="add-card">＋ Ajouter une carte</button>
           <button class="btn" data-action="import-csv">Importer un CSV</button>
+          <button class="btn" data-action="wiz-open">Importer depuis un autre site…</button>
           <button class="btn" data-action="words">Voir mes mots (${fmtN(c.total + c.aside)})</button>
         </div>
         <details>
@@ -1025,6 +1026,271 @@
     $('#addRecto').focus();
   }
 
+  // ---------- Assistant d'import (exports d'autres sites : Anki, Quizlet, Excel…) ----------
+  // Tout se passe dans le navigateur, rien n'est envoyé nulle part. Le fichier est lu, on devine séparateur,
+  // encodage et en-tête, l'utilisateur choisit le rôle de chaque colonne sur un aperçu, puis les cartes passent par le
+  // même import additif que d'habitude (runImport).
+  const WIZ_ROLES = [['recto', 'Recto'], ['verso', 'Verso'], ['emoji', 'Emoji'], ['cat', 'Catégorie'], ['ignore', 'Ignorer']];
+  const WIZ_DELIMS = [['\t', 'Tabulation'], [',', 'Virgule'], [';', 'Point-virgule'], ['|', 'Barre verticale |']];
+  const WIZ_ENCODINGS = [['utf-8', 'UTF-8'], ['windows-1252', 'Windows (Excel européen)'], ['shift_jis', 'Shift-JIS (japonais)'], ['euc-jp', 'EUC-JP (japonais)']];
+  let wiz = null;
+
+  function decodeEntities(s) {
+    const t = document.createElement('textarea'); // contenu non interprété : seules les entités (&amp;, &#39;…) sont décodées
+    t.innerHTML = s.replace(/</g, '&lt;');
+    return t.value;
+  }
+
+  // Nettoyage d'une cellule : balises HTML, [sound:…] d'Anki, entités, espaces
+  function wizClean(s) {
+    return decodeEntities(FJ.csv.clean(String(s || '').replace(/\[sound:[^\]]*\]/gi, ''))).trim();
+  }
+
+  const decodeBuf = (buf, enc) => new TextDecoder(enc).decode(buf);
+
+  function guessEncoding(buf) {
+    if (!decodeBuf(buf, 'utf-8').includes('�')) return 'utf-8';
+    const sj = decodeBuf(buf, 'shift_jis');
+    if (!sj.includes('�') && /[぀-ヿ一-鿿]/.test(sj)) return 'shift_jis';
+    return 'windows-1252';
+  }
+
+  // Séparateur le plus régulier sur les 20 premières lignes (même nombre d'occurrences d'une ligne à l'autre)
+  function detectDelim(lines) {
+    const sample = lines.filter((l) => l.trim()).slice(0, 20);
+    let best = ',';
+    let bestScore = 0;
+    for (const d of ['\t', ';', ',', '|']) {
+      const counts = sample.map((l) => l.split(d).length - 1).sort((a, b) => a - b);
+      const mode = counts[Math.floor(counts.length / 2)];
+      if (!mode) continue;
+      const score = counts.filter((n) => n === mode).length;
+      if (score > bestScore) { best = d; bestScore = score; }
+    }
+    return best;
+  }
+
+  // Rôle deviné d'après le nom d'une colonne d'en-tête (null si inconnu)
+  function wizRole(name) {
+    const h = String(name || '').trim().toLowerCase();
+    const H = FJ.csv.HEADERS;
+    if (H.recto.includes(h) || ['term', 'terme', 'mot', 'word', 'français', 'francais', 'french'].includes(h)) return 'recto';
+    if (H.verso.includes(h) || ['definition', 'définition', 'traduction', 'translation', 'japonais', 'japanese', 'meaning', 'sens'].includes(h)) return 'verso';
+    if (['emoji', 'émoji'].includes(h)) return 'emoji';
+    if (H.cat.includes(h)) return 'cat';
+    return null;
+  }
+
+  const looksLikeHeader = (row) => row.some((h) => wizRole(h));
+
+  // Ouvre l'assistant : sans argument = choix de la source ; avec un tampon (fichier) ou du texte collé = analyse.
+  function wizSetSource(source, enc) {
+    let raw;
+    let buf = null;
+    if (typeof source === 'string') raw = source;
+    else if (source) { buf = source; enc = enc || guessEncoding(buf); raw = decodeBuf(buf, enc); }
+    if (raw === undefined) { wiz = { stage: 'source' }; return renderWizard(); }
+
+    // En-tête Anki : lignes "#separator:tab", "#html:true"… en tête de fichier
+    const lines = raw.replace(/^﻿/, '').split(/\r?\n/);
+    let i = 0;
+    let sep = null;
+    while (i < lines.length && lines[i].startsWith('#')) {
+      const m = lines[i].match(/^#separator:(.+)$/i);
+      if (m) sep = m[1].trim().toLowerCase();
+      i++;
+    }
+    const named = { tab: '\t', comma: ',', semicolon: ';', pipe: '|' };
+    const body = lines.slice(i).join('\n');
+    wiz = { stage: 'map', buf, enc: enc || 'utf-8', delim: named[sep] || detectDelim(lines.slice(i)), body, swap: false };
+    wizReparse(true);
+    renderWizard();
+  }
+
+  function wizReparse(detectHeader) {
+    wiz.rows = FJ.csv.parseRows(wiz.body, wiz.delim).filter((r) => r.some((v) => v.trim() !== ''));
+    wiz.cols = wiz.rows.slice(0, 50).reduce((n, r) => Math.max(n, r.length), 0);
+    if (detectHeader) wiz.header = wiz.rows.length > 0 && looksLikeHeader(wiz.rows[0]);
+    wizAutoMap();
+  }
+
+  // Rôle de chaque colonne : d'après l'en-tête s'il est reconnu, sinon 1re colonne = recto, 2e = verso
+  function wizAutoMap() {
+    const head = wiz.header && wiz.rows[0] ? wiz.rows[0] : [];
+    const map = Array.from({ length: wiz.cols }, (_, i) => (head[i] ? wizRole(head[i]) : null));
+    if (!map.includes('recto') && !map.includes('verso')) {
+      map.fill(null);
+      if (wiz.cols >= 1) map[0] = 'recto';
+      if (wiz.cols >= 2) map[1] = 'verso';
+    } else {
+      const free = () => map.findIndex((r) => !r);
+      if (!map.includes('verso') && free() >= 0) map[free()] = 'verso';
+      if (!map.includes('recto') && free() >= 0) map[free()] = 'recto';
+    }
+    wiz.map = map.map((r) => r || 'ignore');
+  }
+
+  // Cartes que produirait l'import avec les réglages actuels
+  function wizBuild() {
+    const data = wiz.header ? wiz.rows.slice(1) : wiz.rows;
+    const ri = wiz.map.indexOf('recto');
+    const vi = wiz.map.indexOf('verso');
+    const ei = wiz.map.indexOf('emoji');
+    const ci = wiz.map.indexOf('cat');
+    const cards = [];
+    const seen = new Set();
+    let skipped = 0;
+    let repeated = 0;
+    for (const row of data) {
+      if (ri < 0 || vi < 0) { skipped++; continue; }
+      let a = wizClean(row[ri]);
+      let b = wizClean(row[vi]);
+      if (wiz.swap) [a, b] = [b, a];
+      if (!a || !b) { skipped++; continue; }
+      const id = FJ.csv.cardId(a, b);
+      if (seen.has(id)) { repeated++; continue; }
+      seen.add(id);
+      const card = { id, recto: a, verso: b };
+      const emoji = ei >= 0 ? FJ.csv.cleanEmoji(row[ei]) : '';
+      if (emoji) card.emoji = emoji;
+      // Étiquettes d'Anki : "genki::L08" -> "genki › L08" ; "_" -> espace
+      const cat = ci >= 0 ? FJ.csv.cleanCategory(wizClean(row[ci]).replace(/::/g, ' › ').replace(/_/g, ' ')) : '';
+      if (cat) card.cat = cat;
+      cards.push(card);
+    }
+    const known = new Set(store.state.cards.map((c) => c.recto + '\u0001' + c.verso));
+    const existing = cards.filter((c) => store.map.has(c.id) || known.has(c.recto + '\u0001' + c.verso)).length;
+    return { cards, skipped, repeated, existing };
+  }
+
+  function renderWizard() {
+    view = 'import';
+    if (!wiz || wiz.stage === 'source') {
+      $('#app').innerHTML = `
+        <section class="panel">
+          <div class="words-head">
+            <button class="btn ghost" data-action="home">← Accueil</button>
+            <h2 style="margin:0">Importer depuis un autre site</h2>
+          </div>
+          <p class="muted small">Exportez vos cartes depuis Anki (« Notes en texte brut »), Quizlet (« Exporter »), Excel ou Google Sheets (CSV), puis ouvrez le fichier ici, ou collez son contenu. Rien n'est envoyé sur internet.</p>
+          <div class="actions"><button class="btn primary" data-action="wiz-file">Choisir un fichier…</button></div>
+          <div class="add-form" style="margin-top:14px">
+            <label for="wizPaste">… ou collez le contenu</label>
+            <textarea id="wizPaste" rows="6" placeholder="mot[Tab]traduction, un par ligne"></textarea>
+            <button class="btn" data-action="wiz-paste">Analyser</button>
+          </div>
+        </section>`;
+      return;
+    }
+    const opt = (list, cur) => list.map(([k, l]) => `<option value="${esc(k)}"${k === cur ? ' selected' : ''}>${esc(l)}</option>`).join('');
+    $('#app').innerHTML = `
+      <section class="panel">
+        <div class="words-head">
+          <button class="btn ghost" data-action="home">← Accueil</button>
+          <h2 style="margin:0">Importer depuis un autre site</h2>
+        </div>
+        <div class="add-form">
+          <label for="wizPreset">Format du fichier</label>
+          <select id="wizPreset">
+            <option value="auto">Détection automatique</option>
+            <option value="anki">Anki : « Notes en texte brut »</option>
+            <option value="quizlet">Quizlet : export texte</option>
+            <option value="sheet">Excel / Google Sheets (CSV)</option>
+          </select>
+          <label for="wizDelim">Séparateur de colonnes</label>
+          <select id="wizDelim">${opt(WIZ_DELIMS, wiz.delim)}</select>
+          ${wiz.buf ? `<label for="wizEnc">Encodage du fichier</label><select id="wizEnc">${opt(WIZ_ENCODINGS, wiz.enc)}</select>` : ''}
+          <label class="checkbox-row"><input type="checkbox" id="wizHeader"${wiz.header ? ' checked' : ''}> La première ligne est un en-tête</label>
+          <label class="checkbox-row"><input type="checkbox" id="wizSwap"${wiz.swap ? ' checked' : ''}> Inverser recto et verso</label>
+          <label for="wizCat">Catégorie des cartes du fichier qui n'en ont pas</label>
+          ${catPickerHtml('wizCat', '')}
+        </div>
+        <div id="wizDyn"></div>
+        <button class="btn ghost" data-action="wiz-open" style="margin-top:10px">Changer de fichier</button>
+      </section>`;
+    updateWizard();
+  }
+
+  // Colonnes + aperçu + bouton d'import (recalculés à chaque changement de réglage)
+  function updateWizard() {
+    const box = $('#wizDyn');
+    if (!box || !wiz || wiz.stage !== 'map') return;
+    const b = wizBuild();
+    wiz.built = b;
+    const first = (t) => t.split('\n')[0];
+    const data = wiz.header ? wiz.rows.slice(1) : wiz.rows;
+    const example = (i) => (data[0] && data[0][i] ? wizClean(data[0][i]).slice(0, 28) : '');
+    box.innerHTML = `
+      <h2>Colonnes</h2>
+      <div class="wiz-cols">${wiz.map.map((role, i) => `
+        <div class="wiz-col"><span class="muted small">Colonne ${i + 1}${example(i) ? ` · ${esc(example(i))}` : ''}</span>
+          <select data-wizcol="${i}">${WIZ_ROLES.map(([k, l]) => `<option value="${k}"${k === role ? ' selected' : ''}>${l}</option>`).join('')}</select></div>`).join('')}
+      </div>
+      <h2 style="margin-top:14px">Aperçu</h2>
+      ${b.cards.slice(0, 6).map((c) => `<div class="word"><div class="word-main" style="cursor:default"><div class="w-text">
+          <div class="w-a" lang="${lang(first(c.recto))}">${c.emoji ? esc(c.emoji) + ' ' : ''}${esc(first(c.recto))}</div>
+          <div class="w-b" lang="${lang(first(c.verso))}">${esc(first(c.verso))}${c.cat ? ` <span class="w-cat">· ${esc(c.cat)}</span>` : ''}</div>
+        </div></div></div>`).join('') || '<p class="muted small">Aucune carte valide pour l\'instant : vérifiez qu\'une colonne est « Recto » et une autre « Verso ».</p>'}
+      <p class="muted small">${plural(b.cards.length, 'carte prête', 'cartes prêtes')} · ${b.existing} déjà présente${b.existing > 1 ? 's' : ''} · ${plural(b.skipped, 'ligne incomplète', 'lignes incomplètes')}${b.repeated ? ` · ${b.repeated} répétée${b.repeated > 1 ? 's' : ''} dans le fichier` : ''}</p>
+      <button class="btn primary big" data-action="wiz-import"${b.cards.length ? '' : ' disabled'}>Importer ${plural(b.cards.length, 'carte', 'cartes')}</button>`;
+  }
+
+  async function wizImport() {
+    if (!wiz || !wiz.built || !wiz.built.cards.length) return;
+    const pick = readCatPicker('wizCat');
+    if (pick.error) return toast(pick.error);
+    const cards = wiz.built.cards.map((c) => (pick.cat && !c.cat ? { ...c, cat: pick.cat } : c));
+    const s = store.state.settings;
+    if (pick.isNew && s.catPool) s.catPool = [...s.catPool, pick.cat];
+    const parts = await runImport(cards);
+    toast(parts.join(' · '));
+    wiz = null;
+    renderHome();
+  }
+
+  function wizPickFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values';
+    input.onchange = async () => { if (input.files[0]) wizSetSource(await input.files[0].arrayBuffer()); };
+    input.click();
+  }
+
+  // Préréglages : simples raccourcis vers des réglages usuels
+  function wizPreset(name) {
+    if (name === 'anki' || name === 'quizlet') {
+      wiz.delim = '\t';
+      wiz.header = false;
+      wizReparse(false);
+      wiz.map = wiz.map.map((_, i) => (i === 0 ? 'recto' : i === 1 ? 'verso' : 'ignore'));
+    } else {
+      wiz.delim = detectDelim(wiz.body.split(/\r?\n/));
+      wizReparse(true);
+    }
+    renderWizard();
+    $('#wizPreset').value = name;
+  }
+
+  // Changements de réglages de l'assistant (délégués depuis l'écouteur "change" global)
+  function wizChange(el) {
+    if (!wiz || wiz.stage !== 'map') return false;
+    if (el.dataset.wizcol !== undefined) {
+      const i = Number(el.dataset.wizcol);
+      if (el.value !== 'ignore') wiz.map = wiz.map.map((r, j) => (j !== i && r === el.value ? 'ignore' : r)); // un seul rôle par type
+      wiz.map[i] = el.value;
+      updateWizard();
+      return true;
+    }
+    switch (el.id) {
+      case 'wizPreset': wizPreset(el.value); return true;
+      case 'wizDelim': wiz.delim = el.value; wizReparse(false); updateWizard(); return true;
+      case 'wizEnc': wizSetSource(wiz.buf, el.value); return true;
+      case 'wizHeader': wiz.header = el.checked; wizAutoMap(); renderWizard(); return true;
+      case 'wizSwap': wiz.swap = el.checked; updateWizard(); return true;
+      default: return false;
+    }
+  }
+
   // ---------- Modifier une carte ----------
   // La carte garde son identifiant : modifier le texte ne perd pas la progression, et réimporter le CSV d'origine
   // ne recrée ni l'ancienne ni la nouvelle version (voir la détection de doublons dans store.addCards).
@@ -1230,9 +1496,12 @@
   }
 
   async function importCsv(file) {
-    const text = await readText(file);
-    if (text.includes('�')) toast('Attention : caractères illisibles. Enregistrez le CSV en UTF-8.');
+    const buf = await file.arrayBuffer();
+    const text = new TextDecoder('utf-8').decode(buf);
     const res = FJ.csv.parseCards(text);
+    // Format inconnu (export d'un autre site) : au lieu d'une erreur, on ouvre l'assistant de choix des colonnes
+    if (res.needsMapping) { toast('Format inconnu : choisissez les colonnes.'); return wizSetSource(buf); }
+    if (text.includes('�')) toast('Attention : caractères illisibles. Enregistrez le CSV en UTF-8.');
     if (res.error) return toast(res.error);
     const parts = await runImport(res.cards);
     if (res.skipped) parts.push(plural(res.skipped, 'ligne incomplète ignorée', 'lignes incomplètes ignorées'));
@@ -1343,6 +1612,14 @@
     'chart-range'(el) { store.state.settings.chartRange = Number(el.dataset.val); persist(); refreshChart(); },
     'set-reverse'(el) { store.state.settings.reverse = el.dataset.val === '1'; persist(); renderHome(); },
     'add-card'() { addedThisSession = []; renderAddCard(); },
+    'wiz-open': () => wizSetSource(),
+    'wiz-file': wizPickFile,
+    'wiz-paste'() {
+      const text = $('#wizPaste').value;
+      if (!text.trim()) return toast('Collez d\'abord le contenu à importer.');
+      wizSetSource(text);
+    },
+    'wiz-import': wizImport,
     'w-edit': (el) => renderEditCard(el.dataset.id),
     'edit-cancel'() { expandedId = edit ? edit.id : expandedId; edit = null; renderWords(); },
     'edit-kanji-mode'(el) {
@@ -1405,6 +1682,8 @@
       const input = $('#' + el.dataset.catpicker);
       input.hidden = el.value !== '__new__';
       if (!input.hidden) input.focus();
+    } else if (wizChange(el)) {
+      // géré par l'assistant d'import
     } else if (el.id === 'wordsCat') {
       wordsCat = el.value === '*' ? null : el.value;
       renderWordsList();

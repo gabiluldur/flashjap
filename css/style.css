@@ -469,3 +469,10 @@ textarea { background: var(--surface-2); border: 1px solid var(--line); border-r
 .controls-extra:empty { display: none; }
 .controls-extra .btn { width: 100%; border-style: dashed; color: var(--ink); }
 .controls-extra .btn span { color: var(--xp); font-weight: 700; }
+
+/* ---------- Assistant d'import ---------- */
+.wiz-cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.wiz-col { display: grid; gap: 4px; min-width: 0; }
+.wiz-col > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wiz-col select { width: 100%; }
+#wizDyn { margin-top: 18px; }

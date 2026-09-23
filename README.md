@@ -46,6 +46,11 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - En révision classique, après avoir retourné une carte qui a une version Kanji Only (hors repasse de fin de boucle) : bouton « ✓ Je savais, mais pas le kanji 漢 » (raccourci clavier : K). La carte compte comme réussie normalement (XP, planning, combo) **et** passe en tête de la prochaine session Kanji Only (`card.kprio`), à réviser tout de suite ; si sa progression Kanji était validée, elle repart de l'étape 1.
 - La priorité Kanji est effacée dès que la carte est révisée en Kanji Only (elle reste tant qu'elle ne l'a pas été) et ne s'applique qu'à cette piste.
 
+## Importer depuis un autre site (assistant d'import)
+- Accueil → Cartes → « Importer depuis un autre site… », ou automatiquement quand « Importer un CSV » reçoit un fichier dont les colonnes ne sont pas reconnues (`parseCards` renvoie `needsMapping`).
+- Fichier ou texte collé ; entièrement local. Détection du séparateur (tabulation, virgule, point-virgule, barre verticale), de l'encodage (UTF-8, Windows-1252, Shift-JIS, EUC-JP, modifiable) et de l'en-tête ; lignes `#separator:` / `#html:` d'Anki lues ; HTML, `[sound:…]` et entités nettoyés.
+- Rôle de chaque colonne au choix (Recto, Verso, Emoji, Catégorie, Ignorer), « Inverser recto/verso », catégorie par défaut, aperçu et compteurs (prêtes / déjà présentes / incomplètes), préréglages Anki, Quizlet, Excel/Sheets. Ensuite `runImport` : même import additif que partout ailleurs. Non géré : paquets Anki `.apkg`.
+
 ## Packs de démarrage
 - `starter/vocab-genki.csv` (1000 mots) et `starter/kanji-genki.csv` (145 kanjis, déjà écrits kanji → lecture(s) + sens) : fichiers publics, versionnés avec le code (contrairement à `data/`, réservé à vos données personnelles).
 - Accessibles via deux boutons (accueil, état vide + section Cartes → « Packs de démarrage »), qui passent par le même chemin que l'import CSV classique : purement additif, jamais de remplacement.
