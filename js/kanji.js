@@ -111,7 +111,7 @@
   const cache = new Map();
   function view(card) {
     if (card.kanjiForce === false) return null;
-    const key = card.id + '|' + card.recto.length + '|' + card.verso.length + '|' + card.kanjiForce;
+    const key = card.id + '|' + card.recto + '|' + card.verso + '|' + card.kanjiForce; // le texte entier : une carte peut être modifiée
     if (!cache.has(key)) cache.set(key, build(card, card.kanjiForce === true));
     return cache.get(key);
   }

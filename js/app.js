@@ -996,6 +996,106 @@
     $('#addRecto').focus();
   }
 
+  // ---------- Modifier une carte ----------
+  // La carte garde son identifiant : modifier le texte ne perd pas la progression, et réimporter le CSV d'origine
+  // ne recrée ni l'ancienne ni la nouvelle version (voir la détection de doublons dans store.addCards).
+  let edit = null; // { id, kanjiMode, stage0, kstage0 }
+
+  function stageOptions(current, withMastered) {
+    const opts = [['0', 'Nouvelle']];
+    for (let s = 1; s < srs.VALIDATED; s++) opts.push([String(s), `Étape ${s} · ${srs.STEPS[s - 1].label}`]);
+    opts.push([String(srs.VALIDATED), 'Validée']);
+    if (withMastered) opts.push(['mastered', 'Masterisée']);
+    return opts.map(([v, l]) => `<option value="${v}"${current === v ? ' selected' : ''}>${l}</option>`).join('');
+  }
+
+  const masteryOf = (card) => (card.state === 'mastered' ? 'mastered' : String(card.stage || 0));
+
+  function renderEditCard(id) {
+    const card = store.byId(id);
+    if (!card) return renderWords();
+    view = 'edit';
+    const kview = card.state !== 'mastered' && kanji.view(card) ? true : card.kanjiForce === true;
+    edit = {
+      id,
+      kanjiMode: card.kanjiForce === true ? 'force' : card.kanjiForce === false ? 'off' : 'auto',
+      stage0: masteryOf(card),
+      kstage0: String((card.k && card.k.stage) || 0),
+    };
+    $('#app').innerHTML = `
+      <section class="panel">
+        <div class="words-head">
+          <button class="btn ghost" data-action="edit-cancel">← Retour</button>
+          <h2 style="margin:0">Modifier la carte</h2>
+        </div>
+        <form id="editForm" class="add-form">
+          <label for="edRecto">Recto (français)</label>
+          <textarea id="edRecto" rows="2" lang="fr" autocomplete="off">${esc(card.recto)}</textarea>
+          <label for="edVerso">Verso (japonais, notes sur les lignes suivantes)</label>
+          <textarea id="edVerso" rows="3" lang="ja" autocomplete="off" spellcheck="false">${esc(card.verso)}</textarea>
+          <label for="edEmoji">Emoji (facultatif)</label>
+          <input id="edEmoji" type="text" autocomplete="off" maxlength="8" class="add-emoji" value="${esc(card.emoji || '')}">
+          <label for="edCat">Catégorie</label>
+          <div>${catPickerHtml('edCat', card.cat || '')}</div>
+          <label>Kanji Only</label>
+          <div class="segment" role="group" aria-label="Présence dans Kanji Only">
+            ${KANJI_MODES.map(([k, l]) => `<button type="button" data-action="edit-kanji-mode" data-val="${k}" aria-pressed="${edit.kanjiMode === k}">${l}</button>`).join('')}
+          </div>
+          <p class="muted small" id="edKanjiHint">${ADD_KANJI_HINTS[edit.kanjiMode]}</p>
+          <label for="edStage">Maîtrise (révision classique)</label>
+          <select id="edStage">${stageOptions(edit.stage0, true)}</select>
+          ${kview ? `<label for="edKStage">Maîtrise (Kanji Only)</label>
+          <select id="edKStage">${stageOptions(edit.kstage0, false)}</select>` : ''}
+          <p class="muted small">Corriger une maîtrise ne rend et ne retire aucun XP. Une carte remise à une étape en cours revient en révision tout de suite.</p>
+          <button class="btn primary big" type="submit">Enregistrer</button>
+        </form>
+      </section>`;
+    $('#edRecto').focus();
+  }
+
+  // Change l'étape d'une carte (piste classique ou Kanji) : correction d'un accident, sans XP.
+  function applyMastery(card, value, track) {
+    if (value === 'mastered') { card.state = 'mastered'; card.masterXp = true; return; }
+    if (track === 'main' && card.state === 'mastered') delete card.state; // on quitte l'état masterisé
+    const p = store.ensureProgress(card, track);
+    p.stage = Number(value);
+    p.due = p.stage >= 1 && p.stage < srs.VALIDATED ? Date.now() : 0;
+  }
+
+  function submitEditCard(e) {
+    e.preventDefault();
+    const card = edit && store.byId(edit.id);
+    if (!card) return renderWords();
+    const recto = FJ.csv.clean($('#edRecto').value);
+    const verso = FJ.csv.clean($('#edVerso').value);
+    if (!recto || !verso) return toast('Le recto et le verso sont obligatoires.');
+    if (store.state.cards.some((c) => c !== card && c.recto === recto && c.verso === verso)) return toast('Une autre carte a déjà ce recto et ce verso.');
+    const pick = readCatPicker('edCat');
+    if (pick.error) return toast(pick.error);
+
+    card.recto = recto;
+    card.verso = verso;
+    const emoji = FJ.csv.clean($('#edEmoji').value);
+    if (emoji) card.emoji = emoji; else delete card.emoji;
+    if (pick.cat) card.cat = pick.cat; else delete card.cat;
+    const s = store.state.settings;
+    if (pick.isNew && s.catPool) s.catPool = [...s.catPool, pick.cat];
+    if (edit.kanjiMode === 'force') card.kanjiForce = true;
+    else if (edit.kanjiMode === 'off') card.kanjiForce = false;
+    else delete card.kanjiForce;
+
+    const stage = $('#edStage').value;
+    if (stage !== edit.stage0) applyMastery(card, stage, 'main');
+    const kstage = $('#edKStage');
+    if (kstage && kstage.value !== edit.kstage0) applyMastery(card, kstage.value, 'kanji');
+
+    persist();
+    toast('Carte modifiée ✓');
+    expandedId = card.id;
+    edit = null;
+    renderWords();
+  }
+
   // ---------- Liste des mots ----------
   const FILTERS = [
     ['all', 'Tous'], ['fresh', 'Nouveaux'], ['learning', 'En cours'], ['validated', 'Validés'],
@@ -1061,10 +1161,11 @@
       const btn = (act, label, cls = '') => `<button class="btn ${cls}" data-action="${act}" data-id="${c.id}">${label}</button>`;
       let buttons;
       if (c.state === 'removed') buttons = btn('w-restore', '↩ Restaurer');
-      else if (c.state === 'mastered') buttons = btn('w-unmaster', '↩ Remettre en révision') + btn('w-remove', '✕ Éliminer', 'danger');
+      else if (c.state === 'mastered') buttons = btn('w-edit', '✎ Modifier') + btn('w-unmaster', '↩ Remettre en révision') + btn('w-remove', '✕ Éliminer', 'danger');
       else {
         const kanjiLabel = c.kanjiForce === true ? '漢 Kanji Only : forcé' : c.kanjiForce === false ? '漢 Kanji Only : exclu' : '漢 Kanji Only : auto';
-        buttons = btn('w-prio', c.prio ? '★ Retirer la priorité' : '☆ Priorité') +
+        buttons = btn('w-edit', '✎ Modifier') +
+          btn('w-prio', c.prio ? '★ Retirer la priorité' : '☆ Priorité') +
           btn('w-master', '✓ Masterisé') +
           btn('w-kanji', kanjiLabel) +
           btn('w-aside', c.state === 'aside' ? '↩ Remettre dans le paquet' : '⏸ Mettre de côté') +
@@ -1212,6 +1313,13 @@
     'chart-range'(el) { store.state.settings.chartRange = Number(el.dataset.val); persist(); refreshChart(); },
     'set-reverse'(el) { store.state.settings.reverse = el.dataset.val === '1'; persist(); renderHome(); },
     'add-card'() { addedThisSession = []; renderAddCard(); },
+    'w-edit': (el) => renderEditCard(el.dataset.id),
+    'edit-cancel'() { expandedId = edit ? edit.id : expandedId; edit = null; renderWords(); },
+    'edit-kanji-mode'(el) {
+      edit.kanjiMode = el.dataset.val;
+      document.querySelectorAll('[data-action="edit-kanji-mode"]').forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
+      $('#edKanjiHint').textContent = ADD_KANJI_HINTS[edit.kanjiMode];
+    },
     'cat-all'() { setPool(null); },
     'cat-toggle'(el) {
       const key = el.dataset.key;
@@ -1280,6 +1388,7 @@
   document.addEventListener('submit', (e) => {
     if (e.target.id === 'addForm') submitAddCard(e);
     else if (e.target.id === 'feedbackForm') submitFeedback(e);
+    else if (e.target.id === 'editForm') submitEditCard(e);
   });
 
   document.addEventListener('input', (e) => {

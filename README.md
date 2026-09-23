@@ -38,6 +38,10 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Accueil, panneau « Leçons à réviser » (visible dès qu'une carte a une catégorie) : sélection (`settings.catPool`, `null` = toutes) qui filtre les sessions classique **et** Kanji Only (nouvelles + à réviser). Toucher une leçon depuis « Toutes » l'isole ; ensuite chaque touche ajoute/retire une leçon ; le tirage est aléatoire si « Mélanger les cartes » est actif. Les révisions dues hors sélection sont signalées avec un bouton « Les inclure ».
 - Ajout de carte : menu Catégorie (dernière utilisée mémorisée) + « Nouvelle catégorie… » (une catégorie créée pendant une sélection en cours rejoint cette sélection). Mes mots : filtre et affichage par catégorie.
 
+## Modifier une carte
+- Mes mots → toucher une carte → « ✎ Modifier » : recto, verso (notes sur les lignes suivantes), emoji, catégorie (avec création), réglage Kanji Only, et deux menus de maîtrise (classique : Nouvelle, Étapes 1–8, Validée, Masterisée ; Kanji Only : sans « Masterisée »).
+- La carte garde son identifiant : la progression est conservée. `store.addCards` reconnaît aussi un doublon par son texte actuel, donc réimporter le CSV d'origine (ou la version corrigée) ne recrée rien. Corriger une maîtrise ne donne ni ne retire d'XP ; passer en « Masterisée » marque `masterXp` pour éviter un double gain plus tard.
+
 ## Packs de démarrage
 - `starter/vocab-genki.csv` (1000 mots) et `starter/kanji-genki.csv` (145 kanjis, déjà écrits kanji → lecture(s) + sens) : fichiers publics, versionnés avec le code (contrairement à `data/`, réservé à vos données personnelles).
 - Accessibles via deux boutons (accueil, état vide + section Cartes → « Packs de démarrage »), qui passent par le même chemin que l'import CSV classique : purement additif, jamais de remplacement.

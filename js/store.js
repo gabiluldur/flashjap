@@ -83,8 +83,11 @@
     let imagesUpdated = 0;
     let catFilled = 0;
     const catConflicts = [];
+    // Une carte modifiée garde son identifiant d'origine : on reconnaît donc aussi un doublon par son texte actuel
+    // (recto + verso), pour qu'un import ne recrée ni l'ancienne ni la nouvelle version d'une carte corrigée.
+    const byContent = new Map(store.state.cards.map((c) => [c.recto + '\u0001' + c.verso, c]));
     for (const c of parsed) {
-      const existing = store.map.get(c.id);
+      const existing = store.map.get(c.id) || byContent.get(c.recto + '\u0001' + c.verso);
       if (existing) {
         duplicates++;
         let changed = false;
@@ -94,7 +97,7 @@
         if (changed) imagesUpdated++;
         if (c.cat) {
           if (!existing.cat) { existing.cat = c.cat; catFilled++; }
-          else if (existing.cat !== c.cat) catConflicts.push({ id: c.id, cat: c.cat });
+          else if (existing.cat !== c.cat) catConflicts.push({ id: existing.id, cat: c.cat });
         }
         continue;
       }
@@ -106,6 +109,7 @@
       if (c.kanjiForce !== undefined) card.kanjiForce = c.kanjiForce; // réglage manuel Kanji Only (true/false)
       store.state.cards.push(card);
       store.map.set(card.id, card);
+      byContent.set(card.recto + '\u0001' + card.verso, card);
       added++;
     }
     store.save();
