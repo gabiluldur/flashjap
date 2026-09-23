@@ -18,6 +18,7 @@
   let sess = null;
   let wordsFilter = 'all';
   let wordsQuery = '';
+  let wordsCat = null; // null = toutes les catégories, '' = sans catégorie
   let expandedId = null;
 
   // ---------- Utilitaires ----------
@@ -87,12 +88,13 @@
   // ---------- Fenêtre de confirmation ----------
   let modalResolve = null;
 
-  function askConfirm({ title, text, ok }) {
+  function askConfirm({ title, text, ok, cancel = 'Annuler' }) {
     return new Promise((resolve) => {
       modalResolve = resolve;
       $('#modalTitle').textContent = title;
       $('#modalText').textContent = text;
       $('#modalOk').textContent = ok;
+      $('#modalCancel').textContent = cancel;
       $('#modal').hidden = false;
       $('#modalOk').focus();
     });
@@ -148,7 +150,7 @@
     const { cards, settings } = store.state;
     const now = Date.now();
     const P = (c) => store.progress(c, track);
-    const pool = cards.filter((c) => store.isActive(c) && (track === 'main' || kanji.view(c)));
+    const pool = cards.filter((c) => store.isActive(c) && store.inPool(c) && (track === 'main' || kanji.view(c)));
 
     const due = pool.filter((c) => P(c).stage >= 1 && P(c).stage < srs.VALIDATED && P(c).due <= now).sort((a, b) => P(a).due - P(b).due);
     const fresh = pool.filter((c) => P(c).stage === 0);
@@ -344,13 +346,49 @@
   function startBlock(track, counts, label) {
     const now = Date.now();
     const q = buildQueue(track);
-    if (!counts.total) return '';
+    if (!counts.total) {
+      return store.state.settings.catPool
+        ? '<div class="start"><button class="btn primary big" disabled>Aucune carte dans la sélection</button><p class="start-sub">Choisissez d\'autres leçons ci-dessous.</p></div>'
+        : '';
+    }
     if (!q.items.length) {
       const next = counts.nextDue ? `Prochaine carte ${srs.fmtDue(counts.nextDue, now)}.` : 'Tout est validé, bravo !';
       return `<div class="start"><button class="btn primary big" disabled>Rien à réviser</button><p class="start-sub">${next}</p></div>`;
     }
     return `<div class="start"><button class="btn primary big" data-action="start" data-track="${track}">${label}</button>
       <p class="start-sub">${plural(q.dueN, 'carte à réviser', 'cartes à réviser')} · ${plural(q.newN, 'nouvelle', 'nouvelles')}</p></div>`;
+  }
+
+  // Enregistre la sélection ; vide ou complète = null ("Toutes").
+  function setPool(pool) {
+    const all = store.categoryList().map((e) => e.key);
+    if (pool && (!pool.length || all.every((k) => pool.includes(k)))) pool = null;
+    store.state.settings.catPool = pool;
+    persist();
+    renderHome();
+  }
+
+  // Sélection des leçons/catégories à réviser (le "pool"). Par défaut toutes ; toucher une leçon depuis "Toutes"
+  // l'isole (mode concentration), ensuite chaque touche ajoute ou retire une leçon. Panneau masqué tant qu'aucune
+  // carte n'a de catégorie.
+  function catPanel() {
+    const list = store.categoryList(Date.now());
+    if (!list.some((e) => e.key !== '')) return '';
+    const pool = store.state.settings.catPool;
+    const inPool = (key) => !pool || pool.includes(key);
+    const chips = list.map((e) => `<button class="chip" data-action="cat-toggle" data-key="${esc(e.key)}" aria-pressed="${!!pool && pool.includes(e.key)}"
+      title="${esc(`${plural(e.total, 'carte', 'cartes')} · ${e.due} à réviser · ${e.fresh} nouvelles`)}">${esc(e.key || 'Sans catégorie')}${e.due ? ` <b class="badge-due">${e.due}</b>` : ''}</button>`).join('');
+    const outsideDue = list.filter((e) => !inPool(e.key)).reduce((n, e) => n + e.due, 0);
+    const outside = outsideDue
+      ? `<p class="small" style="margin:10px 0 0">⏳ ${plural(outsideDue, 'révision en attente', 'révisions en attente')} dans d'autres leçons.
+           <button class="btn ghost small-text" data-action="cat-add-due">Les inclure</button></p>`
+      : '';
+    return `<section class="panel" id="catBox">
+      <h2>Leçons à réviser</h2>
+      <div class="chips"><button class="chip" data-action="cat-all" aria-pressed="${!pool}">Toutes</button>${chips}</div>
+      <p class="muted small" style="margin:0">${pool ? `${plural(pool.length, 'leçon sélectionnée', 'leçons sélectionnées')} : les cartes sont tirées au hasard parmi elles.` : 'Touchez une leçon pour ne réviser qu\'elle, puis ajoutez-en d\'autres quand vous êtes prêt.'}</p>
+      ${outside}
+    </section>`;
   }
 
   function stackBlock(c) {
@@ -373,10 +411,12 @@
     const now = Date.now();
     const c = store.counts(now, 'main');
     const k = store.counts(now, 'kanji');
+    const cp = store.counts(now, 'main', true); // cartes des seules catégories sélectionnées : pour les boutons de révision
+    const kp = store.counts(now, 'kanji', true);
     const todayReviews = (s.daily[store.dayKey()] || {}).reviews || 0;
 
     const startMain = c.total
-      ? startBlock('main', c, 'Commencer la révision')
+      ? startBlock('main', cp, 'Commencer la révision')
       : `<div class="empty"><p>Aucune carte pour le moment.</p>
          <button class="btn primary big" data-action="starter-vocab">📦 Commencer avec le pack de base (1000 mots)</button>
          <p class="muted small" style="margin:10px 0 6px">ou</p>
@@ -401,10 +441,12 @@
 
       <section class="panel">${startMain}</section>
 
+      ${catPanel()}
+
       ${k.total ? `<section class="panel">
         <h2>Kanji Only</h2>
         <p class="muted small">Le japonais d'abord, pour apprendre à reconnaître les kanjis. ${fmtN(k.total)} cartes concernées, avec une progression à part.</p>
-        ${startBlock('kanji', k, 'Réviser les kanjis')}
+        ${startBlock('kanji', kp, 'Réviser les kanjis')}
         <div style="margin-top:12px">${stackBlock(k)}</div>
       </section>` : ''}
 
@@ -847,6 +889,8 @@
           <p class="muted small">Sur téléphone, le clavier passe en japonais tout seul si vous avez installé un clavier japonais (Gboard : Réglages → Langues → 日本語). Sur PC, basculez votre clavier système (ex. Windows + Barre d'espace, ou l'IME que vous utilisez).</p>
           <label for="addEmoji">Emoji (facultatif)</label>
           <input id="addEmoji" type="text" autocomplete="off" placeholder="🍚" maxlength="8" class="add-emoji">
+          <label for="addCat">Catégorie (leçon, thème…)</label>
+          <div id="addCatWrap">${catPickerHtml('addCat', store.state.settings.addCat || '')}</div>
           <label>Kanji Only</label>
           <div class="segment" role="group" aria-label="Présence dans Kanji Only">
             ${KANJI_MODES.map(([k, l]) => `<button type="button" data-action="add-kanji-mode" data-val="${k}" aria-pressed="${addKanjiMode === k}">${l}</button>`).join('')}
@@ -859,6 +903,24 @@
     renderAddRecent();
     updateAddPreview();
     $('#addRecto').focus();
+  }
+
+  // Sélecteur de catégorie réutilisable (ajout et modification de carte) : catégories existantes + création à la volée.
+  function catPickerHtml(id, current) {
+    const opts = ['<option value="">Sans catégorie</option>']
+      .concat(store.categoryList().filter((e) => e.key !== '').map((e) => `<option value="${esc(e.key)}"${e.key === current ? ' selected' : ''}>${esc(e.key)}</option>`));
+    opts.push('<option value="__new__">＋ Nouvelle catégorie…</option>');
+    return `<select id="${id}" data-catpicker="${id}Text">${opts.join('')}</select>
+      <input id="${id}Text" type="text" maxlength="60" placeholder="Nom de la nouvelle catégorie" autocomplete="off" hidden>`;
+  }
+
+  // Lit le choix : { cat, isNew } ou { error }
+  function readCatPicker(id) {
+    const value = $('#' + id).value;
+    if (value !== '__new__') return { cat: value, isNew: false };
+    const name = FJ.csv.cleanCategory($('#' + id + 'Text').value);
+    if (!name) return { error: 'Donnez un nom à la nouvelle catégorie.' };
+    return { cat: name, isNew: !store.categoryList().some((e) => e.key === name) };
   }
 
   const ADD_KANJI_HINTS = {
@@ -908,12 +970,22 @@
     const verso = FJ.csv.clean($('#addVerso').value);
     const emoji = FJ.csv.clean($('#addEmoji').value);
     if (!recto || !verso) return toast('Le recto et le verso sont obligatoires.');
+    const pick = readCatPicker('addCat');
+    if (pick.error) return toast(pick.error);
     const card = { id: FJ.csv.cardId(recto, verso), recto, verso };
     if (emoji) card.emoji = emoji;
+    if (pick.cat) card.cat = pick.cat;
     if (addKanjiMode === 'force') card.kanjiForce = true;
     else if (addKanjiMode === 'off') card.kanjiForce = false;
     const { added, duplicates } = store.addCards([card]);
     if (!added) { toast(duplicates ? 'Cette carte existe déjà.' : 'Carte non ajoutée.'); resetAddKanjiMode(); return; }
+    // La catégorie reste sélectionnée pour enchaîner plusieurs cartes d'une même leçon. Une catégorie qu'on vient de
+    // créer rejoint la sélection en cours (sinon la carte n'apparaîtrait jamais dans les révisions).
+    const s = store.state.settings;
+    s.addCat = pick.cat;
+    if (pick.isNew && s.catPool) s.catPool = [...s.catPool, pick.cat];
+    persist();
+    $('#addCatWrap').innerHTML = catPickerHtml('addCat', pick.cat);
     addedThisSession.unshift({ recto, verso, emoji });
     renderAddRecent();
     toast('Carte ajoutée ✓');
@@ -931,6 +1003,7 @@
   ];
 
   function matchesFilter(c) {
+    if (wordsCat !== null && (c.cat || '') !== wordsCat) return false;
     if (['removed', 'aside', 'mastered'].includes(wordsFilter)) return c.state === wordsFilter;
     if (c.state === 'removed') return false;
     switch (wordsFilter) {
@@ -941,6 +1014,14 @@
       case 'kanji': return !!kanji.view(c);
       default: return true;
     }
+  }
+
+  // Filtre par catégorie (affiché seulement si au moins une carte a une catégorie)
+  function catFilterHtml() {
+    const list = store.categoryList();
+    if (!list.some((e) => e.key !== '')) return '';
+    const opts = list.map((e) => `<option value="${esc(e.key)}"${wordsCat === e.key ? ' selected' : ''}>${esc(e.key || 'Sans catégorie')}</option>`).join('');
+    return `<div class="cat-filter"><select id="wordsCat" aria-label="Catégorie"><option value="*">Toutes les catégories</option>${opts}</select></div>`;
   }
 
   function renderWords() {
@@ -956,6 +1037,7 @@
         <div class="chips">
           ${FILTERS.map(([k, l]) => `<button class="chip" data-action="words-filter" data-val="${k}" aria-pressed="${wordsFilter === k}">${l}${count(k) ? ` (${count(k)})` : ''}</button>`).join('')}
         </div>
+        ${catFilterHtml()}
         <div id="wordsList"></div>
       </section>`;
     renderWordsList();
@@ -993,7 +1075,7 @@
         <div class="word-main" data-action="w-toggle" data-id="${c.id}" role="button" tabindex="0">
           <div class="w-text">
             <div class="w-a" lang="${lang(first(c.recto))}">${c.prio ? '<span class="star">★</span> ' : ''}${c.emoji ? esc(c.emoji) + ' ' : ''}${esc(first(c.recto))}</div>
-            <div class="w-b" lang="${lang(first(c.verso))}">${esc(first(c.verso))}</div>
+            <div class="w-b" lang="${lang(first(c.verso))}">${esc(first(c.verso))}${c.cat ? ` <span class="w-cat">· ${esc(c.cat)}</span>` : ''}</div>
           </div>${pill}
         </div>${actions}</div>`;
     };
@@ -1022,13 +1104,32 @@
     if (text.includes('�')) toast('Attention : caractères illisibles. Enregistrez le CSV en UTF-8.');
     const res = FJ.csv.parseCards(text);
     if (res.error) return toast(res.error);
-    const { added, duplicates, imagesUpdated } = store.addCards(res.cards);
-    const parts = [plural(added, 'nouvelle carte ajoutée', 'nouvelles cartes ajoutées')];
-    if (duplicates) parts.push(plural(duplicates, 'doublon ignoré', 'doublons ignorés'));
-    if (imagesUpdated) parts.push(plural(imagesUpdated, 'carte enrichie (emoji/image)', 'cartes enrichies (emoji/image)'));
+    const parts = await runImport(res.cards);
     if (res.skipped) parts.push(plural(res.skipped, 'ligne incomplète ignorée', 'lignes incomplètes ignorées'));
     toast(parts.join(' · '));
     if (view === 'words') renderWords(); else renderHome();
+  }
+
+  // Import additif commun (CSV, packs de démarrage). Renvoie les morceaux du message récapitulatif.
+  // Une carte déjà connue garde sa progression ; sa catégorie n'est complétée que si elle n'en avait pas. Si le fichier
+  // en propose une autre, on demande avant de remplacer (par défaut : on garde celle de l'utilisateur).
+  async function runImport(cards) {
+    const r = store.addCards(cards);
+    const parts = [plural(r.added, 'nouvelle carte ajoutée', 'nouvelles cartes ajoutées')];
+    if (r.duplicates) parts.push(plural(r.duplicates, 'déjà présente', 'déjà présentes'));
+    if (r.imagesUpdated) parts.push(plural(r.imagesUpdated, 'carte enrichie (emoji/image)', 'cartes enrichies (emoji/image)'));
+    if (r.catFilled) parts.push(plural(r.catFilled, 'carte rangée dans sa catégorie', 'cartes rangées dans leur catégorie'));
+    if (r.catConflicts.length) {
+      const n = r.catConflicts.length;
+      const replace = await askConfirm({
+        title: 'Catégories différentes',
+        text: `${plural(n, 'carte a', 'cartes ont')} déjà une autre catégorie que celle du fichier. Voulez-vous la remplacer par celle du fichier ? (Sinon, vos catégories actuelles sont conservées.)`,
+        ok: 'Remplacer',
+        cancel: 'Garder les miennes',
+      });
+      if (replace) parts.push(plural(store.applyCatChanges(r.catConflicts), 'catégorie remplacée', 'catégories remplacées'));
+    }
+    return parts;
   }
 
   // Pack de démarrage (starter/*.csv, dans le dépôt public) : même chemin que l'import CSV normal — additif,
@@ -1040,9 +1141,7 @@
       const text = await res.text();
       const parsed = FJ.csv.parseCards(text);
       if (parsed.error) return toast(`${label} : ${parsed.error}`);
-      const { added, duplicates } = store.addCards(parsed.cards);
-      const parts = [plural(added, 'carte ajoutée', 'cartes ajoutées')];
-      if (duplicates) parts.push(plural(duplicates, 'déjà présente', 'déjà présentes'));
+      const parts = await runImport(parsed.cards);
       toast(`${label} : ${parts.join(' · ')}`);
       if (view === 'words') renderWords(); else renderHome();
     } catch (e) {
@@ -1087,7 +1186,7 @@
     prio: togglePrio,
     quit: quitSession,
     home() { sess = null; renderHome(); },
-    words() { wordsFilter = 'all'; wordsQuery = ''; expandedId = null; renderWords(); },
+    words() { wordsFilter = 'all'; wordsQuery = ''; wordsCat = null; expandedId = null; renderWords(); },
     'words-filter'(el) { wordsFilter = el.dataset.val; expandedId = null; renderWords(); },
     'w-toggle'(el) { expandedId = expandedId === el.dataset.id ? null : el.dataset.id; renderWordsList(); },
     'w-prio': (el) => wordAction(el.dataset.id, (c) => { c.prio = !c.prio; }),
@@ -1113,6 +1212,16 @@
     'chart-range'(el) { store.state.settings.chartRange = Number(el.dataset.val); persist(); refreshChart(); },
     'set-reverse'(el) { store.state.settings.reverse = el.dataset.val === '1'; persist(); renderHome(); },
     'add-card'() { addedThisSession = []; renderAddCard(); },
+    'cat-all'() { setPool(null); },
+    'cat-toggle'(el) {
+      const key = el.dataset.key;
+      const pool = store.state.settings.catPool;
+      setPool(!pool ? [key] : pool.includes(key) ? pool.filter((k) => k !== key) : [...pool, key]);
+    },
+    'cat-add-due'() {
+      const pool = store.state.settings.catPool || [];
+      setPool([...pool, ...store.categoryList().filter((e) => e.due && !pool.includes(e.key)).map((e) => e.key)]);
+    },
     'starter-vocab': () => importStarter('Vocabulaire de base', 'starter/vocab-genki.csv'),
     'starter-kanji': () => importStarter('Kanji de base', 'starter/kanji-genki.csv'),
     'add-kanji-mode'(el) {
@@ -1154,6 +1263,13 @@
       if (key === 'sound') audio.enabled = el.checked;
       persist();
       renderHome();
+    } else if (el.dataset.catpicker) { // sélecteur de catégorie : "Nouvelle catégorie…" fait apparaître le champ de saisie
+      const input = $('#' + el.dataset.catpicker);
+      input.hidden = el.value !== '__new__';
+      if (!input.hidden) input.focus();
+    } else if (el.id === 'wordsCat') {
+      wordsCat = el.value === '*' ? null : el.value;
+      renderWordsList();
     } else if (el.id === 'csvFile' || el.id === 'jsonFile') {
       const file = el.files && el.files[0];
       el.value = '';

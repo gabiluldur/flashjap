@@ -3,6 +3,7 @@
 
   const RECTO_HEADERS = ['recto_texte', 'recto', 'front', 'question'];
   const VERSO_HEADERS = ['verso_texte', 'verso', 'back', 'reponse', 'réponse', 'answer'];
+  const CAT_HEADERS = ['categorie', 'catégorie', 'category', 'cat', 'lecon', 'leçon', 'lesson', 'deck'];
 
   function detectDelimiter(text) {
     const firstLine = text.split(/\r?\n/, 1)[0];
@@ -89,6 +90,7 @@
 
     const ei = head.findIndex((h) => ['emoji', 'émoji'].includes(h)); // un seul emoji par carte, facultatif
     const ki = head.findIndex((h) => ['kanji_only', 'kanjionly'].includes(h)); // "on"/"force" ou "off" : voir js/kanji.js
+    const ci = head.findIndex((h) => CAT_HEADERS.includes(h)); // catégorie / leçon : une seule par carte
 
     const cards = [];
     let skipped = 0;
@@ -103,6 +105,8 @@
       if (rimg) card.rimg = rimg;
       if (vimg) card.vimg = vimg;
       if (emoji) card.emoji = emoji;
+      const cat = cleanCategory(row[ci]);
+      if (cat) card.cat = cat;
       const kanjiOnly = (row[ki] || '').trim().toLowerCase();
       if (kanjiOnly === 'off') card.kanjiForce = false;
       else if (kanjiOnly === 'on' || kanjiOnly === 'force') card.kanjiForce = true;
@@ -119,11 +123,16 @@
     return [...v][0];
   }
 
+  // Nom de catégorie : une seule ligne, espaces normalisés, 60 caractères max
+  function cleanCategory(s) {
+    return (s || '').replace(/\s+/g, ' ').trim().normalize('NFC').slice(0, 60);
+  }
+
   function cleanImage(s) {
     const v = (s || '').trim();
     if (!v || /^(javascript|data|vbscript|file):/i.test(v)) return '';
     return v;
   }
 
-  FJ.csv = { parseCards, parseRows, clean, cardId };
+  FJ.csv = { parseCards, parseRows, clean, cleanCategory, cardId };
 })();

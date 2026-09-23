@@ -32,6 +32,12 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Les règles de sécurité Firestore se publient dans la console Firebase (*Firestore → Règles*) : chaque compte n'accède qu'à `users/{son uid}`, et le site étant public, seul le compte du propriétaire est accepté.
 - Première utilisation : se connecter, puis importer le CSV **sur un seul appareil** ; les autres n'ont qu'à se connecter.
 
+## Catégories (leçons) et sélection à réviser
+- Une seule catégorie par carte (`card.cat`, ex. `Genki L03`). Colonne CSV `categorie` (aussi `catégorie`, `category`, `cat`, `lecon`, `leçon`, `lesson`, `deck`).
+- Réimporter un CSV catégorisé range les cartes existantes sans toucher à leur progression : la catégorie n'est complétée que si la carte n'en avait pas ; si elle en a déjà une autre, l'appli demande avant de la remplacer (par défaut : on garde celle de l'utilisateur).
+- Accueil, panneau « Leçons à réviser » (visible dès qu'une carte a une catégorie) : sélection (`settings.catPool`, `null` = toutes) qui filtre les sessions classique **et** Kanji Only (nouvelles + à réviser). Toucher une leçon depuis « Toutes » l'isole ; ensuite chaque touche ajoute/retire une leçon ; le tirage est aléatoire si « Mélanger les cartes » est actif. Les révisions dues hors sélection sont signalées avec un bouton « Les inclure ».
+- Ajout de carte : menu Catégorie (dernière utilisée mémorisée) + « Nouvelle catégorie… » (une catégorie créée pendant une sélection en cours rejoint cette sélection). Mes mots : filtre et affichage par catégorie.
+
 ## Packs de démarrage
 - `starter/vocab-genki.csv` (1000 mots) et `starter/kanji-genki.csv` (145 kanjis, déjà écrits kanji → lecture(s) + sens) : fichiers publics, versionnés avec le code (contrairement à `data/`, réservé à vos données personnelles).
 - Accessibles via deux boutons (accueil, état vide + section Cartes → « Packs de démarrage »), qui passent par le même chemin que l'import CSV classique : purement additif, jamais de remplacement.

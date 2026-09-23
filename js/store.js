@@ -8,7 +8,8 @@
     cards: [], // { id, recto, verso, stage, due, ok, ko, last, added }
     stats: { reviews: 0, sessions: 0, ms: 0, xp: 0 },
     daily: {}, // 'YYYY-MM-DD' -> { reviews, ms, xp }
-    settings: { reverse: false, shuffle: true, newPerSession: 10, sound: true, chartMetric: 'reviews', chartRange: 7 },
+    // catPool : sélection de catégories à réviser (null = toutes) ; addCat : dernière catégorie choisie à l'ajout d'une carte
+    settings: { reverse: false, shuffle: true, newPerSession: 10, sound: true, chartMetric: 'reviews', chartRange: 7, catPool: null, addCat: '' },
     metaU: 0, // version (horodatage) des compteurs/réglages pour la synchro ; chaque carte porte la sienne dans `_u`
   });
 
@@ -72,12 +73,16 @@
   };
 
   // Ajoute les cartes inconnues (comme "nouvelles"). Une carte déjà connue n'est pas recréée (sa progression est
-  // conservée) ; seules ses images sont mises à jour si le CSV en apporte de nouvelles.
+  // conservée) ; seuls ses images/emoji sont complétés si le CSV en apporte, et sa catégorie si elle n'en a pas encore.
+  // Si une carte existante a DÉJÀ une autre catégorie, on ne la change pas : le conflit est renvoyé dans
+  // `catConflicts`, à l'appelant de demander (voir store.applyCatChanges).
   store.addCards = function (parsed) {
     const now = Date.now();
     let added = 0;
     let duplicates = 0;
     let imagesUpdated = 0;
+    let catFilled = 0;
+    const catConflicts = [];
     for (const c of parsed) {
       const existing = store.map.get(c.id);
       if (existing) {
@@ -87,19 +92,58 @@
           if (c[f] && existing[f] !== c[f]) { existing[f] = c[f]; changed = true; }
         }
         if (changed) imagesUpdated++;
+        if (c.cat) {
+          if (!existing.cat) { existing.cat = c.cat; catFilled++; }
+          else if (existing.cat !== c.cat) catConflicts.push({ id: c.id, cat: c.cat });
+        }
         continue;
       }
       const card = { id: c.id, recto: c.recto, verso: c.verso, stage: 0, due: 0, ok: 0, ko: 0, last: 0, added: now };
       if (c.rimg) card.rimg = c.rimg;
       if (c.vimg) card.vimg = c.vimg;
       if (c.emoji) card.emoji = c.emoji;
+      if (c.cat) card.cat = c.cat;
       if (c.kanjiForce !== undefined) card.kanjiForce = c.kanjiForce; // réglage manuel Kanji Only (true/false)
       store.state.cards.push(card);
       store.map.set(card.id, card);
       added++;
     }
     store.save();
-    return { added, duplicates, imagesUpdated };
+    return { added, duplicates, imagesUpdated, catFilled, catConflicts };
+  };
+
+  // Applique les changements de catégorie refusés par défaut par addCards (après confirmation de l'utilisateur).
+  store.applyCatChanges = function (changes) {
+    let n = 0;
+    for (const ch of changes) {
+      const c = store.map.get(ch.id);
+      if (c && c.cat !== ch.cat) { c.cat = ch.cat; n++; }
+    }
+    if (n) store.save();
+    return n;
+  };
+
+  // ---------- Catégories (une par carte, c.cat ; absente = "Sans catégorie", clé '') ----------
+  // Liste triée (ordre naturel : "Genki L2" avant "Genki L10"), avec quelques compteurs pour l'affichage.
+  store.categoryList = function (now = Date.now()) {
+    const m = new Map();
+    for (const c of store.state.cards) {
+      if (c.state === 'removed') continue;
+      const key = c.cat || '';
+      let e = m.get(key);
+      if (!e) m.set(key, (e = { key, total: 0, due: 0, fresh: 0 }));
+      if (c.state) continue; // de côté / masterisée : la catégorie existe, mais ses cartes ne comptent pas
+      e.total++;
+      if (c.stage === 0) e.fresh++;
+      else if (c.stage < FJ.srs.VALIDATED && c.due <= now) e.due++;
+    }
+    return [...m.values()].sort((a, b) => (a.key === '' ? 1 : b.key === '' ? -1 : a.key.localeCompare(b.key, 'fr', { numeric: true })));
+  };
+
+  // La carte fait-elle partie de la sélection de catégories à réviser ? (null = toutes)
+  store.inPool = function (c) {
+    const pool = store.state.settings.catPool;
+    return !pool || pool.includes(c.cat || '');
   };
 
   // Deux pistes de progression indépendantes : "main" (la carte elle-même) et "kanji" (c.k, créée à la demande).
@@ -111,12 +155,14 @@
   store.isActive = (c) => !c.state;
 
   // Compteurs pour le tableau de bord
-  store.counts = function (now, track = 'main') {
+  // poolOnly : ne compte que les cartes des catégories sélectionnées (utilisé pour les boutons de révision)
+  store.counts = function (now, track = 'main', poolOnly = false) {
     const out = { total: 0, fresh: 0, learning: 0, validated: 0, due: 0, known: 0, nextDue: 0, aside: 0, removed: 0, mastered: 0, priority: 0 };
     for (const c of store.state.cards) {
       if (c.state === 'aside') { out.aside++; continue; }
       if (c.state === 'removed') { out.removed++; continue; }
       if (track === 'kanji' && !FJ.kanji.view(c)) continue;
+      if (poolOnly && !store.inPool(c)) continue;
       if (c.state === 'mastered') { // masterisé : compte comme validé et connu, ne revient plus en révision
         out.total++;
         out.validated++;

@@ -454,3 +454,12 @@ textarea { background: var(--surface-2); border: 1px solid var(--line); border-r
 .fb-head b { flex: 1; min-width: 0; }
 .fb-mood { font-size: 1.2rem; }
 .fb-text { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---------- Catégories / leçons ---------- */
+#catBox .chips { margin-bottom: 10px; }
+.chip .badge-due { background: var(--learning); color: #1f2430; border-radius: 99px; padding: 0 6px; font-size: .72rem; margin-left: 4px; font-weight: 700; }
+.cat-filter { margin-bottom: 12px; }
+.cat-filter select { width: 100%; }
+.w-cat { color: var(--muted); font-size: .8rem; }
+.add-form select { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; font-size: 1rem; width: 100%; }
+.add-form select + input { margin-top: 8px; }
