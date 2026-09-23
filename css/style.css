@@ -506,3 +506,12 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 .linkish:hover { background: var(--surface-2); }
 #feedbackBox summary { cursor: pointer; font-weight: 600; padding: 2px 0; }
 #feedbackBox details[open] summary { margin-bottom: 8px; }
+
+/* Paquets de mises à jour */
+.packs h2 { font-size: 1rem; }
+.pack { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px 12px; margin-bottom: 8px; }
+.pack-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.pack-desc { margin: 6px 0 0; overflow-wrap: anywhere; }
+.pack .actions { margin-top: 10px; }
+.packs details { margin-top: 10px; }
+.packs input[type="text"], .packs input[type="file"] { width: 100%; }

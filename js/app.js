@@ -344,7 +344,7 @@
     updateSyncBadge();
     const box = $('#syncBox');
     if (box) box.innerHTML = syncInner();
-    if (view === 'home' && !!$('#notesBox') && FJ.syncUi.phase !== 'signedin') renderHome(); // déconnexion : la zone disparaît
+    if (view === 'home' && (!!$('#notesBox') || !!$('#packsBox')) && FJ.syncUi.phase !== 'signedin') renderHome(); // déconnexion : les zones disparaissent
   }
 
   // Appelé quand des données arrivent d'un autre appareil : rafraîchit l'affichage sans toucher à une session en cours.
@@ -361,7 +361,7 @@
     else refreshNotes();
   }
 
-  FJ.ui = { refresh, syncChanged, notesChanged, toast };
+  FJ.ui = { refresh, syncChanged, notesChanged, packsChanged: (...a) => packsChanged(...a), toast };
 
   // ---------- Accueil ----------
   function startBlock(track, counts, label) {
@@ -511,6 +511,8 @@
 
     $('#app').innerHTML = `
       ${review}
+
+      ${packsVisible() ? `<section class="panel packs" id="packsBox">${packsInner()}</section>` : ''}
 
       <section class="panel">
         <h2>Ma progression</h2>
@@ -1532,6 +1534,163 @@
     renderWordsList();
   }
 
+  // ---------- Paquets de mises à jour ----------
+  // Le propriétaire publie des paquets (CSV) ; chacun décide de les intégrer. Le choix (intégré / plus tard) est
+  // gardé dans les réglages, donc synchronisé entre appareils. L'intégration passe par runImport : additive.
+  const packDraft = { open: false, title: '', desc: '', csv: '', count: 0, info: '' };
+  const packUi = { allOpen: false };
+  const MAX_PACK_BYTES = 900000; // un document Firestore est limité à 1 Mo
+
+  const packList = () => (FJ.packsUi && FJ.packsUi.items) || [];
+  const packStatus = (id) => store.state.settings.packs[id] || '';
+  function setPackStatus(id, v) {
+    const p = Object.assign({}, store.state.settings.packs);
+    if (v) p[id] = v; else delete p[id];
+    store.state.settings.packs = p;
+    persist();
+  }
+  const packsVisible = () => FJ.syncUi.phase === 'signedin' && !!FJ.packsUi && (FJ.packsUi.items.length > 0 || FJ.packsUi.admin);
+
+  function packRow(p, pending) {
+    const st = packStatus(p.id);
+    const badge = st === 'done' ? '<span class="pill done">✓ Intégré</span>' : st === 'later' ? '<span class="pill">Plus tard</span>' : '';
+    return `<div class="pack">
+      <div class="pack-head"><b>📦 ${esc(p.title)}</b>${badge}</div>
+      <p class="muted small" style="margin:2px 0 0">${plural(p.count, 'carte', 'cartes')} · ${agoText(p.createdAt)}</p>
+      ${p.desc ? `<p class="pack-desc">${esc(p.desc)}</p>` : ''}
+      <div class="actions">
+        <button class="btn" data-action="pack-view" data-id="${esc(p.id)}">Voir le contenu</button>
+        <button class="btn primary" data-action="pack-integrate" data-id="${esc(p.id)}">${st === 'done' ? 'Réintégrer' : 'Intégrer'}</button>
+        ${pending ? `<button class="btn ghost" data-action="pack-later" data-id="${esc(p.id)}">Plus tard</button>` : ''}
+        ${FJ.packsUi.admin ? `<button class="btn ghost danger" data-action="pack-delete" data-id="${esc(p.id)}">Retirer</button>` : ''}
+      </div></div>`;
+  }
+
+  function packAdminHtml() {
+    const d = packDraft;
+    return `<details id="packAdmin"${d.open ? ' open' : ''}>
+      <summary>🛠 Publier un paquet (administrateur)</summary>
+      <div class="add-form">
+        <label for="packFile">Fichier CSV (même format que les packs de base)</label>
+        <input type="file" id="packFile" accept=".csv,text/csv">
+        <label for="packTitle">Titre</label>
+        <input type="text" id="packTitle" maxlength="60" value="${esc(d.title)}" placeholder="Ex. Leçon 9 — la santé">
+        <label for="packDesc">Description (facultatif)</label>
+        <input type="text" id="packDesc" maxlength="140" value="${esc(d.desc)}" placeholder="Une phrase pour présenter le paquet">
+        ${d.csv ? `<p class="muted small">${esc(d.info)}</p>
+        <div class="actions">
+          <button class="btn" data-action="pack-view" data-id="__draft">Aperçu</button>
+          <button class="btn primary" data-action="pack-publish">Envoyer à tous</button>
+        </div>` : ''}
+      </div>
+    </details>`;
+  }
+
+  function packsInner() {
+    const items = packList();
+    const pending = items.filter((p) => !packStatus(p.id));
+    const head = pending.length
+      ? `<h2>📦 Nouveau paquet disponible</h2><p class="muted small" style="margin:0 0 8px">Souhaitez-vous l'intégrer ? Vous pouvez d'abord en voir le contenu. Rien n'est remplacé : seules les cartes que vous n'avez pas encore sont ajoutées.</p>${pending.map((p) => packRow(p, true)).join('')}`
+      : '<h2>📦 Mises à jour</h2>';
+    const all = items.length
+      ? `<details id="packsAll"${packUi.allOpen ? ' open' : ''}><summary>Toutes les mises à jour (${items.length})</summary>${items.map((p) => packRow(p, false)).join('')}</details>`
+      : '<p class="muted small" style="margin:0">Aucun paquet publié pour le moment.</p>';
+    return head + all + (FJ.packsUi.admin ? packAdminHtml() : '');
+  }
+
+  function refreshPacks() {
+    const box = $('#packsBox');
+    if (box) box.innerHTML = packsInner();
+  }
+
+  function packsChanged() {
+    if (view !== 'home') return;
+    if (!!$('#packsBox') !== packsVisible()) renderHome();
+    else refreshPacks();
+  }
+
+  function ownedKeys() {
+    return { ids: store.map, content: new Set(store.state.cards.map((c) => c.recto + '\u0001' + c.verso)) };
+  }
+  const isOwned = (c, o) => o.ids.has(c.id) || o.content.has(c.recto + '\u0001' + c.verso);
+
+  async function readPackFile(file) {
+    const text = await readText(file);
+    if (text.length > MAX_PACK_BYTES) return toast('Fichier trop volumineux pour un paquet (900 Ko max).');
+    const res = FJ.csv.parseCards(text);
+    if (res.needsMapping) return toast('Format inconnu : utilisez les colonnes recto_texte, verso_texte, emoji, categorie.');
+    if (res.error) return toast(res.error);
+    if (!res.cards.length) return toast('Aucune carte valide dans ce fichier.');
+    const owned = ownedKeys();
+    const fresh = res.cards.filter((c) => !isOwned(c, owned)).length;
+    const cats = [...new Set(res.cards.map((c) => c.cat).filter(Boolean))];
+    packDraft.csv = text;
+    packDraft.count = res.cards.length;
+    packDraft.open = true;
+    if (!packDraft.title) packDraft.title = file.name.replace(/\.csv$/i, '');
+    packDraft.info = `${plural(res.cards.length, 'carte', 'cartes')} (${fresh} nouvelle${fresh > 1 ? 's' : ''} pour vous)${cats.length ? ' · ' + cats.slice(0, 6).join(', ') + (cats.length > 6 ? '…' : '') : ''}${res.skipped ? ` · ${plural(res.skipped, 'ligne ignorée', 'lignes ignorées')}` : ''}`;
+    refreshPacks();
+  }
+
+  async function publishPack() {
+    const title = packDraft.title.trim();
+    if (!title) return toast('Donnez un titre au paquet.');
+    if (!packDraft.csv) return toast("Choisissez d'abord un fichier CSV.");
+    const ok = await askConfirm({
+      title: 'Envoyer à tous ?',
+      text: `« ${title} » (${plural(packDraft.count, 'carte', 'cartes')}) sera proposé à tous les utilisateurs. Vous pourrez le retirer ensuite.`,
+      ok: 'Envoyer',
+    });
+    if (!ok) return;
+    const sent = await (FJ.sync && FJ.sync.publishPack({ title, desc: packDraft.desc.trim(), csv: packDraft.csv, count: packDraft.count }));
+    if (!sent) return toast('Envoi impossible : vérifiez la connexion et les règles Firestore.');
+    Object.assign(packDraft, { open: false, title: '', desc: '', csv: '', count: 0, info: '' });
+    toast('Paquet publié !', true);
+    refreshPacks();
+  }
+
+  function packById(id) {
+    return id === '__draft' ? { id, title: packDraft.title.trim() || 'Aperçu', csv: packDraft.csv, draft: true } : packList().find((p) => p.id === id);
+  }
+
+  // Contenu d'un paquet en lecture seule, avec les cartes que l'on possède déjà
+  function renderPackView(id) {
+    const p = packById(id);
+    if (!p) return renderHome();
+    view = 'pack';
+    const cards = FJ.csv.parseCards(p.csv).cards || [];
+    const o = ownedKeys();
+    const fresh = cards.filter((c) => !isOwned(c, o)).length;
+    const first = (t) => t.split('\n')[0];
+    const shown = cards.slice(0, 400);
+    $('#app').innerHTML = `
+      <section class="panel">
+        <div class="words-head">
+          <button class="btn ghost" data-action="home">← Accueil</button>
+          <h2 style="margin:0">📦 ${esc(p.title)}</h2>
+        </div>
+        <p class="muted small">${plural(cards.length, 'carte', 'cartes')} · ${fresh} nouvelle${fresh > 1 ? 's' : ''} pour vous, ${cards.length - fresh} déjà présente${cards.length - fresh > 1 ? 's' : ''}.</p>
+        ${p.draft ? '' : `<div class="actions" style="margin-bottom:8px"><button class="btn primary" data-action="pack-integrate" data-id="${esc(p.id)}">Intégrer ce paquet</button></div>`}
+        <div>${shown.map((c) => `<div class="word"><div class="word-main"><div class="w-text">
+          <div class="w-a" lang="${lang(first(c.recto))}">${c.emoji ? esc(c.emoji) + ' ' : ''}${esc(first(c.recto))}</div>
+          <div class="w-b" lang="${lang(first(c.verso))}">${esc(first(c.verso))}${c.cat ? ` <span class="w-cat">· ${esc(c.cat)}</span>` : ''}</div>
+        </div>${isOwned(c, o) ? '<span class="pill">Déjà présente</span>' : '<span class="pill learning">Nouvelle</span>'}</div></div>`).join('')}
+        ${cards.length > shown.length ? `<p class="muted" style="text-align:center">${cards.length - shown.length} autres cartes non affichées.</p>` : ''}</div>
+      </section>`;
+    window.scrollTo(0, 0);
+  }
+
+  async function integratePack(id) {
+    const p = packById(id);
+    if (!p || p.draft) return;
+    const res = FJ.csv.parseCards(p.csv);
+    if (res.error || !res.cards.length) return toast('Ce paquet est illisible.');
+    const parts = await runImport(res.cards);
+    setPackStatus(id, 'done');
+    toast(`${p.title} : ${parts.join(' · ')}`);
+    renderHome();
+  }
+
   // ---------- Import / export ----------
   async function readText(file) {
     return new TextDecoder('utf-8').decode(await file.arrayBuffer());
@@ -1697,6 +1856,15 @@
       document.querySelectorAll('[data-action="note-mood"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.val === noteDraft.mood)));
     },
     'note-dismiss': (el) => dismissNote(el.dataset.id),
+    'pack-view': (el) => renderPackView(el.dataset.id),
+    'pack-integrate': (el) => integratePack(el.dataset.id),
+    'pack-later'(el) { setPackStatus(el.dataset.id, 'later'); refreshPacks(); },
+    'pack-publish': publishPack,
+    async 'pack-delete'(el) {
+      const p = packById(el.dataset.id);
+      const ok = await askConfirm({ title: 'Retirer ce paquet ?', text: `« ${p ? p.title : ''} » ne sera plus proposé. Les cartes déjà intégrées par les utilisateurs restent chez eux.`, ok: 'Retirer' });
+      if (ok && FJ.sync) { if (!(await FJ.sync.deletePack(el.dataset.id))) toast('Suppression impossible.'); }
+    },
     'sync-signout': () => FJ.sync && FJ.sync.signOut(),
     reset() {
       const online = FJ.syncUi.phase === 'signedin';
@@ -1730,6 +1898,9 @@
     } else if (el.id === 'wordsCat') {
       wordsCat = el.value === '*' ? null : el.value;
       renderWordsList();
+    } else if (el.id === 'packFile') {
+      const file = el.files && el.files[0];
+      if (file) readPackFile(file);
     } else if (el.id === 'csvFile' || el.id === 'jsonFile') {
       const file = el.files && el.files[0];
       el.value = '';
@@ -1740,6 +1911,8 @@
   // L'événement "toggle" ne remonte pas : on l'écoute en phase de capture pour mémoriser l'état de "Petits mots"
   document.addEventListener('toggle', (e) => {
     if (e.target.id === 'noteDetails') noteDraft.open = e.target.open;
+    else if (e.target.id === 'packsAll') packUi.allOpen = e.target.open;
+    else if (e.target.id === 'packAdmin') packDraft.open = e.target.open;
   }, true);
 
   document.addEventListener('submit', (e) => {
@@ -1753,6 +1926,10 @@
       updateAddPreview();
     } else if (e.target.id === 'noteText') {
       noteDraft.text = e.target.value;
+    } else if (e.target.id === 'packTitle') {
+      packDraft.title = e.target.value;
+    } else if (e.target.id === 'packDesc') {
+      packDraft.desc = e.target.value;
     } else if (e.target.id === 'wordsSearch') {
       wordsQuery = e.target.value;
       renderWordsList();

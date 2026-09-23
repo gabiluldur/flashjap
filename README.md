@@ -69,6 +69,11 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Un seul mot par personne et par jour : appliqué côté serveur (identifiant du document `{uid}_{jour}`, un second envoi le même jour est refusé par les règles) et rappelé dans l'interface.
 - Collection Firestore `notes` : lecture pour tout compte connecté admis, création seule (jamais modifiable), suppression réservée au propriétaire (modération depuis la console Firebase). Règles : `data/firestore.rules`.
 
+## Paquets de mises à jour
+- Le propriétaire (compte reconnu par les règles Firestore, jamais par un e-mail dans le code) voit « 🛠 Publier un paquet » : il choisit un CSV (mêmes colonnes que les packs de base), un titre, une description, consulte l'aperçu (cartes nouvelles / déjà présentes) puis « Envoyer à tous ». Un paquet peut être retiré ensuite.
+- Les autres comptes voient sur l'accueil « 📦 Nouveau paquet disponible : souhaitez-vous l'intégrer ? » avec **Voir le contenu** (lecture seule), **Intégrer** ou **Plus tard**. Intégration additive (même chemin que l'import CSV : dédoublonnage, progression intacte, catégories complétées). Pas de pop-up.
+- « Toutes les mises à jour » garde tous les paquets (les nouveaux arrivants les retrouvent après le pack de base). Le choix intégré / plus tard est dans les réglages, donc synchronisé entre appareils.
+- Firestore : collection `packs` (lecture pour les comptes admis, écriture propriétaire seul, 900 Ko max par paquet) et document sentinelle `config/admin` lisible par le seul propriétaire. Règles : `data/firestore.rules`.
 ## Règles
 - Échelle de Leitner : 10 min → 1 j → 2 j → 3 j → 1 sem → 2 sem → 1 mois → 3 mois → **validée**.
   Un échec renvoie à l'étape 1 (10 min). Les intervalles en jours reviennent à 4 h du matin du jour cible.

@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.9.0/firebas
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js';
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-  collection, doc, onSnapshot, writeBatch, setDoc, serverTimestamp, query, orderBy, limit,
+  collection, doc, onSnapshot, writeBatch, setDoc, deleteDoc, getDoc, serverTimestamp, query, orderBy, limit,
 } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
 
@@ -82,6 +82,7 @@ function startSync(user) {
   FJ.sync.replaceAll = () => core.replaceAll();
   core.start();
   startNotes(user.uid);
+  startPacks();
   publish();
 }
 
@@ -91,6 +92,7 @@ function stopSync() {
   store.onChange = null;
   FJ.sync.replaceAll = () => Promise.resolve();
   stopNotes();
+  stopPacks();
 }
 
 // ---------- Petits mots publics ("notes") ----------
@@ -128,8 +130,57 @@ function stopNotes() {
   unsubNotes = null;
 }
 
+// ---------- Paquets de mises à jour ----------
+// Le propriétaire publie des paquets de cartes (un CSV stocké dans un document) ; tous les comptes admis les voient
+// et choisissent de les intégrer ou non. Aucune adresse e-mail dans ce fichier public : le statut "admin" se déduit
+// de la lecture d'un document réservé au propriétaire par les règles (config/admin).
+const packs = (FJ.packsUi = FJ.packsUi || {});
+Object.assign(packs, { items: [], admin: false });
+let unsubPacks = null;
+let packsGen = 0;
+
+function startPacks() {
+  const gen = ++packsGen;
+  const q = query(collection(db, 'packs'), orderBy('createdAt', 'desc'), limit(50));
+  unsubPacks = onSnapshot(q, (snap) => {
+    packs.items = snap.docs.map((d) => {
+      const x = d.data({ serverTimestamps: 'estimate' });
+      return {
+        id: d.id, title: x.title || 'Paquet', desc: x.desc || '', csv: x.csv || '', count: x.count || 0,
+        createdAt: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : Date.now(),
+      };
+    });
+    if (ui().packsChanged) ui().packsChanged();
+  }, () => {
+    packs.items = [];
+    if (ui().packsChanged) ui().packsChanged();
+  });
+  getDoc(doc(db, 'config', 'admin')).then(() => {
+    if (gen !== packsGen) return;
+    packs.admin = true;
+    if (ui().packsChanged) ui().packsChanged();
+  }).catch(() => { /* refusé par les règles : pas le propriétaire */ });
+}
+
+function stopPacks() {
+  packsGen++;
+  Object.assign(packs, { items: [], admin: false });
+  if (unsubPacks) unsubPacks();
+  unsubPacks = null;
+}
+
 FJ.sync = {
   replaceAll: () => Promise.resolve(),
+  async publishPack({ title, desc, csv, count }) {
+    if (!auth.currentUser) return false;
+    try {
+      await setDoc(doc(db, 'packs', 'p' + Date.now().toString(36)), { title, desc, csv, count, createdAt: serverTimestamp() });
+      return true;
+    } catch (e) { return false; }
+  },
+  async deletePack(id) {
+    try { await deleteDoc(doc(db, 'packs', id)); return true; } catch (e) { return false; }
+  },
   async signIn() {
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());

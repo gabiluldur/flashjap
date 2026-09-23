@@ -9,7 +9,7 @@
     stats: { reviews: 0, sessions: 0, ms: 0, xp: 0 },
     daily: {}, // 'YYYY-MM-DD' -> { reviews, ms, xp }
     // catPool : sélection de catégories à réviser (null = toutes) ; addCat : dernière catégorie choisie à l'ajout d'une carte
-    settings: { reverse: false, shuffle: true, newPerSession: 10, sound: true, chartMetric: 'reviews', chartRange: 7, catPool: null, addCat: '' },
+    settings: { reverse: false, shuffle: true, newPerSession: 10, sound: true, chartMetric: 'reviews', chartRange: 7, catPool: null, addCat: '', packs: {} },
     metaU: 0, // version (horodatage) des compteurs/réglages pour la synchro ; chaque carte porte la sienne dans `_u`
   });
 
