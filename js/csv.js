@@ -92,6 +92,10 @@
     const ei = head.findIndex((h) => ['emoji', 'émoji'].includes(h)); // un seul emoji par carte, facultatif
     const ki = head.findIndex((h) => ['kanji_only', 'kanjionly'].includes(h)); // "on"/"force" ou "off" : voir js/kanji.js
     const ci = head.findIndex((h) => CAT_HEADERS.includes(h)); // catégorie / leçon : une seule par carte
+    // Correction d'une carte déjà importée : ancien texte (recto + verso). L'import corrige alors la carte sur place
+    // (voir store.addCards) au lieu d'en créer une seconde.
+    const owi = head.findIndex((h) => ['ancien_recto', 'old_recto'].includes(h));
+    const ovi = head.findIndex((h) => ['ancien_verso', 'old_verso'].includes(h));
 
     const cards = [];
     let skipped = 0;
@@ -102,10 +106,16 @@
       const card = { id: cardId(recto, verso), recto, verso };
       const rimg = cleanImage(row[rii]);
       const vimg = cleanImage(row[vii]);
-      const emoji = cleanEmoji(row[ei]);
+      // "-" dans la colonne emoji = retirer l'emoji des cartes déjà importées (une cellule vide, elle, ne change rien)
+      const clearEmoji = (row[ei] || '').trim() === '-';
+      const emoji = clearEmoji ? '' : cleanEmoji(row[ei]);
       if (rimg) card.rimg = rimg;
       if (vimg) card.vimg = vimg;
       if (emoji) card.emoji = emoji;
+      if (clearEmoji) card.emojiClear = true;
+      const wasRecto = clean(row[owi]);
+      const wasVerso = clean(row[ovi]);
+      if (wasRecto && wasVerso) card.was = { recto: wasRecto, verso: wasVerso };
       const cat = cleanCategory(row[ci]);
       if (cat) card.cat = cat;
       const kanjiOnly = (row[ki] || '').trim().toLowerCase();

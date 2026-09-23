@@ -1516,6 +1516,7 @@
     const r = store.addCards(cards);
     const parts = [plural(r.added, 'nouvelle carte ajoutée', 'nouvelles cartes ajoutées')];
     if (r.duplicates) parts.push(plural(r.duplicates, 'déjà présente', 'déjà présentes'));
+    if (r.textFixed) parts.push(plural(r.textFixed, 'carte corrigée', 'cartes corrigées'));
     if (r.imagesUpdated) parts.push(plural(r.imagesUpdated, 'carte enrichie (emoji/image)', 'cartes enrichies (emoji/image)'));
     if (r.catFilled) parts.push(plural(r.catFilled, 'carte rangée dans sa catégorie', 'cartes rangées dans leur catégorie'));
     if (r.catConflicts.length) {

@@ -1,1001 +1,1001 @@
-recto_texte,verso_texte,emoji,categorie
-"Bonjour (matin, familier)",おはよう,🕐,Genki L01
-"Bonjour (matin, poli)",おはようございます,🕐,Genki L01
-Bonsoir,こんばんは,,Genki L01
-Au revoir,さようなら,,Genki L01
-Bonne nuit,おやすみなさい,🕐,Genki L01
-J'y vais (en partant),いってきます,,Genki L01
-Merci pour le repas (après manger),ごちそうさまでした,🍽️,Genki L01
-Enchanté(e) (première rencontre),はじめまして,,Genki L01
-"Ravi de vous connaître, merci d'avance",よろしくおねがいします,,Genki L01
-Zéro,ぜろ／れい,,Genki L01
-Onze,じゅういち,,Genki L01
-Vingt,にじゅう,,Genki L01
-Cent,ひゃく,,Genki L01
-Mille,せん,,Genki L01
-Quelle heure est-il ?,なんじ(何時)ですか。,,Genki L01
-Une heure,いちじ(一時),,Genki L01
-Et demie,はん(半),,Genki L01
-Du matin,ごぜん(午前),🕐,Genki L01
-De l'après-midi,ごご(午後),🕐,Genki L01
-Ceci (près de moi),これ,,Genki L02
-Cela (près de toi),それ,,Genki L02
-Cela (là-bas),あれ,,Genki L02
-Lequel,どれ,,Genki L02
-"Ce, cette (+ nom, ici)",この,,Genki L02
-"Ce, cette (+ nom, là)",その,,Genki L02
-"Ce, cette (+ nom, là-bas)",あの,,Genki L02
-"Quel, quelle (+ nom)",どの,,Genki L02
-Ici,ここ,,Genki L02
-Là,そこ,,Genki L02
-Là-bas,あそこ,,Genki L02
-Où,どこ,,Genki L02
-Qui,だれ,,Genki L02
-Délicieux,おいしい(美味しい),,Genki L02
-Poisson,さかな(魚),,Genki L02
-Escalope de porc panée,とんかつ,,Genki L02
-Viande,にく(肉),,Genki L02
-Menu,メニュー,,Genki L02
-Légume,やさい(野菜),,Genki L02
-Parapluie,かさ,,Genki L02
-Sac,かばん,,Genki L02
-Chaussures,くつ(靴),👕,Genki L02
-Portefeuille,さいふ(財布),,Genki L02
-Vélo,じてんしゃ(自転車),🚲,Genki L02
-Journal,しんぶん(新聞),,Genki L02
-Smartphone,スマホ,,Genki L02
-"Montre, horloge",とけい(時計),,Genki L02
-École,がっこう(学校),🏫,Genki L02
-Banque,ぎんこう(銀行),,Genki L02
-Supérette,コンビニ,,Genki L02
-Bibliothèque,としょかん(図書館),,Genki L02
-Bureau de poste,ゆうびんきょく(郵便局),✉️,Genki L02
-"Toilettes (mot courant, katakana)",トイレ,,Genki L02
-Angleterre,イギリス,,Genki L02
-Corée,かんこく(韓国),,Genki L02
-Chine,ちゅうごく(中国),,Genki L02
-Anglais (langue),えいご(英語),,Genki L02
-Économie,けいざい(経済),,Genki L02
-Ordinateur,コンピューター,,Genki L02
-Histoire,れきし(歴史),,Genki L02
-Mère (de qqn),おかあさん,👪,Genki L02
-Père (de qqn),おとうさん,👪,Genki L02
-Combien (prix),いくら,💴,Genki L02
-... yens,～えん(円),💴,Genki L02
-"Cher, élevé",たかい(高い),💴,Genki L02
-"..., s'il vous plaît",(～を)おねがいします,,Genki L02
-Donnez-moi ...,(～を)ください,,Genki L02
-"Alors, dans ce cas",じゃあ,,Genki L02
-"Je vous en prie, tenez",どうぞ,,Genki L02
-Merci,どうも,,Genki L02
-Film,えいが(映画),,Genki L03
-Musique,おんがく(音楽),,Genki L03
-Magazine,ざっし(雑誌),,Genki L03
-Sport,スポーツ,⚽,Genki L03
-Rendez-vous amoureux,デート,,Genki L03
-Tennis,テニス,,Genki L03
-Télévision,テレビ,,Genki L03
-Glace,アイスクリーム,,Genki L03
-Hamburger,ハンバーガー,,Genki L03
-"Alcool, saké",おさけ(お酒),,Genki L03
-Thé vert,おちゃ(お茶),🥤,Genki L03
-Café,コーヒー,🥤,Genki L03
-Eau,みず(水),🥤,Genki L03
-Petit-déjeuner,あさごはん(朝ご飯),,Genki L03
-Déjeuner,ひるごはん(昼ご飯),,Genki L03
-Dîner,ばんごはん(晩ご飯),,Genki L03
-Maison,いえ(家),,Genki L03
-Chez soi,うち,,Genki L03
-Café (lieu),カフェ,🥤,Genki L03
-Demain,あした(明日),,Genki L03
-Aujourd'hui,きょう(今日),,Genki L03
-Matin,あさ(朝),🕐,Genki L03
-Ce soir,こんばん(今晩),🕐,Genki L03
-Chaque jour,まいにち(毎日),📅,Genki L03
-Chaque soir,まいばん(毎晩),🕐,Genki L03
-Week-end,しゅうまつ(週末),,Genki L03
-Samedi,どようび(土曜日),📅,Genki L03
-Dimanche,にちようび(日曜日),📅,Genki L03
-Quand,いつ,,Genki L03
-Vers ... (heure),～ごろ,,Genki L03
-Aller,いく(行く),,Genki L03
-Rentrer,かえる(帰る),,Genki L03
-"Écouter, demander",きく(聞く),,Genki L03
-Boire,のむ(飲む),🥤,Genki L03
-Parler,はなす(話す),,Genki L03
-Lire,よむ(読む),,Genki L03
-Se lever,おきる(起きる),,Genki L03
-Manger,たべる(食べる),🍽️,Genki L03
-"Dormir, se coucher",ねる(寝る),💴,Genki L03
-"Voir, regarder",みる(見る),,Genki L03
-Venir,くる(来る),,Genki L03
-Faire,する,,Genki L03
-Étudier,べんきょうする(勉強する),🏫,Genki L03
-"Bien, bon",いい,,Genki L03
-"Tôt, rapide",はやい(早い),,Genki L03
-Pas beaucoup (+ négatif),あまり,,Genki L03
-Pas du tout (+ négatif),ぜんぜん,,Genki L03
-Généralement,たいてい,,Genki L03
-Un peu,ちょっと,,Genki L03
-Parfois,ときどき(時々),,Genki L03
-"Souvent, bien",よく,,Genki L03
-"C'est vrai, voyons voir",そうですね,,Genki L03
-Mais,でも,,Genki L03
-Comment est... ?,どうですか,,Genki L03
-Jeu,ゲーム,,Genki L04
-Job à temps partiel,アルバイト,,Genki L04
-"Courses, shopping",かいもの(買い物),🏫,Genki L04
-"Classe, cours",クラス,🏫,Genki L04
-Chien,いぬ(犬),🐕,Genki L04
-Chat,ねこ(猫),🐈,Genki L04
-Personne,ひと(人),,Genki L04
-Enfant,こども(子供),,Genki L04
-"Toi, vous",あなた,,Genki L04
-Chaise,いす,,Genki L04
-Bureau (meuble),つくえ(机),,Genki L04
-Photo,しゃしん(写真),,Genki L04
-Fleur,はな(花),,Genki L04
-"Rapport, devoir écrit",レポート,,Genki L04
-"Riz cuit, repas",ごはん(ご飯),🍽️,Genki L04
-Pain,パン,,Genki L04
-Temple bouddhiste,おてら(お寺),⛩️,Genki L04
-Parc,こうえん(公園),,Genki L04
-Supermarché,スーパー,,Genki L04
-Arrêt de bus,バスてい(バス停),🚌,Genki L04
-Hôpital,びょういん(病院),💊,Genki L04
-Hôtel,ホテル,🏨,Genki L04
-Librairie,ほんや(本屋),,Genki L04
-"Ville, quartier",まち(町),,Genki L04
-Restaurant,レストラン,🍽️,Genki L04
-Hier,きのう(昨日),,Genki L04
-... heures (durée),～じかん(～時間),,Genki L04
-La semaine dernière,せんしゅう(先週),📅,Genki L04
-Moment où...,とき(時),,Genki L04
-Lundi,げつようび(月曜日),📅,Genki L04
-Mardi,かようび(火曜日),📅,Genki L04
-Mercredi,すいようび(水曜日),📅,Genki L04
-Jeudi,もくようび(木曜日),📅,Genki L04
-Vendredi,きんようび(金曜日),📅,Genki L04
-Rencontrer,あう(会う),,Genki L04
-Il y a (chose),ある,,Genki L04
-Acheter,かう(買う),,Genki L04
-Écrire,かく(書く),,Genki L04
-Prendre (une photo),とる(撮る),,Genki L04
-Attendre,まつ(待つ),,Genki L04
-Comprendre,わかる,,Genki L04
-"Il y a (être vivant), rester",いる,,Genki L04
-Environ ...,～ぐらい,,Genki L04
-Je suis désolé(e),ごめんなさい,,Genki L04
-"Et puis, ensuite",それから,,Genki L04
-"Donc, c'est pourquoi",だから,,Genki L04
-Beaucoup,たくさん,,Genki L04
-"Avec ..., et",～と,,Genki L04
-Pourquoi,どうして,,Genki L04
-Seul(e),ひとりで(一人で),,Genki L04
-Allô (au téléphone),もしもし,📱,Genki L04
-Droite,みぎ(右),,Genki L04
-Gauche,ひだり(左),,Genki L04
-Devant,まえ(前),,Genki L04
-Derrière,うしろ(後ろ),,Genki L04
-Dedans,なか(中),,Genki L04
-"Sur, au-dessus",うえ(上),,Genki L04
-"Sous, en dessous",した(下),,Genki L04
-Près de,ちかく(近く),,Genki L04
-À côté de,となり(隣),,Genki L04
-Entre,あいだ(間),,Genki L04
-Janvier,いちがつ(一月),,Genki L04
-Février,にがつ(二月),,Genki L04
-Juillet,しちがつ(七月),,Genki L04
-Décembre,じゅうにがつ(十二月),,Genki L04
-Avant-hier,おととい,,Genki L04
-Après-demain,あさって,,Genki L04
-Le mois dernier,せんげつ(先月),📅,Genki L04
-Le mois prochain,らいげつ(来月),📅,Genki L04
-L'année dernière,きょねん(去年),📅,Genki L04
-L'année prochaine,らいねん(来年),📅,Genki L04
-Nourriture,たべもの(食べ物),🍽️,Genki L05
-Boisson,のみもの(飲み物),🥤,Genki L05
-Fruit,くだもの(果物),,Genki L05
-"Vacances, jour de congé",やすみ(休み),📅,Genki L05
-Voyage,りょこう(旅行),,Genki L05
-Mer,うみ(海),,Genki L05
-Surf,サーフィン,,Genki L05
-Souvenir (cadeau),おみやげ(お土産),,Genki L05
-Bus,バス,🚌,Genki L05
-"Météo, temps",てんき(天気),🌦️,Genki L05
-Devoirs,しゅくだい(宿題),🏫,Genki L05
-"Test, contrôle",テスト,,Genki L05
-Anniversaire,たんじょうび(誕生日),,Genki L05
-"Chambre, pièce",へや(部屋),🏨,Genki L05
-"Je (masculin, familier)",ぼく(僕),,Genki L05
-Taille L,Lサイズ,,Genki L05
-Nouveau,あたらしい(新しい),,Genki L05
-Vieux (objet),ふるい(古い),,Genki L05
-Chaud (météo),あつい(暑い),🌦️,Genki L05
-Froid (météo),さむい(寒い),🌦️,Genki L05
-Occupé,いそがしい(忙しい),,Genki L05
-Grand,おおきい(大きい),,Genki L05
-Petit,ちいさい(小さい),,Genki L05
-"Intéressant, drôle",おもしろい(面白い),,Genki L05
-Ennuyeux,つまらない,,Genki L05
-"Facile, gentil",やさしい,,Genki L05
-Difficile,むずかしい(難しい),,Genki L05
-Effrayant,こわい(怖い),,Genki L05
-"Amusant, agréable",たのしい(楽しい),,Genki L05
-Pas cher,やすい(安い),💴,Genki L05
-"Aimer, apprécier",すき(な)(好き),,Genki L05
-Détester,きらい(な)(嫌い),,Genki L05
-"Beau, propre",きれい(な),,Genki L05
-"En forme, énergique",げんき(な)(元気),,Genki L05
-Calme,しずか(な)(静か),,Genki L05
-"Animé, vivant",にぎやか(な),,Genki L05
-"Libre, disponible",ひま(な)(暇),,Genki L05
-Nager,およぐ(泳ぐ),⚽,Genki L05
-Monter à bord de,のる(乗る),,Genki L05
-Faire (familier),やる,,Genki L05
-Sortir,でかける(出かける),,Genki L05
-Ensemble,いっしょに(一緒に),,Genki L05
-Extrêmement,すごく,,Genki L05
-"Ça va, pas de problème",だいじょうぶ(大丈夫),,Genki L05
-Quel genre de,どんな,,Genki L05
-Compteur pour objets plats,～まい(～枚),,Genki L05
-Kanji,かんじ(漢字),,Genki L06
-Manuel scolaire,きょうかしょ(教科書),,Genki L06
-Page,ページ,,Genki L06
-Suivant,つぎ(次),,Genki L06
-Argent,おかね(お金),💴,Genki L06
-Bagage,にもつ(荷物),,Genki L06
-Ordinateur personnel,パソコン,,Genki L06
-Douche,シャワー,,Genki L06
-Climatisation,エアコン,,Genki L06
-Électricité,でんき(電気),,Genki L06
-Fenêtre,まど(窓),,Genki L06
-Train,でんしゃ(電車),🚆,Genki L06
-Pays,くに(国),,Genki L06
-Cette semaine,こんしゅう(今週),📅,Genki L06
-La semaine prochaine,らいしゅう(来週),📅,Genki L06
-Nuit,よる(夜),🕐,Genki L06
-"Difficile, pénible",たいへん(な)(大変),,Genki L06
-"Jouer, s'amuser",あそぶ(遊ぶ),,Genki L06
-Se dépêcher,いそぐ(急ぐ),💴,Genki L06
-Rendre,かえす(返す),,Genki L06
-"Éteindre, effacer",けす(消す),,Genki L06
-S'asseoir,すわる(座る),,Genki L06
-"Se lever, se tenir debout",たつ(立つ),,Genki L06
-Utiliser,つかう(使う),,Genki L06
-Aider (dans une tâche),てつだう(手伝う),,Genki L06
-Entrer,はいる(入る),,Genki L06
-"Porter, tenir",もつ(持つ),👕,Genki L06
-"Se reposer, s'absenter",やすむ(休む),,Genki L06
-Ouvrir,あける(開ける),,Genki L06
-Fermer,しめる(閉める),,Genki L06
-Enseigner,おしえる(教える),,Genki L06
-Oublier,わすれる(忘れる),,Genki L06
-Descendre (de),おりる(降りる),,Genki L06
-Emprunter,かりる(借りる),,Genki L06
-Prendre une douche,シャワーをあびる,,Genki L06
-Allumer,つける,,Genki L06
-Téléphoner,でんわする(電話する),📱,Genki L06
-Amener (qqn),つれてくる(連れてくる),,Genki L06
-Plus tard,あとで(後で),,Genki L06
-Tout de suite,すぐ,,Genki L06
-"Lentement, tranquillement",ゆっくり,,Genki L06
-"Non merci, ça ira",けっこうです(結構です),,Genki L06
-Vraiment ?,ほんとうですか(本当ですか),,Genki L06
-Famille,かぞく(家族),👪,Genki L07
-Grand-père,おじいさん,👪,Genki L07
-Grand-mère,おばあさん,👪,Genki L07
-Grand frère (de qqn),おにいさん,👪,Genki L07
-Grande sœur (de qqn),おねえさん,👪,Genki L07
-Mon père,ちち(父),👪,Genki L07
-Ma mère,はは(母),👪,Genki L07
-Mon grand frère,あに(兄),👪,Genki L07
-Ma grande sœur,あね(姉),👪,Genki L07
-Petite sœur,いもうと(妹),👪,Genki L07
-Petit frère,おとうと(弟),👪,Genki L07
-Frères et sœurs,きょうだい(兄弟),👪,Genki L07
-Homme,おとこのひと(男の人),,Genki L07
-Femme,おんなのひと(女の人),,Genki L07
-Entreprise,かいしゃ(会社),,Genki L07
-Cantine,しょくどう(食堂),,Genki L07
-Grand magasin,デパート,,Genki L07
-Cheveux,かみ(髪),,Genki L07
-Bouche,くち(口),,Genki L07
-Œil,め(目),,Genki L07
-Lunettes,めがね(眼鏡),,Genki L07
-Chanson,うた(歌),,Genki L07
-"Club, cercle (activité)",サークル,,Genki L07
-Voiture,くるま(車),🚗,Genki L07
-Long,ながい(長い),,Genki L07
-Court,みじかい(短い),,Genki L07
-Grand (taille),せがたかい(背が高い),,Genki L07
-Petit (taille),せがひくい(背が低い),,Genki L07
-Intelligent,あたまがいい(頭がいい),,Genki L07
-Mignon,かわいい,,Genki L07
-Gentil,しんせつ(な)(親切),,Genki L07
-Pratique,べんり(な)(便利),,Genki L07
-Chanter,うたう(歌う),,Genki L07
-Porter (sur la tête),かぶる,👕,Genki L07
-Porter (bas du corps),はく,👕,Genki L07
-"Apprendre à connaître, savoir",しる(知る),,Genki L07
-Habiter,すむ(住む),,Genki L07
-Travailler,はたらく(働く),,Genki L07
-Grossir,ふとる(太る),,Genki L07
-Porter (haut du corps),きる(着る),👕,Genki L07
-Maigrir,やせる,,Genki L07
-Se marier,けっこんする(結婚する),,Genki L07
-Rien (+ négatif),なにも(何も),,Genki L07
-Compteur de personnes,～にん(～人),,Genki L07
-Une personne,ひとり(一人),,Genki L07
-Deux personnes,ふたり(二人),,Genki L07
-Rien de particulier (+ négatif),べつに(別に),,Genki L07
-Bien sûr,もちろん,,Genki L07
-Si tu veux,よかったら,,Genki L07
-"Mot, vocabulaire",たんご(単語),,Genki L09
-Rédaction,さくぶん(作文),,Genki L09
-Examen (officiel),しけん(試験),🏫,Genki L09
-Lettre,てがみ(手紙),✉️,Genki L09
-E-mail,メール,,Genki L09
-Guitare,ギター,,Genki L09
-Piano,ピアノ,,Genki L09
-Concert,コンサート,,Genki L09
-Ski,スキー,,Genki L09
-"Bento, panier-repas",おべんとう(お弁当),🍽️,Genki L09
-Maladie,びょうき(病気),💊,Genki L09
-Médicament,くすり(薬),💊,Genki L09
-Couleur,いろ(色),,Genki L09
-"Prochainement, la prochaine fois",こんど(今度),,Genki L09
-Bleu,あおい(青い),🔵,Genki L09
-Rouge,あかい(赤い),🔴,Genki L09
-Noir,くろい(黒い),⚫,Genki L09
-Blanc,しろい(白い),⚪,Genki L09
-"Triste, seul",さびしい(寂しい),,Genki L09
-Jeune,わかい(若い),,Genki L09
-Danser,おどる(踊る),,Genki L09
-Se terminer,おわる(終わる),,Genki L09
-Prendre un médicament,くすりをのむ(薬を飲む),💊,Genki L09
-Être populaire,にんきがある(人気がある),,Genki L09
-Commencer (intransitif),はじまる(始まる),,Genki L09
-Jouer (instrument à cordes/piano),ひく(弾く),,Genki L09
-Recevoir,もらう,,Genki L09
-Mémoriser,おぼえる(覚える),,Genki L09
-"Sortir, assister",でる(出る),,Genki L09
-Faire de l'exercice,うんどうする(運動する),,Genki L09
-Se promener,さんぽする(散歩する),,Genki L09
-Depuis ...,～から,,Genki L09
-Jusqu'à ...,～まで,,Genki L09
-"Absolument, avec plaisir",ぜひ(是非),,Genki L09
-Au fait,ところで,,Genki L09
-Tout le monde,みんな,,Genki L09
-Déjà,もう,,Genki L09
-Un (objet),ひとつ,,Genki L09
-Deux (objets),ふたつ,,Genki L09
-Trois (objets),みっつ,,Genki L09
-Quatre (objets),よっつ,,Genki L09
-Cinq (objets),いつつ,,Genki L09
-Six (objets),むっつ,,Genki L09
-Sept (objets),ななつ,,Genki L09
-Huit (objets),やっつ,,Genki L09
-Neuf (objets),ここのつ,,Genki L09
-Dix (objets),とお,,Genki L09
-Saison,きせつ(季節),🍂,Genki L10
-Printemps,はる(春),🍂,Genki L10
-Automne,あき(秋),🍂,Genki L10
-Lait,ぎゅうにゅう(牛乳),,Genki L10
-Gâteau,ケーキ,,Genki L10
-Sushi,すし(寿司),,Genki L10
-Tempura,てんぷら(天ぷら),,Genki L10
-Pomme,りんご,,Genki L10
-Cuisine,りょうり(料理),🍽️,Genki L10
-Football,サッカー,⚽,Genki L10
-Baseball,やきゅう(野球),⚽,Genki L10
-Médecin,いしゃ(医者),💊,Genki L10
-Personne riche,おかねもち(お金持ち),,Genki L10
-Célébrité,ゆうめいじん(有名人),,Genki L10
-Visage,かお(顔),,Genki L10
-Plus âgé,としうえ(年上),,Genki L10
-Gare,えき(駅),🚆,Genki L10
-Shinkansen,しんかんせん(新幹線),,Genki L10
-Métro,ちかてつ(地下鉄),🚆,Genki L10
-Bateau,ふね(船),⛴️,Genki L10
-Avion,ひこうき(飛行機),✈️,Genki L10
-Réservation,よやく(予約),,Genki L10
-"Tour, excursion",ツアー,,Genki L10
-Zoo,どうぶつえん(動物園),,Genki L10
-Monde,せかい(世界),,Genki L10
-Gants,てぶくろ(手袋),,Genki L10
-Vie quotidienne,せいかつ(生活),,Genki L10
-Cette année,ことし(今年),📅,Genki L10
-Doux (météo),あたたかい(暖かい),🌦️,Genki L10
-Frais (météo),すずしい(涼しい),🌦️,Genki L10
-Froid (au toucher),つめたい(冷たい),💴,Genki L10
-"Lent, en retard",おそい(遅い),,Genki L10
-Somnolent,ねむい(眠い),,Genki L10
-"Simple, facile",かんたん(な)(簡単),,Genki L10
-Prendre (temps/argent),かかる,💴,Genki L10
-"Loger, séjourner",とまる(泊まる),,Genki L10
-Devenir,なる,,Genki L10
-Décider,きめる(決める),,Genki L10
-Traîner à la maison,ごろごろする,,Genki L10
-Voyager,りょこうする(旅行する),,Genki L10
-S'entraîner,れんしゅうする(練習する),,Genki L10
-"Le plus, numéro un",いちばん(一番),,Genki L10
-Lequel des deux,どっち／どちら,,Genki L10
-"Tôt, vite",はやく(早く／速く),,Genki L10
-À pied,あるいて(歩いて),,Genki L10
-Par (moyen de transport),～で,💴,Genki L10
-Comment (par quel moyen),どうやって,💴,Genki L10
-Combien de temps/argent,どのぐらい,💴,Genki L10
-... semaines,～しゅうかん(～週間),📅,Genki L10
-... mois,～かげつ(～か月),📅,Genki L10
-... ans,～ねん(～年),,Genki L10
-Ces jours-ci,このごろ,,Genki L10
-Après ...,～ご(～後),,Genki L10
-Pays étranger,がいこく(外国),,Genki L11
-Australie,オーストラリア,,Genki L11
-Rivière,かわ(川),,Genki L11
-Source chaude,おんせん(温泉),,Genki L11
-Pêche,つり,,Genki L11
-Lac,みずうみ(湖),,Genki L11
-Montagne,やま(山),,Genki L11
-Camping,キャンプ,,Genki L11
-Balade en voiture,ドライブ,🚗,Genki L11
-Sanctuaire shinto,じんじゃ(神社),⛩️,Genki L11
-Musée d'art,びじゅつかん(美術館),⛩️,Genki L11
-Président d'entreprise,しゃちょう(社長),,Genki L11
-Chanteur,かしゅ(歌手),,Genki L11
-Colocataire,ルームメイト,,Genki L11
-Famille d'accueil,ホストファミリー,👪,Genki L11
-Avenir,しょうらい(将来),,Genki L11
-Rêve,ゆめ(夢),,Genki L11
-Festival,おまつり(お祭り),⛩️,Genki L11
-Nouvel An,おしょうがつ(お正月),,Genki L11
-"Sucrerie, friandise",おかし(お菓子),,Genki L11
-Ce semestre,こんがっき(今学期),,Genki L11
-Le semestre prochain,らいがっき(来学期),,Genki L11
-Cours,じゅぎょう(授業),🏫,Genki L11
-Cette personne (poli),こちら,,Genki L11
-Mentir,うそをつく,,Genki L11
-Avoir faim,おなかがすく,,Genki L11
-Sécher (les cours),サボる,💴,Genki L11
-Apprendre (avec un prof),ならう(習う),,Genki L11
-Grimper,のぼる(登る),,Genki L11
-Courir,はしる(走る),⚽,Genki L11
-Être fatigué,つかれる(疲れる),,Genki L11
-"Arrêter, démissionner",やめる,,Genki L11
-Se disputer,けんかする,,Genki L11
-Présenter (qqn),しょうかいする(紹介する),,Genki L11
-Faire un régime,ダイエットする,,Genki L11
-Être en retard,ちこくする(遅刻する),,Genki L11
-Étudier à l'étranger,りゅうがくする(留学する),🏫,Genki L11
-"Origine, ville natale",しゅっしん(出身),,Genki L11
-Ça fait longtemps,ひさしぶり(久しぶり),,Genki L11
-Comme ci comme ça,まあまあ,,Genki L11
-Seulement ...,～だけ,,Genki L11
-... points,～てん(～点),,Genki L11
-Écrivain,さっか(作家),,Genki L11
-Policier,けいさつかん(警察官),,Genki L11
-Pompier,しょうぼうし(消防士),,Genki L11
-Enseignant,きょうし(教師),,Genki L11
-Infirmier,かんごし(看護師),,Genki L11
-Ventre,おなか,,Genki L12
-"Jambe, pied",あし(足),,Genki L12
-Gorge,のど,,Genki L12
-Dent,は(歯),,Genki L12
-Grippe,インフルエンザ,,Genki L12
-Rhume,かぜ(風邪),💊,Genki L12
-Toux,せき(咳),,Genki L12
-Gueule de bois,ふつかよい(二日酔い),,Genki L12
-Mal du pays,ホームシック,,Genki L12
-Allergie,アレルギー,,Genki L12
-Jus,ジュース,,Genki L12
-Œuf,たまご(卵),,Genki L12
-Vêtements,ふく(服),👕,Genki L12
-Cadeau,プレゼント,,Genki L12
-Billet (train),きっぷ(切符),🚆,Genki L12
-Frais de ...,～だい(～代),,Genki L12
-Affaire à régler,ようじ(用事),,Genki L12
-Toilettes (poli),おてあらい(お手洗い),,Genki L12
-Match,しあい(試合),,Genki L12
-Politique,せいじ(政治),,Genki L12
-"Note, résultat scolaire",せいせき(成績),,Genki L12
-"Elle, petite amie",かのじょ(彼女),,Genki L12
-"Lui, petit ami",かれ(彼),,Genki L12
-Petit ami,かれし(彼氏),,Genki L12
-"Sens, signification",いみ(意味),,Genki L12
-Étroit,せまい(狭い),,Genki L12
-Spacieux,ひろい(広い),,Genki L12
-Mauvais,わるい(悪い),,Genki L12
-Douloureux,いたい(痛い),,Genki L12
-Sucré,あまい(甘い),,Genki L12
-"Charmant, chouette",すてき(な)(素敵),,Genki L12
-Marcher,あるく(歩く),💴,Genki L12
-Attraper un rhume,かぜをひく(風邪をひく),💊,Genki L12
-Avoir de la fièvre,ねつがある(熱がある),💊,Genki L12
-Avoir soif,のどがかわく,,Genki L12
-Payer,はらう(払う),💴,Genki L12
-Perdre (un objet),なくす,,Genki L12
-Être intéressé par,きょうみがある(興味がある),,Genki L12
-Tousser,せきがでる(咳が出る),,Genki L12
-Se séparer,わかれる(別れる),,Genki L12
-Être nerveux,きんちょうする(緊張する),,Genki L12
-S'inquiéter,しんぱいする(心配する),,Genki L12
-Prenez soin de vous (au malade),おだいじに(お大事に),💊,Genki L12
-Ne pas avoir l'air en forme,げんきがない(元気がない),,Genki L12
-Autant que possible,できるだけ,,Genki L12
-Probablement,たぶん,,Genki L12
-Bientôt,もうすぐ,,Genki L12
-Deux ou trois jours,にさんにち(二三日),,Genki L12
-Jours de la semaine (dimanche à samedi),にちようび(日曜日)～どようび(土曜日),📅,Genki L04
-Mois de l'année (janvier à décembre),いちがつ(一月)～じゅうにがつ(十二月),📅,Genki L04
-Le 1er du mois,ついたち(一日),📅,Genki L05
-Le 2 du mois,ふつか(二日),📅,Genki L05
-Le 3 du mois,みっか(三日),📅,Genki L05
-Le 4 du mois,よっか(四日),📅,Genki L05
-Le 5 du mois,いつか(五日),📅,Genki L05
-Le 6 du mois,むいか(六日),📅,Genki L05
-Le 7 du mois,なのか(七日),📅,Genki L05
-Le 8 du mois,ようか(八日),📅,Genki L05
-Le 9 du mois,ここのか(九日),📅,Genki L05
-Le 10 du mois,とおか(十日),📅,Genki L05
-Le 20 du mois,はつか(二十日),📅,Genki L05
-"Beau temps, ciel dégagé",はれ(晴れ),🌦️,Genki L08
-Pluie,あめ(雨),🌦️,Genki L08
-"Temps nuageux, couvert",くもり(曇り),🌦️,Genki L08
-Neige,ゆき(雪),🌦️,Genki L08
-Prévisions météo,てんきよほう(天気予報),🌦️,Genki L08
-Température (air),きおん(気温),,Genki L08
-Été,なつ(夏),🍂,Genki L08
-Hiver,ふゆ(冬),🍂,Genki L08
-Ce matin,けさ(今朝),🕐,Genki L08
-Chaque semaine,まいしゅう(毎週),📅,Genki L08
-Ce mois-ci,こんげつ(今月),📅,Genki L08
-Employé de bureau,かいしゃいん(会社員),,Genki L08
-"Travail, occupation",しごと(仕事),,Genki L08
-Appareil photo,カメラ,,Genki L08
-Karaoké,カラオケ,,Genki L08
-Endroit,ところ(所),,Genki L08
-Tomate,トマト,,Genki L08
-Baguettes,はし(箸),,Genki L08
-Fête,パーティー,,Genki L08
-Barbecue,バーベキュー,,Genki L08
-Séjour chez l'habitant,ホームステイ,,Genki L08
-Bain,おふろ(お風呂),,Genki L08
-Espagne,スペイン,,Genki L08
-Quelque chose,なにか(何か),,Genki L08
-"Habile, doué",じょうず(な)(上手),,Genki L08
-"Maladroit, mauvais en...",へた(な)(下手),,Genki L08
-Célèbre,ゆうめい(な)(有名),,Genki L08
-Laver,あらう(洗う),,Genki L08
-Dire,いう(言う),,Genki L08
-"Être en retard, se faire tard",おそくなる(遅くなる),,Genki L08
-Prendre un bain,おふろにはいる(お風呂に入る),,Genki L08
-Penser,おもう(思う),,Genki L08
-"Fabriquer, préparer",つくる(作る),,Genki L08
-Tomber (pluie/neige),(あめ/ゆきが)ふる(降る),🌦️,Genki L08
-Emporter,もっていく(持っていく),👕,Genki L08
-Jeter,すてる(捨てる),,Genki L08
-Commencer,はじめる(始める),,Genki L08
-Conduire,うんてんする(運転する),🚗,Genki L08
-Faire la lessive,せんたくする(洗濯する),,Genki L08
-Nettoyer,そうじする(掃除する),,Genki L08
-Cuisiner,りょうりする(料理する),🍽️,Genki L08
-Oui (familier),うん,,Genki L08
-Non (familier),ううん,,Genki L08
-Toujours,いつも,,Genki L08
-"En retard, tard",おそく(遅く),,Genki L08
-Santé ! (on trinque),かんぱい(乾杯),,Genki L08
-Tous ensemble,みんなで,,Genki L08
-C'est dommage,ざんねん(ですね)(残念),,Genki L08
-Pas encore (+ négatif),まだ,,Genki L08
-À propos de...,～について,,Genki L08
-... degrés,～ど(～度),,Genki L08
-Comment,どう,,Genki L08
-Portillon de billet (gare),かいさつぐち(改札口),🚆,Hors Genki
-Distributeur de billets (train),けんばいき(券売機),🚆,Hors Genki
-Guichet des billets,きっぷうりば(切符売場),🚆,Hors Genki
-Voie ferrée,せんろ(線路),,Hors Genki
-Arrivée,とうちゃく(到着),,Hors Genki
-Départ,しゅっぱつ(出発),,Hors Genki
-Porte d'embarquement,ゲート,,Hors Genki
-Douane,ぜいかん(税関),,Hors Genki
-Contrôle des passeports,しゅつにゅうこくしんさ(出入国審査),,Hors Genki
-"Couloir, allée",つうろ(通路),,Hors Genki
-Tarif (transport),うんちん(運賃),⚽,Hors Genki
-Navette,シャトルバス,,Hors Genki
-Bus de l'aéroport,くうこうバス(空港バス),✈️,Hors Genki
-Enregistrement (hôtel),チェックイン,🏨,Hors Genki
-Départ (hôtel),チェックアウト,🏨,Hors Genki
-Réception,うけつけ(受付),🏨,Hors Genki
-Numéro de chambre,へやばんごう(部屋番号),🏨,Hors Genki
-Service en chambre,ルームサービス,🏨,Hors Genki
-Auberge japonaise traditionnelle,りょかん(旅館),🏨,Hors Genki
-Chambre simple,シングルルーム,🏨,Hors Genki
-Chambre à lits jumeaux,ツインルーム,🏨,Hors Genki
-Coffre-fort,きんこ(金庫),,Hors Genki
-Bain public,せんとう(銭湯),,Hors Genki
-Réservé aux hommes,だんせいせんよう(男性専用),,Hors Genki
-Réservé aux femmes,じょせいせんよう(女性専用),,Hors Genki
-Collyre,めぐすり(目薬),,Hors Genki
-Antidouleur,いたみどめ(痛み止め),💊,Hors Genki
-Diarrhée,げり(下痢),,Hors Genki
-Mal de tête,ずつう(頭痛),,Hors Genki
-Bandage,ほうたい(包帯),,Hors Genki
-Comprimé,じょうざい(錠剤),,Hors Genki
-Anti-moustique,むしよけ(虫よけ),,Hors Genki
-Crème solaire,ひやけどめ(日焼け止め),,Hors Genki
-Pansement,ばんそうこう(絆創膏),,Hors Genki
-Timbre,きって(切手),✉️,Hors Genki
-Colis,こづつみ(小包),✉️,Hors Genki
-Boîte aux lettres,ゆうびんポスト(郵便ポスト),✉️,Hors Genki
-Envoi express,そくたつ(速達),🚆,Hors Genki
-Adresse,じゅうしょ(住所),,Hors Genki
-Code postal,ゆうびんばんごう(郵便番号),,Hors Genki
-Serviette humide,おしぼり,,Hors Genki
-Commander,ちゅうもんする(注文する),,Hors Genki
-À emporter,もちかえり(持ち帰り),👕,Hors Genki
-Stand de rue,やたい(屋台),,Hors Genki
-Recharger (batterie),じゅうでんする(充電する),📱,Hors Genki
-Routeur Wi-Fi,むせんルーター(無線ルーター),,Hors Genki
-Carte SIM,SIMカード,📱,Hors Genki
-Téléphone portable,けいたい(携帯),📱,Hors Genki
-Signal (réseau),じゅしんじょうたい(受信状態),,Hors Genki
-Musée,はくぶつかん(博物館),⛩️,Hors Genki
-Château,しろ(城),⛩️,Hors Genki
-Office de tourisme,かんこうあんないじょ(観光案内所),⛩️,Hors Genki
-Guide (livre),ガイドブック,,Hors Genki
-Mairie,しやくしょ(市役所),,Hors Genki
-Poste de police de quartier,こうばん(交番),✉️,Hors Genki
-Caserne de pompiers,しょうぼうしょ(消防署),,Hors Genki
-Cou,くび(首),,Hors Genki
-Épaule,かた(肩),,Hors Genki
-Bras,うで(腕),,Hors Genki
-Dos,せなか(背中),,Hors Genki
-Poitrine,むね(胸),,Hors Genki
-Argent liquide,げんきん(現金),💴,Hors Genki
-Carte de crédit,クレジットカード,💴,Hors Genki
-Change (devises),りょうがえ(両替),💴,Hors Genki
-Distributeur de billets (argent),ATM(えーてぃーえむ),🚆,Hors Genki
-Au secours !,たすけて！,🏫,Hors Genki
-Ambulance,きゅうきゅうしゃ(救急車),,Hors Genki
-Police,けいさつ(警察),🚨,Hors Genki
-Accident,じこ(事故),🚨,Hors Genki
-Aéroport,くうこう(空港),✈️,Hors Genki
-Cinéma,えいがかん(映画館),,Hors Genki
-Pharmacie,やっきょく(薬局),💊,Hors Genki
-Église,きょうかい(教会),,Hors Genki
-Parking,ちゅうしゃじょう(駐車場),,Hors Genki
-Dehors,そと(外),,Hors Genki
-Corps,からだ(体),,Hors Genki
-Tête,あたま(頭),,Hors Genki
-"Cœur, esprit",こころ(心),,Hors Genki
-"Son, bruit",おと(音),,Hors Genki
-Force,ちから(力),,Hors Genki
-"Nombre, quantité",かず(数),,Hors Genki
-Dans le monde entier,せかいじゅう(世界中),,Hors Genki
-"Boutique, magasin",みせ(店),,Hors Genki
-Nom,なまえ(名前),,Hors Genki
-Nécessaire,ひつよう(な)(必要),,Hors Genki
-"Problème, question",もんだい(問題),,Hors Genki
-Téléphone,でんわ(電話),📱,Hors Genki
-Raison,りゆう(理由),,Hors Genki
-Explication,せつめい(説明),,Hors Genki
-Pour la première fois,はじめて(初めて),,Hors Genki
-"Sentiment, sensation",きもち(気持ち),,Hors Genki
-Fort,つよい(強い),,Hors Genki
-Léger,かるい(軽い),,Hors Genki
-Nombreux,おおい(多い),,Hors Genki
-Beau (esthétique),うつくしい(美しい),,Hors Genki
-Fille (de qqn),むすめ(娘),👪,Hors Genki
-Rester,のこる(残る),,Hors Genki
-"Être différent, se tromper",ちがう(違う),,Hors Genki
-"Endroit, lieu",ばしょ(場所),,Hors Genki
-"Divers, variés",いろいろ(な)(色々),,Hors Genki
-Dangereux,きけん(な)(危険),🚨,Hors Genki
-Chercher,さがす(探す),💴,Hors Genki
-Escalier,かいだん(階段),,Hors Genki
-"Interdit, mauvais",だめ(な),,Hors Genki
-Réponse,へんじ(返事),,Hors Genki
-Aider,たすける(助ける),,Hors Genki
-Moitié,はんぶん(半分),,Hors Genki
-Choisir,えらぶ(選ぶ),,Hors Genki
-Désagréable ; non merci,いや(な)(嫌),,Hors Genki
-"En chemin, en cours de route",とちゅう(途中),🏫,Hors Genki
-Demander (un service),たのむ(頼む),,Hors Genki
-Question,しつもん(質問),,Hors Genki
-"ah !, oh !, hey!",ああ(嗚呼),,Hors Genki
-saluer,あいさつする(挨拶する),,Hors Genki
-"bleu (le), vert (le)",あお(青),🔵,Hors Genki
-rouge (le),あか(赤),🔴,Hors Genki
-clair,あかるい(明るい),,Hors Genki
-s'ouvrir,あく(開く),,Hors Genki
-donner,あげる(上げる),,Hors Genki
-jeu,あそび(遊び),,Hors Genki
-"ce côté-là, là-bas (poli)",あちら(彼方),,Hors Genki
-"ce côté-là, là-bas (familier)",あっち(彼方),,Hors Genki
-après,あと(後),,Hors Genki
-"prendre une douche, prendre un bain, se dorer au",あびる(浴びる),,Hors Genki
-dangereux,あぶない(危ない),🚨,Hors Genki
-"excès, trop plein, surplus",あんまり・あま(余り),,Hors Genki
-"plaisant, agréable, bien",いい・よい(良い),,Hors Genki
-否 : non,いいえ、いえ,,Hors Genki
-aller,いく・ゆく(行くs),,Hors Genki
-combien ? (quantité),いくつ(幾つ),,Hors Genki
-étang,いけ(池),,Hors Genki
-"pierre, roc",いし(石),,Hors Genki
-un jour,いちにち(一日),📅,Hors Genki
-une semaine,いっしゅうかん(一週間),📅,Hors Genki
-ensemble,いっしょ(一緒),,Hors Genki
-maintenant,いま(今),,Hors Genki
-"bienvenue (dans notre magasin, notre restaurant)",いらっしゃいま,🍽️,Hors Genki
-entrée,いりぐち(入り口),,Hors Genki
-"introduire, mettre dedans, insérer, préparer (du thé,",いれる(入れる),🥤,Hors Genki
-"mince, pâle (pour une couleur)",うすい(薄い),,Hors Genki
-chez soi,うちで(内で),,Hors Genki
-naître,うまれる(生まれる),,Hors Genki
-vendre,うる(売る),,Hors Genki
-"manteau, veste",うわぎ(上着),,Hors Genki
-"image, dessin",え(絵),,Hors Genki
-"oui, en effet, c'est cela",ええ,,Hors Genki
-crayon,えんぴつ(鉛筆),,Hors Genki
-"être, arriver (poli)",おいでになる(お出でになる),,Hors Genki
-foule,おおぜい(大勢),,Hors Genki
-poser,おく(置く),,Hors Genki
-épouse (d'un autre),おくさん(奥さん),,Hors Genki
-"envoyer, expédier, accompagner une personne",おくる(送る),,Hors Genki
-"portez-vous bien, prends soin de toi",おげんきで(お元気で),,Hors Genki
-oncle (polie),おじさん(伯父さん・叔父さん),,Hors Genki
-"pousser, presser",おす(押す),,Hors Genki
-garçon,おとこのこ(男の子),,Hors Genki
-avant-hier,おととい・いっ(一昨日),,Hors Genki
-"l'année avant l'année dernière, il y a 2 ans",おととし・いっ(一昨年),📅,Hors Genki
-"adulte, grande personne",おとな(大人),,Hors Genki
-"identique, égal",おなじ(同じ),,Hors Genki
-tante,おば(伯母・叔母),,Hors Genki
-tante (polie),おばさん(伯母さん・叔母さん),,Hors Genki
-bonjour (le matin),おはようござい(お早う御座います),🕐,Hors Genki
-policier (désigné de manière amicale),おまわりさん(お巡りさん),,Hors Genki
-"lourd, massif",おもい(重い),,Hors Genki
-fille,おんなのこ(女の子),,Hors Genki
-compteur pour le nombre de fois,かい(回),,Hors Genki
-étranger,がいこくじん(外国人),,Hors Genki
-clé,かぎ(鍵),,Hors Genki
-"accrocher, porter (des lunettes...), appeler (au",かける(掛ける),💴,Hors Genki
-prêter,かす(貸す),,Hors Genki
-katakana (un des syllabaires japonais),かたかな(片仮名),,Hors Genki
-mois de l'année,がつ(月),📅,Hors Genki
-"famille (sa), maison (sa)",かてい(家庭),👪,Hors Genki
-"coin (d'une rue, d'un trottoir…), rebord, bord",かど(角),,Hors Genki
-épouse (la nôtre),かない(家内),,Hors Genki
-"argent, monnaie",かね(金),💴,Hors Genki
-vase,かびん(花瓶),,Hors Genki
-épicé,からい(辛い),,Hors Genki
-"arbre, bois (la matière)",き(木),,Hors Genki
-"jaune (le, nom)",きいろ(黄色),,Hors Genki
-jaune (adjectif),きいろい(黄色い),,Hors Genki
-"disparaître, s'éteindre, s'effacer",きえる(消える),,Hors Genki
-nord,きた(北),,Hors Genki
-sale,きたない(汚い),,Hors Genki
-salon de thé,きっさ(喫茶),🥤,Hors Genki
-"salon de thé, café (lieux)",きっさてん(喫茶店),🥤,Hors Genki
-viande de boeuf,ぎゅうにく(牛肉),,Hors Genki
-aujourd'hui,きょう・こんに(今日),,Hors Genki
-salle de classe,きょうしつ(教室),,Hors Genki
-chaussettes,くつした(靴下),,Hors Genki
-sombre,くらい(暗い),,Hors Genki
-environ,くらい・ぐらい,,Hors Genki
-noir (le),くろ(黒),⚫,Hors Genki
-"bien, merveilleux",けっこう(結構),,Hors Genki
-mariage,けっこん(結婚),,Hors Genki
-"hall d'entrée, vestibule",げんかん(玄関),,Hors Genki
-thé noir,こうちゃ(紅茶),🥤,Hors Genki
-voix,こえ(声),,Hors Genki
-mari (de quelqu'un) (polie),ごしゅじん(ご主人),,Hors Genki
-répondre,こたえる(答える),,Hors Genki
-merci pour ce repas (après avoir mangé),ごちそうさまで(ご馳走様でした),🍽️,Hors Genki
-de même,こちらこそ,,Hors Genki
-"mot, langage, phrase, parole",ことば(言葉),,Hors Genki
-"être gêné, être embarrassé",こまる(困る),,Hors Genki
-puis-je rentrer ? (dans la maison de quelqu'un,ごめんください(ご免下さい),,Hors Genki
-vers (pour l'heure),ころ・ごろ,,Hors Genki
-cette sorte de,こんな,,Hors Genki
-ans (pour l'âge),さい(歳),,Hors Genki
-poisson,さかな・うお(魚),,Hors Genki
-"précédent, antérieur",さき(先),,Hors Genki
-"fleurir, éclore",さく(咲く),,Hors Genki
-"alcool, sake",さけ(酒),,Hors Genki
-ouvrir (un parapluie),さす(差す),,Hors Genki
-compteur pour les livres,さつ(冊),,Hors Genki
-sucre,さとう(砂糖),,Hors Genki
-au revoir,さよなら,,Hors Genki
-assiette,さら(皿),,Hors Genki
-dans deux ans,さらいねん(再来年),,Hors Genki
-"promenade, balade",さんぽ(散歩),,Hors Genki
-"heure (comme dans : 6h du matin, 18h…)",じ(時),🕐,Hors Genki
-sel,しお(塩),,Hors Genki
-"mais, cependant, pourtant, toutefois",しかし(併し),,Hors Genki
-dictionnaire (courant),じしょ(辞書),,Hors Genki
-poser une question,しつもんする(質問する),,Hors Genki
-véhicule,じどうしゃ(自動車),,Hors Genki
-mourir,しぬ(死ぬ),,Hors Genki
-dictionnaire (vieilli),じびき(字引),,Hors Genki
-"soi-même, elle-même, lui-même",じぶん(自分),,Hors Genki
-se fermer,しまる(閉まる),,Hors Genki
-写真を撮る : prendre une photo,しゃしんをとる,,Hors Genki
-"bonne santé, forme",じょうぶ(丈夫),,Hors Genki
-sauce soja,しょうゆ(醤油),,Hors Genki
-"fumer, respirer, inhaler",すう(吸う),,Hors Genki
-immédiatement,すぐに(直ぐに),,Hors Genki
-un peu,すこし(少し),,Hors Genki
-chaque,ずつ,,Hors Genki
-taille (hauteur d'une personne),せい(背),,Hors Genki
-élève,せいと(生徒),,Hors Genki
-savon,せっけん(石鹸),,Hors Genki
-costume d'affaire,せびろ(背広),,Hors Genki
-lessive,せんたく(洗濯),,Hors Genki
-"totalement, en entier",ぜんぶ(全部),,Hors Genki
-"et ensuite, et après",そうして(然うして),,Hors Genki
-divers,そのほか(その他),,Hors Genki
-"proche de, à côté de",そば(側),,Hors Genki
-ciel,そら(空),,Hors Genki
-"dans ce cas, alors, donc",それでわ(其れでは),,Hors Genki
-université,だいがく(大学),,Hors Genki
-ambassade,たいしかん(大使館),,Hors Genki
-"adorable, adoré",だいすき(大好き),,Hors Genki
-important,たいせつ(大切),,Hors Genki
-cuisine,だいどころ(台所),🍽️,Hors Genki
-"sortir, partir",だす(出す),,Hors Genki
-"marque du pluriel, suffixe pour le pluriel",たち(達),,Hors Genki
-bâtiment,たてもの(建物),,Hors Genki
-"cigarette, tabac",たばこ(煙草),🚆,Hors Genki
-quelqu'un,だれか(誰か),,Hors Genki
-"progressivement, petit à petit",だんだん(段々),,Hors Genki
-"proche (en distance), près",ちかい(近い),,Hors Genki
-"carte, plan",ちず(地図),,Hors Genki
-marron clair,ちゃいろ(茶色),,Hors Genki
-"bol à riz, tasse à thé",ちゃわん(茶碗),🥤,Hors Genki
-pendant,ちゅう(中),,Hors Genki
-"juste, exact",ちょうど(丁度),,Hors Genki
-clair de lune,つきあかり(月明かり),,Hors Genki
-"arriver, atteindre",つく(着く),,Hors Genki
-"faire des efforts, s'appliquer, travailler",つとめる(努める),,Hors Genki
-main,て(手),,Hors Genki
-"être capable de faire, être fait",できる(出来る),,Hors Genki
-sortie,でぐち(出口),,Hors Genki
-"donc, alors, et bien",では,,Hors Genki
-allumer la lumière,でんきをつける(電気を点ける),,Hors Genki
-"il n'y a pas de quoi, de rien",どういたしまし(どう致しまして),,Hors Genki
-animal,どうぶつ(動物),,Hors Genki
-merci beaucoup,どうもありがと(どうも有難う御座います),,Hors Genki
-"long, distant",とおい(遠い),,Hors Genki
-quel côté ?,どちら(何方),,Hors Genki
-"beaucoup, extrêmement",とても(迚も),,Hors Genki
-qui ? (poli),どなた(何方),,Hors Genki
-"voler, s'envoler, bondir",とぶ(飛ぶ・跳ぶ),,Hors Genki
-"rester (au même endroit), stopper, s'arrêter,",とまる・とどま(止まる・留まる),,Hors Genki
-"ami, compagnon",ともだち(友達),,Hors Genki
-oiseau,とり(鳥),,Hors Genki
-poulet,とりにく(鶏肉),,Hors Genki
-"qui n'existe pas, qui n'est pas là, qui n'est pas",ない(無い),,Hors Genki
-"chanter (oiseau), aboyer, miauler, grogner",なく(鳴く),,Hors Genki
-vacances d'été,なつやすみ(夏休み),🍂,Hors Genki
-"etc, et cetera",など(等),,Hors Genki
-"se mettre en rangs, faire la queue, rivaliser, égaler",ならぶ(並ぶ),,Hors Genki
-aligner,ならべる(並べる),,Hors Genki
-ouest,にし(西),,Hors Genki
-langue japonaise,にほんご(日本語),,Hors Genki
-jardin,にわ(庭),,Hors Genki
-"enlever (des habits), se déshabiller",ぬぐ(脱ぐ),,Hors Genki
-cendrier,はいざら(灰皿),,Hors Genki
-carte postale,はがき(葉書),,Hors Genki
-boite,はこ(箱),,Hors Genki
-début,はじめ(初め),,Hors Genki
-vingt ans (être âgé de),はたち(二十歳),,Hors Genki
-"discours, conversation",はなし(話),🏫,Hors Genki
-"s'éclaircir, s'ensoleiller",はれる(晴れる),,Hors Genki
-soir,ばん(晩),🕐,Hors Genki
-numéro,ばんごう(番号),,Hors Genki
-est,ひがし(東),,Hors Genki
-rouleau de tissu,ひき(匹),,Hors Genki
-"bas, faible (température, rang, degré…)",ひくい(低い),,Hors Genki
-un mois,ひとつき(一月),📅,Hors Genki
-hiragana (un des syllabaires japonais),ひらがな(平仮名),,Hors Genki
-midi,ひる(昼),🕐,Hors Genki
-enveloppe,ふうとう(封筒),,Hors Genki
-porc,ぶたにく(豚肉),,Hors Genki
-"gros, épais",ふとい(太い),,Hors Genki
-minute,ふん(分),,Hors Genki
-"phrase, style d'écriture, texte",ぶんしょう(文章),,Hors Genki
-"côté (d'un triangle par ex.), les alentours",へん(辺),,Hors Genki
-"études, travail",べんきょう(勉強),,Hors Genki
-chapeau,ぼうし(帽子),,Hors Genki
-"divers, autre",ほか(他),,Hors Genki
-"désiré, voulu",ほしい(欲しい),,Hors Genki
-"fin, ténu",ほそい(細い),,Hors Genki
-livre,ほん(本),,Hors Genki
-bibliothèque (rangement),ほんだな(本棚),,Hors Genki
-"vrai, véritable",ほんとう(本当),,Hors Genki
-"vraiment, réellement",ほんとうに(本当に),,Hors Genki
-tous les matins,まいあさ(毎朝),🕐,Hors Genki
-tous les mois,まいつき(毎月),📅,Hors Genki
-tous les ans,まいとし・まい(毎年・毎年),,Hors Genki
-"tourner, se courber, se plier",まがる(曲がる),,Hors Genki
-"peu appétissant, sans goût",まずい(不味い),,Hors Genki
-encore,また(復),,Hors Genki
-"pas encore (+négatif), encore (+positif)",まだ・いまだ(未だ),,Hors Genki
-"droit devant, en face",まっすぐ(真っ直ぐ),,Hors Genki
-"rond, circulaire",まるい(丸い),,Hors Genki
-dix-mille,まん(万),,Hors Genki
-stylo-plume,まんねんひつ(万年筆),,Hors Genki
-"polir, nettoyer, faire briller",みがく(磨く),,Hors Genki
-"montrer, afficher, laisser montrer",みせる(見せる),💴,Hors Genki
-chemin,みち(道),,Hors Genki
-tout le monde,みなさん(皆さん),,Hors Genki
-sud,みなみ(南),,Hors Genki
-oreille,みみ(耳),,Hors Genki
-de l'autre côté,むこう(向こう),,Hors Genki
-plus,もっと,,Hors Genki
-"chose, objet",もの(物),,Hors Genki
-porte,もん(門),,Hors Genki
-"maraîcher, marchand de fruits et légumes",やおや(八百屋),💴,Hors Genki
-"fin d'après-midi, crépuscule",ゆうがた(夕方),🕐,Hors Genki
-vêtements occidentaux,ようふく(洋服),👕,Hors Genki
-"côté (d'un boîte, d'un bâtiment...)",よこ(横),,Hors Genki
-appeler,よぶ(呼ぶ),,Hors Genki
-nuit,よる・よ(夜),🕐,Hors Genki
-"magnifique, splendide, impressionnant",りっぱ(立派),,Hors Genki
-étudiant venant de l'étranger,りゅうがくせい(留学生),,Hors Genki
-parents (père et mère),りょうしん(両親),👪,Hors Genki
-réfrigérateur,れいぞうこ(冷蔵庫),,Hors Genki
-exercice,れんしゅう(練習),,Hors Genki
-"remettre, livrer, transmettre",わたす(渡す),,Hors Genki
-traverser,わたる(渡る),,Hors Genki
-salutation,あいさつ(挨拶),,Hors Genki
-s'excuser,あやまる(謝る),,Hors Genki
-"vivre, exister",いきる(生きる),,Hors Genki
-fil,いと(糸),,Hors Genki
-"frapper (une personne), battre",うつ(打つ・撃つ),,Hors Genki
-"mouvement, exercice",うんどう(運動),⚽,Hors Genki
-toît,おくじょう(屋上),,Hors Genki
-"dire, parler (poli)",おっしゃる(仰る),,Hors Genki
-jouet,おもちゃ・がん(玩具),,Hors Genki
-"conférence, réunion, meeting",かいぎ(会議),,Hors Genki
-"forme, aspect, apparence",かたち(形),,Hors Genki
-"faire des aller-et-retours, faire la navette, fréquenter,",かよう(通う),,Hors Genki
-être audible,きこえる(聞こえる),,Hors Genki
-train express,きゅうこう(急行),🚆,Hors Genki
-comparer,くらべる(比べる),,Hors Genki
-absolument pas,けっして(決して),,Hors Genki
-"de cette manière, comme cela",こう(斯う),,Hors Genki
-fonctionnaire,こうむいん(公務員),,Hors Genki
-"petit, détaillé",こまかい(細かい),,Hors Genki
-le premier,さいしょ(最初),,Hors Genki
-toucher,さわる(触る),💴,Hors Genki
-malpoli,しつれい(失礼),,Hors Genki
-libre,じゆう(自由),,Hors Genki
-roman,しょうせつ(小説),,Hors Genki
-"inquiétudes, angoisses",しんぱい(心配),,Hors Genki
-"tous, complètement",すっかり,,Hors Genki
-"Occident, pays occidentaux",せいよう(西洋 np),,Hors Genki
-obtention d'un diplôme,そつぎょう(卒業),,Hors Genki
-"comme, tellement",そんなに,,Hors Genki
-"demander, se renseigner",たずねる(尋ねる),,Hors Genki
-"être suffisant, être assez",たりる(足りる),,Hors Genki
-"attraper, capturer",つかまえる(捕まえる),,Hors Genki
-emmener,つれる(連れる),,Hors Genki
-"de loin, à distance",とおく(遠く),,Hors Genki
-"arrêter, stopper",とめる(止める),,Hors Genki
-autant que possible,なるべく(成る可く),,Hors Genki
-"se ressembler, être similaire",にる(似る),,Hors Genki
-"situation, cas",ばあい(場合),,Hors Genki
-"hanami, contemplation de la floraison des cerisiers",はなみ(花見),,Hors Genki
-extrêmement,ひじょうに(非常に),,Hors Genki
-profond,ふかい(深い),,Hors Genki
-littérature,ぶんがく(文学),,Hors Genki
-"louer, admirer",ほめる(褒める),,Hors Genki
-"tel quel, comme, parce que",まま,,Hors Genki
-"tout le monde, tout",みな・みんな(皆),,Hors Genki
-"dire, raconter (poli)",もうしあげる(申し上げる),,Hors Genki
-comme je le pensais,やっぱり・やは,,Hors Genki
-préparation,ようい(用意),,Hors Genki
-absence (de chez soi),るす(留守),,Hors Genki
+recto_texte,verso_texte,emoji,categorie,ancien_recto,ancien_verso
+"Bonjour (matin, familier)",おはよう,🌅,Genki L01,,
+"Bonjour (matin, poli)",おはようございます,🌅,Genki L01,,
+Bonsoir,こんばんは,,Genki L01,,
+Au revoir,さようなら,,Genki L01,,
+Bonne nuit,おやすみなさい,🌙,Genki L01,,
+J'y vais (en partant),いってきます,,Genki L01,,
+Merci pour le repas (après manger),ごちそうさまでした,🍽️,Genki L01,,
+Enchanté(e) (première rencontre),はじめまして,,Genki L01,,
+"Ravi de vous connaître, merci d'avance",よろしくおねがいします,,Genki L01,,
+Zéro,ぜろ／れい,,Genki L01,,
+Onze,じゅういち,,Genki L01,,
+Vingt,にじゅう,,Genki L01,,
+Cent,ひゃく,,Genki L01,,
+Mille,せん,,Genki L01,,
+Quelle heure est-il ?,なんじ(何時)ですか。,,Genki L01,,
+Une heure,いちじ(一時),,Genki L01,,
+Et demie,はん(半),,Genki L01,,
+Du matin,ごぜん(午前),🕐,Genki L01,,
+De l'après-midi,ごご(午後),🕐,Genki L01,,
+Ceci (près de moi),これ,,Genki L02,,
+Cela (près de toi),それ,,Genki L02,,
+Cela (là-bas),あれ,,Genki L02,,
+Lequel,どれ,,Genki L02,,
+"Ce, cette (+ nom, ici)",この,,Genki L02,,
+"Ce, cette (+ nom, là)",その,,Genki L02,,
+"Ce, cette (+ nom, là-bas)",あの,,Genki L02,,
+"Quel, quelle (+ nom)",どの,,Genki L02,,
+Ici,ここ,,Genki L02,,
+Là,そこ,,Genki L02,,
+Là-bas,あそこ,,Genki L02,,
+Où,どこ,,Genki L02,,
+Qui,だれ,,Genki L02,,
+Délicieux,おいしい(美味しい),,Genki L02,,
+Poisson,さかな(魚),,Genki L02,,
+Escalope de porc panée,とんかつ,,Genki L02,,
+Viande,にく(肉),,Genki L02,,
+Menu,メニュー,,Genki L02,,
+Légume,やさい(野菜),,Genki L02,,
+Parapluie,かさ,,Genki L02,,
+Sac,かばん,,Genki L02,,
+Chaussures,くつ(靴),👟,Genki L02,,
+Portefeuille,さいふ(財布),,Genki L02,,
+Vélo,じてんしゃ(自転車),🚲,Genki L02,,
+Journal,しんぶん(新聞),,Genki L02,,
+Smartphone,スマホ,,Genki L02,,
+"Montre, horloge",とけい(時計),,Genki L02,,
+École,がっこう(学校),🏫,Genki L02,,
+Banque,ぎんこう(銀行),,Genki L02,,
+Supérette,コンビニ,,Genki L02,,
+Bibliothèque,としょかん(図書館),,Genki L02,,
+Bureau de poste,ゆうびんきょく(郵便局),✉️,Genki L02,,
+"Toilettes (mot courant, katakana)",トイレ,,Genki L02,,
+Angleterre,イギリス,,Genki L02,,
+Corée,かんこく(韓国),,Genki L02,,
+Chine,ちゅうごく(中国),,Genki L02,,
+Anglais (langue),えいご(英語),,Genki L02,,
+Économie,けいざい(経済),,Genki L02,,
+Ordinateur,コンピューター,,Genki L02,,
+Histoire,れきし(歴史),,Genki L02,,
+Mère (de qqn),おかあさん,👪,Genki L02,,
+Père (de qqn),おとうさん,👪,Genki L02,,
+Combien (prix),いくら,💴,Genki L02,,
+... yens,～えん(円),💴,Genki L02,,
+"Cher, élevé",たかい(高い),💴,Genki L02,,
+"..., s'il vous plaît",(～を)おねがいします,,Genki L02,,
+Donnez-moi ...,(～を)ください,,Genki L02,,
+"Alors, dans ce cas",じゃあ,,Genki L02,,
+"Je vous en prie, tenez",どうぞ,,Genki L02,,
+Merci,どうも,,Genki L02,,
+Film,えいが(映画),,Genki L03,,
+Musique,おんがく(音楽),,Genki L03,,
+Magazine,ざっし(雑誌),,Genki L03,,
+Sport,スポーツ,⚽,Genki L03,,
+Rendez-vous amoureux,デート,,Genki L03,,
+Tennis,テニス,,Genki L03,,
+Télévision,テレビ,,Genki L03,,
+Glace,アイスクリーム,,Genki L03,,
+Hamburger,ハンバーガー,,Genki L03,,
+"Alcool, saké",おさけ(お酒),,Genki L03,,
+Thé vert,おちゃ(お茶),🍵,Genki L03,,
+Café,コーヒー,☕,Genki L03,,
+Eau,みず(水),💧,Genki L03,,
+Petit-déjeuner,あさごはん(朝ご飯),,Genki L03,,
+Déjeuner,ひるごはん(昼ご飯),,Genki L03,,
+Dîner,ばんごはん(晩ご飯),,Genki L03,,
+Maison,いえ(家),,Genki L03,,
+Chez soi,うち,,Genki L03,,
+Café (lieu),カフェ,☕,Genki L03,,
+Demain,あした(明日),,Genki L03,,
+Aujourd'hui,きょう(今日),,Genki L03,,
+Matin,あさ(朝),🌅,Genki L03,,
+Ce soir,こんばん(今晩),🌆,Genki L03,,
+Chaque jour,まいにち(毎日),📅,Genki L03,,
+Chaque soir,まいばん(毎晩),🌆,Genki L03,,
+Week-end,しゅうまつ(週末),,Genki L03,,
+Samedi,どようび(土曜日),📅,Genki L03,,
+Dimanche,にちようび(日曜日),📅,Genki L03,,
+Quand,いつ,,Genki L03,,
+Vers ... (heure),～ごろ,,Genki L03,,
+Aller,いく(行く),,Genki L03,,
+Rentrer,かえる(帰る),,Genki L03,,
+"Écouter, demander",きく(聞く),,Genki L03,,
+Boire,のむ(飲む),🥤,Genki L03,,
+Parler,はなす(話す),,Genki L03,,
+Lire,よむ(読む),,Genki L03,,
+Se lever,おきる(起きる),,Genki L03,,
+Manger,たべる(食べる),🍽️,Genki L03,,
+"Dormir, se coucher",ねる(寝る),😴,Genki L03,,
+"Voir, regarder",みる(見る),,Genki L03,,
+Venir,くる(来る),,Genki L03,,
+Faire,する,,Genki L03,,
+Étudier,べんきょうする(勉強する),🏫,Genki L03,,
+"Bien, bon",いい,,Genki L03,,
+"Tôt, rapide",はやい(早い),,Genki L03,,
+Pas beaucoup (+ négatif),あまり,,Genki L03,,
+Pas du tout (+ négatif),ぜんぜん,,Genki L03,,
+Généralement,たいてい,,Genki L03,,
+Un peu,ちょっと,,Genki L03,,
+Parfois,ときどき(時々),,Genki L03,,
+"Souvent, bien",よく,,Genki L03,,
+"C'est vrai, voyons voir",そうですね,,Genki L03,,
+Mais,でも,,Genki L03,,
+Comment est... ?,どうですか,,Genki L03,,
+Jeu,ゲーム,,Genki L04,,
+Job à temps partiel,アルバイト,,Genki L04,,
+"Courses, shopping",かいもの(買い物),🛍️,Genki L04,,
+"Classe, cours",クラス,🏫,Genki L04,,
+Chien,いぬ(犬),🐕,Genki L04,,
+Chat,ねこ(猫),🐈,Genki L04,,
+Personne,ひと(人),,Genki L04,,
+Enfant,こども(子供),,Genki L04,,
+"Toi, vous",あなた,,Genki L04,,
+Chaise,いす,,Genki L04,,
+Bureau (meuble),つくえ(机),,Genki L04,,
+Photo,しゃしん(写真),,Genki L04,,
+Fleur,はな(花),,Genki L04,,
+"Rapport, devoir écrit",レポート,,Genki L04,,
+"Riz cuit, repas",ごはん(ご飯),🍽️,Genki L04,,
+Pain,パン,,Genki L04,,
+Temple bouddhiste,おてら(お寺),⛩️,Genki L04,,
+Parc,こうえん(公園),,Genki L04,,
+Supermarché,スーパー,,Genki L04,,
+Arrêt de bus,バスてい(バス停),🚌,Genki L04,,
+Hôpital,びょういん(病院),💊,Genki L04,,
+Hôtel,ホテル,🏨,Genki L04,,
+Librairie,ほんや(本屋),,Genki L04,,
+"Ville, quartier",まち(町),,Genki L04,,
+Restaurant,レストラン,🍽️,Genki L04,,
+Hier,きのう(昨日),,Genki L04,,
+... heures (durée),～じかん(～時間),,Genki L04,,
+La semaine dernière,せんしゅう(先週),📅,Genki L04,,
+Moment où...,とき(時),,Genki L04,,
+Lundi,げつようび(月曜日),📅,Genki L04,,
+Mardi,かようび(火曜日),📅,Genki L04,,
+Mercredi,すいようび(水曜日),📅,Genki L04,,
+Jeudi,もくようび(木曜日),📅,Genki L04,,
+Vendredi,きんようび(金曜日),📅,Genki L04,,
+Rencontrer,あう(会う),,Genki L04,,
+Il y a (chose),ある,,Genki L04,,
+Acheter,かう(買う),,Genki L04,,
+Écrire,かく(書く),,Genki L04,,
+Prendre (une photo),とる(撮る),,Genki L04,,
+Attendre,まつ(待つ),,Genki L04,,
+Comprendre,わかる,,Genki L04,,
+"Il y a (être vivant), rester",いる,,Genki L04,,
+Environ ...,～ぐらい,,Genki L04,,
+Je suis désolé(e),ごめんなさい,,Genki L04,,
+"Et puis, ensuite",それから,,Genki L04,,
+"Donc, c'est pourquoi",だから,,Genki L04,,
+Beaucoup,たくさん,,Genki L04,,
+"Avec ..., et",～と,,Genki L04,,
+Pourquoi,どうして,,Genki L04,,
+Seul(e),ひとりで(一人で),,Genki L04,,
+Allô (au téléphone),もしもし,📱,Genki L04,,
+Droite,みぎ(右),,Genki L04,,
+Gauche,ひだり(左),,Genki L04,,
+Devant,まえ(前),,Genki L04,,
+Derrière,うしろ(後ろ),,Genki L04,,
+Dedans,なか(中),,Genki L04,,
+"Sur, au-dessus",うえ(上),,Genki L04,,
+"Sous, en dessous",した(下),,Genki L04,,
+Près de,ちかく(近く),,Genki L04,,
+À côté de,となり(隣),,Genki L04,,
+Entre,あいだ(間),,Genki L04,,
+Janvier,いちがつ(一月),,Genki L04,,
+Février,にがつ(二月),,Genki L04,,
+Juillet,しちがつ(七月),,Genki L04,,
+Décembre,じゅうにがつ(十二月),,Genki L04,,
+Avant-hier,おととい,,Genki L04,,
+Après-demain,あさって,,Genki L04,,
+Le mois dernier,せんげつ(先月),📅,Genki L04,,
+Le mois prochain,らいげつ(来月),📅,Genki L04,,
+L'année dernière,きょねん(去年),📅,Genki L04,,
+L'année prochaine,らいねん(来年),📅,Genki L04,,
+Nourriture,たべもの(食べ物),🍽️,Genki L05,,
+Boisson,のみもの(飲み物),🥤,Genki L05,,
+Fruit,くだもの(果物),,Genki L05,,
+"Vacances, jour de congé",やすみ(休み),📅,Genki L05,,
+Voyage,りょこう(旅行),,Genki L05,,
+Mer,うみ(海),,Genki L05,,
+Surf,サーフィン,,Genki L05,,
+Souvenir (cadeau),おみやげ(お土産),,Genki L05,,
+Bus,バス,🚌,Genki L05,,
+"Météo, temps",てんき(天気),🌦️,Genki L05,,
+Devoirs,しゅくだい(宿題),🏫,Genki L05,,
+"Test, contrôle",テスト,,Genki L05,,
+Anniversaire,たんじょうび(誕生日),,Genki L05,,
+"Chambre, pièce",へや(部屋),🏨,Genki L05,,
+"Je (masculin, familier)",ぼく(僕),,Genki L05,,
+Taille L,Lサイズ,,Genki L05,,
+Nouveau,あたらしい(新しい),,Genki L05,,
+Vieux (objet),ふるい(古い),,Genki L05,,
+Chaud (météo),あつい(暑い),🌦️,Genki L05,,
+Froid (météo),さむい(寒い),🌦️,Genki L05,,
+Occupé,いそがしい(忙しい),,Genki L05,,
+Grand,おおきい(大きい),,Genki L05,,
+Petit,ちいさい(小さい),,Genki L05,,
+"Intéressant, drôle",おもしろい(面白い),,Genki L05,,
+Ennuyeux,つまらない,,Genki L05,,
+"Facile, gentil",やさしい,,Genki L05,,
+Difficile,むずかしい(難しい),,Genki L05,,
+Effrayant,こわい(怖い),,Genki L05,,
+"Amusant, agréable",たのしい(楽しい),,Genki L05,,
+Pas cher,やすい(安い),💴,Genki L05,,
+"Aimer, apprécier",すき(な)(好き),,Genki L05,,
+Détester,きらい(な)(嫌い),,Genki L05,,
+"Beau, propre",きれい(な),,Genki L05,,
+"En forme, énergique",げんき(な)(元気),,Genki L05,,
+Calme,しずか(な)(静か),,Genki L05,,
+"Animé, vivant",にぎやか(な),,Genki L05,,
+"Libre, disponible",ひま(な)(暇),,Genki L05,,
+Nager,およぐ(泳ぐ),🏊,Genki L05,,
+Monter à bord de,のる(乗る),,Genki L05,,
+Faire (familier),やる,,Genki L05,,
+Sortir,でかける(出かける),,Genki L05,,
+Ensemble,いっしょに(一緒に),,Genki L05,,
+Extrêmement,すごく,,Genki L05,,
+"Ça va, pas de problème",だいじょうぶ(大丈夫),,Genki L05,,
+Quel genre de,どんな,,Genki L05,,
+Compteur pour objets plats,～まい(～枚),,Genki L05,,
+Kanji,かんじ(漢字),,Genki L06,,
+Manuel scolaire,きょうかしょ(教科書),,Genki L06,,
+Page,ページ,,Genki L06,,
+Suivant,つぎ(次),,Genki L06,,
+Argent,おかね(お金),💴,Genki L06,,
+Bagage,にもつ(荷物),,Genki L06,,
+Ordinateur personnel,パソコン,,Genki L06,,
+Douche,シャワー,,Genki L06,,
+Climatisation,エアコン,,Genki L06,,
+Électricité,でんき(電気),,Genki L06,,
+Fenêtre,まど(窓),,Genki L06,,
+Train,でんしゃ(電車),🚆,Genki L06,,
+Pays,くに(国),,Genki L06,,
+Cette semaine,こんしゅう(今週),📅,Genki L06,,
+La semaine prochaine,らいしゅう(来週),📅,Genki L06,,
+Nuit,よる(夜),🌙,Genki L06,,
+"Difficile, pénible",たいへん(な)(大変),,Genki L06,,
+"Jouer, s'amuser",あそぶ(遊ぶ),,Genki L06,,
+Se dépêcher,いそぐ(急ぐ),🏃,Genki L06,,
+Rendre,かえす(返す),,Genki L06,,
+"Éteindre, effacer",けす(消す),,Genki L06,,
+S'asseoir,すわる(座る),,Genki L06,,
+"Se lever, se tenir debout",たつ(立つ),,Genki L06,,
+Utiliser,つかう(使う),,Genki L06,,
+Aider (dans une tâche),てつだう(手伝う),,Genki L06,,
+Entrer,はいる(入る),,Genki L06,,
+"Porter, tenir",もつ(持つ),🤲,Genki L06,,
+"Se reposer, s'absenter",やすむ(休む),,Genki L06,,
+Ouvrir,あける(開ける),,Genki L06,,
+Fermer,しめる(閉める),,Genki L06,,
+Enseigner,おしえる(教える),,Genki L06,,
+Oublier,わすれる(忘れる),,Genki L06,,
+Descendre (de),おりる(降りる),,Genki L06,,
+Emprunter,かりる(借りる),,Genki L06,,
+Prendre une douche,シャワーをあびる,,Genki L06,,
+Allumer,つける,,Genki L06,,
+Téléphoner,でんわする(電話する),📱,Genki L06,,
+Amener (qqn),つれてくる(連れてくる),,Genki L06,,
+Plus tard,あとで(後で),,Genki L06,,
+Tout de suite,すぐ,,Genki L06,,
+"Lentement, tranquillement",ゆっくり,,Genki L06,,
+"Non merci, ça ira",けっこうです(結構です),,Genki L06,,
+Vraiment ?,ほんとうですか(本当ですか),,Genki L06,,
+Famille,かぞく(家族),👪,Genki L07,,
+Grand-père,おじいさん,👪,Genki L07,,
+Grand-mère,おばあさん,👪,Genki L07,,
+Grand frère (de qqn),おにいさん,👪,Genki L07,,
+Grande sœur (de qqn),おねえさん,👪,Genki L07,,
+Mon père,ちち(父),👪,Genki L07,,
+Ma mère,はは(母),👪,Genki L07,,
+Mon grand frère,あに(兄),👪,Genki L07,,
+Ma grande sœur,あね(姉),👪,Genki L07,,
+Petite sœur,いもうと(妹),👪,Genki L07,,
+Petit frère,おとうと(弟),👪,Genki L07,,
+Frères et sœurs,きょうだい(兄弟),👪,Genki L07,,
+Homme,おとこのひと(男の人),,Genki L07,,
+Femme,おんなのひと(女の人),,Genki L07,,
+Entreprise,かいしゃ(会社),,Genki L07,,
+Cantine,しょくどう(食堂),,Genki L07,,
+Grand magasin,デパート,,Genki L07,,
+Cheveux,かみ(髪),,Genki L07,,
+Bouche,くち(口),,Genki L07,,
+Œil,め(目),,Genki L07,,
+Lunettes,めがね(眼鏡),,Genki L07,,
+Chanson,うた(歌),,Genki L07,,
+"Club, cercle (activité)",サークル,,Genki L07,,
+Voiture,くるま(車),🚗,Genki L07,,
+Long,ながい(長い),,Genki L07,,
+Court,みじかい(短い),,Genki L07,,
+Grand (taille),せがたかい(背が高い),,Genki L07,,
+Petit (taille),せがひくい(背が低い),,Genki L07,,
+Intelligent,あたまがいい(頭がいい),,Genki L07,,
+Mignon,かわいい,,Genki L07,,
+Gentil,しんせつ(な)(親切),,Genki L07,,
+Pratique,べんり(な)(便利),,Genki L07,,
+Chanter,うたう(歌う),,Genki L07,,
+Porter (sur la tête),かぶる,👕,Genki L07,,
+Porter (bas du corps),はく,👕,Genki L07,,
+"Apprendre à connaître, savoir",しる(知る),,Genki L07,,
+Habiter,すむ(住む),,Genki L07,,
+Travailler,はたらく(働く),,Genki L07,,
+Grossir,ふとる(太る),,Genki L07,,
+Porter (haut du corps),きる(着る),👕,Genki L07,,
+Maigrir,やせる,,Genki L07,,
+Se marier,けっこんする(結婚する),,Genki L07,,
+Rien (+ négatif),なにも(何も),,Genki L07,,
+Compteur de personnes,～にん(～人),,Genki L07,,
+Une personne,ひとり(一人),,Genki L07,,
+Deux personnes,ふたり(二人),,Genki L07,,
+Rien de particulier (+ négatif),べつに(別に),,Genki L07,,
+Bien sûr,もちろん,,Genki L07,,
+Si tu veux,よかったら,,Genki L07,,
+"Mot, vocabulaire",たんご(単語),,Genki L09,,
+Rédaction,さくぶん(作文),,Genki L09,,
+Examen (officiel),しけん(試験),🏫,Genki L09,,
+Lettre,てがみ(手紙),✉️,Genki L09,,
+E-mail,メール,,Genki L09,,
+Guitare,ギター,,Genki L09,,
+Piano,ピアノ,,Genki L09,,
+Concert,コンサート,,Genki L09,,
+Ski,スキー,,Genki L09,,
+"Bento, panier-repas",おべんとう(お弁当),🍽️,Genki L09,,
+Maladie,びょうき(病気),💊,Genki L09,,
+Médicament,くすり(薬),💊,Genki L09,,
+Couleur,いろ(色),,Genki L09,,
+"Prochainement, la prochaine fois",こんど(今度),,Genki L09,,
+Bleu,あおい(青い),🔵,Genki L09,,
+Rouge,あかい(赤い),🔴,Genki L09,,
+Noir,くろい(黒い),⚫,Genki L09,,
+Blanc,しろい(白い),⚪,Genki L09,,
+"Triste, seul",さびしい(寂しい),,Genki L09,,
+Jeune,わかい(若い),,Genki L09,,
+Danser,おどる(踊る),,Genki L09,,
+Se terminer,おわる(終わる),,Genki L09,,
+Prendre un médicament,くすりをのむ(薬を飲む),💊,Genki L09,,
+Être populaire,にんきがある(人気がある),,Genki L09,,
+Commencer (intransitif),はじまる(始まる),,Genki L09,,
+Jouer (instrument à cordes/piano),ひく(弾く),,Genki L09,,
+Recevoir,もらう,,Genki L09,,
+Mémoriser,おぼえる(覚える),,Genki L09,,
+"Sortir, assister",でる(出る),,Genki L09,,
+Faire de l'exercice,うんどうする(運動する),,Genki L09,,
+Se promener,さんぽする(散歩する),,Genki L09,,
+Depuis ...,～から,,Genki L09,,
+Jusqu'à ...,～まで,,Genki L09,,
+"Absolument, avec plaisir",ぜひ(是非),,Genki L09,,
+Au fait,ところで,,Genki L09,,
+Tout le monde,みんな,,Genki L09,,
+Déjà,もう,,Genki L09,,
+Un (objet),ひとつ,,Genki L09,,
+Deux (objets),ふたつ,,Genki L09,,
+Trois (objets),みっつ,,Genki L09,,
+Quatre (objets),よっつ,,Genki L09,,
+Cinq (objets),いつつ,,Genki L09,,
+Six (objets),むっつ,,Genki L09,,
+Sept (objets),ななつ,,Genki L09,,
+Huit (objets),やっつ,,Genki L09,,
+Neuf (objets),ここのつ,,Genki L09,,
+Dix (objets),とお,,Genki L09,,
+Saison,きせつ(季節),🍂,Genki L10,,
+Printemps,はる(春),🌸,Genki L10,,
+Automne,あき(秋),🍂,Genki L10,,
+Lait,ぎゅうにゅう(牛乳),,Genki L10,,
+Gâteau,ケーキ,,Genki L10,,
+Sushi,すし(寿司),,Genki L10,,
+Tempura,てんぷら(天ぷら),,Genki L10,,
+Pomme,りんご,,Genki L10,,
+Cuisine,りょうり(料理),🍽️,Genki L10,,
+Football,サッカー,⚽,Genki L10,,
+Baseball,やきゅう(野球),⚾,Genki L10,,
+Médecin,いしゃ(医者),💊,Genki L10,,
+Personne riche,おかねもち(お金持ち),,Genki L10,,
+Célébrité,ゆうめいじん(有名人),,Genki L10,,
+Visage,かお(顔),,Genki L10,,
+Plus âgé,としうえ(年上),,Genki L10,,
+Gare,えき(駅),🚆,Genki L10,,
+Shinkansen,しんかんせん(新幹線),,Genki L10,,
+Métro,ちかてつ(地下鉄),🚆,Genki L10,,
+Bateau,ふね(船),⛴️,Genki L10,,
+Avion,ひこうき(飛行機),✈️,Genki L10,,
+Réservation,よやく(予約),,Genki L10,,
+"Tour, excursion",ツアー,,Genki L10,,
+Zoo,どうぶつえん(動物園),,Genki L10,,
+Monde,せかい(世界),,Genki L10,,
+Gants,てぶくろ(手袋),,Genki L10,,
+Vie quotidienne,せいかつ(生活),,Genki L10,,
+Cette année,ことし(今年),📅,Genki L10,,
+Doux (météo),あたたかい(暖かい),🌦️,Genki L10,,
+Frais (météo),すずしい(涼しい),🌦️,Genki L10,,
+Froid (au toucher),つめたい(冷たい),🧊,Genki L10,,
+"Lent, en retard",おそい(遅い),,Genki L10,,
+Somnolent,ねむい(眠い),,Genki L10,,
+"Simple, facile",かんたん(な)(簡単),,Genki L10,,
+Prendre (temps/argent),かかる,💴,Genki L10,,
+"Loger, séjourner",とまる(泊まる),,Genki L10,,
+Devenir,なる,,Genki L10,,
+Décider,きめる(決める),,Genki L10,,
+Traîner à la maison,ごろごろする,,Genki L10,,
+Voyager,りょこうする(旅行する),,Genki L10,,
+S'entraîner,れんしゅうする(練習する),,Genki L10,,
+"Le plus, numéro un",いちばん(一番),,Genki L10,,
+Lequel des deux,どっち／どちら,,Genki L10,,
+"Tôt, vite",はやく(早く／速く),,Genki L10,,
+À pied,あるいて(歩いて),,Genki L10,,
+Par (moyen de transport),～で,-,Genki L10,,
+Comment (par quel moyen),どうやって,-,Genki L10,,
+Combien de temps/argent,どのぐらい,⏳,Genki L10,,
+... semaines,～しゅうかん(～週間),📅,Genki L10,,
+... mois,～かげつ(～か月),📅,Genki L10,,
+... ans,～ねん(～年),,Genki L10,,
+Ces jours-ci,このごろ,,Genki L10,,
+Après ...,～ご(～後),,Genki L10,,
+Pays étranger,がいこく(外国),,Genki L11,,
+Australie,オーストラリア,,Genki L11,,
+Rivière,かわ(川),,Genki L11,,
+Source chaude,おんせん(温泉),,Genki L11,,
+Pêche,つり,,Genki L11,,
+Lac,みずうみ(湖),,Genki L11,,
+Montagne,やま(山),,Genki L11,,
+Camping,キャンプ,,Genki L11,,
+Balade en voiture,ドライブ,🚗,Genki L11,,
+Sanctuaire shinto,じんじゃ(神社),⛩️,Genki L11,,
+Musée d'art,びじゅつかん(美術館),🖼️,Genki L11,,
+Président d'entreprise,しゃちょう(社長),,Genki L11,,
+Chanteur,かしゅ(歌手),,Genki L11,,
+Colocataire,ルームメイト,,Genki L11,,
+Famille d'accueil,ホストファミリー,👪,Genki L11,,
+Avenir,しょうらい(将来),,Genki L11,,
+Rêve,ゆめ(夢),,Genki L11,,
+Festival,おまつり(お祭り),⛩️,Genki L11,,
+Nouvel An,おしょうがつ(お正月),,Genki L11,,
+"Sucrerie, friandise",おかし(お菓子),,Genki L11,,
+Ce semestre,こんがっき(今学期),,Genki L11,,
+Le semestre prochain,らいがっき(来学期),,Genki L11,,
+Cours,じゅぎょう(授業),🏫,Genki L11,,
+Cette personne (poli),こちら,,Genki L11,,
+Mentir,うそをつく,,Genki L11,,
+Avoir faim,おなかがすく,,Genki L11,,
+Sécher (les cours),サボる,🙈,Genki L11,,
+Apprendre (avec un prof),ならう(習う),,Genki L11,,
+Grimper,のぼる(登る),,Genki L11,,
+Courir,はしる(走る),🏃,Genki L11,,
+Être fatigué,つかれる(疲れる),,Genki L11,,
+"Arrêter, démissionner",やめる,,Genki L11,,
+Se disputer,けんかする,,Genki L11,,
+Présenter (qqn),しょうかいする(紹介する),,Genki L11,,
+Faire un régime,ダイエットする,,Genki L11,,
+Être en retard,ちこくする(遅刻する),,Genki L11,,
+Étudier à l'étranger,りゅうがくする(留学する),🏫,Genki L11,,
+"Origine, ville natale",しゅっしん(出身),,Genki L11,,
+Ça fait longtemps,ひさしぶり(久しぶり),,Genki L11,,
+Comme ci comme ça,まあまあ,,Genki L11,,
+Seulement ...,～だけ,,Genki L11,,
+... points,～てん(～点),,Genki L11,,
+Écrivain,さっか(作家),,Genki L11,,
+Policier,けいさつかん(警察官),,Genki L11,,
+Pompier,しょうぼうし(消防士),,Genki L11,,
+Enseignant,きょうし(教師),,Genki L11,,
+Infirmier,かんごし(看護師),,Genki L11,,
+Ventre,おなか,,Genki L12,,
+"Jambe, pied",あし(足),,Genki L12,,
+Gorge,のど,,Genki L12,,
+Dent,は(歯),,Genki L12,,
+Grippe,インフルエンザ,,Genki L12,,
+Rhume,かぜ(風邪),💊,Genki L12,,
+Toux,せき(咳),,Genki L12,,
+Gueule de bois,ふつかよい(二日酔い),,Genki L12,,
+Mal du pays,ホームシック,,Genki L12,,
+Allergie,アレルギー,,Genki L12,,
+Jus,ジュース,,Genki L12,,
+Œuf,たまご(卵),,Genki L12,,
+Vêtements,ふく(服),👕,Genki L12,,
+Cadeau,プレゼント,,Genki L12,,
+Billet (train),きっぷ(切符),🚆,Genki L12,,
+Frais de ...,～だい(～代),,Genki L12,,
+Affaire à régler,ようじ(用事),,Genki L12,,
+Toilettes (poli),おてあらい(お手洗い),,Genki L12,,
+Match,しあい(試合),,Genki L12,,
+Politique,せいじ(政治),,Genki L12,,
+"Note, résultat scolaire",せいせき(成績),,Genki L12,,
+"Elle, petite amie",かのじょ(彼女),,Genki L12,,
+"Lui, petit ami",かれ(彼),,Genki L12,,
+Petit ami,かれし(彼氏),,Genki L12,,
+"Sens, signification",いみ(意味),,Genki L12,,
+Étroit,せまい(狭い),,Genki L12,,
+Spacieux,ひろい(広い),,Genki L12,,
+Mauvais,わるい(悪い),,Genki L12,,
+Douloureux,いたい(痛い),,Genki L12,,
+Sucré,あまい(甘い),,Genki L12,,
+"Charmant, chouette",すてき(な)(素敵),,Genki L12,,
+Marcher,あるく(歩く),🚶,Genki L12,,
+Attraper un rhume,かぜをひく(風邪をひく),💊,Genki L12,,
+Avoir de la fièvre,ねつがある(熱がある),💊,Genki L12,,
+Avoir soif,のどがかわく,,Genki L12,,
+Payer,はらう(払う),💴,Genki L12,,
+Perdre (un objet),なくす,,Genki L12,,
+Être intéressé par,きょうみがある(興味がある),,Genki L12,,
+Tousser,せきがでる(咳が出る),,Genki L12,,
+Se séparer,わかれる(別れる),,Genki L12,,
+Être nerveux,きんちょうする(緊張する),,Genki L12,,
+S'inquiéter,しんぱいする(心配する),,Genki L12,,
+Prenez soin de vous (au malade),おだいじに(お大事に),💊,Genki L12,,
+Ne pas avoir l'air en forme,げんきがない(元気がない),,Genki L12,,
+Autant que possible,できるだけ,,Genki L12,,
+Probablement,たぶん,,Genki L12,,
+Bientôt,もうすぐ,,Genki L12,,
+Deux ou trois jours,にさんにち(二三日),,Genki L12,,
+Jours de la semaine (dimanche à samedi),にちようび(日曜日)～どようび(土曜日),📅,Genki L04,,
+Mois de l'année (janvier à décembre),いちがつ(一月)～じゅうにがつ(十二月),📅,Genki L04,,
+Le 1er du mois,ついたち(一日),📅,Genki L05,,
+Le 2 du mois,ふつか(二日),📅,Genki L05,,
+Le 3 du mois,みっか(三日),📅,Genki L05,,
+Le 4 du mois,よっか(四日),📅,Genki L05,,
+Le 5 du mois,いつか(五日),📅,Genki L05,,
+Le 6 du mois,むいか(六日),📅,Genki L05,,
+Le 7 du mois,なのか(七日),📅,Genki L05,,
+Le 8 du mois,ようか(八日),📅,Genki L05,,
+Le 9 du mois,ここのか(九日),📅,Genki L05,,
+Le 10 du mois,とおか(十日),📅,Genki L05,,
+Le 20 du mois,はつか(二十日),📅,Genki L05,,
+"Beau temps, ciel dégagé",はれ(晴れ),☀️,Genki L08,,
+Pluie,あめ(雨),🌧️,Genki L08,,
+"Temps nuageux, couvert",くもり(曇り),☁️,Genki L08,,
+Neige,ゆき(雪),❄️,Genki L08,,
+Prévisions météo,てんきよほう(天気予報),🌦️,Genki L08,,
+Température (air),きおん(気温),,Genki L08,,
+Été,なつ(夏),☀️,Genki L08,,
+Hiver,ふゆ(冬),⛄,Genki L08,,
+Ce matin,けさ(今朝),🌅,Genki L08,,
+Chaque semaine,まいしゅう(毎週),📅,Genki L08,,
+Ce mois-ci,こんげつ(今月),📅,Genki L08,,
+Employé de bureau,かいしゃいん(会社員),,Genki L08,,
+"Travail, occupation",しごと(仕事),,Genki L08,,
+Appareil photo,カメラ,,Genki L08,,
+Karaoké,カラオケ,,Genki L08,,
+Endroit,ところ(所),,Genki L08,,
+Tomate,トマト,,Genki L08,,
+Baguettes,はし(箸),,Genki L08,,
+Fête,パーティー,,Genki L08,,
+Barbecue,バーベキュー,,Genki L08,,
+Séjour chez l'habitant,ホームステイ,,Genki L08,,
+Bain,おふろ(お風呂),,Genki L08,,
+Espagne,スペイン,,Genki L08,,
+Quelque chose,なにか(何か),,Genki L08,,
+"Habile, doué",じょうず(な)(上手),,Genki L08,,
+"Maladroit, mauvais en...",へた(な)(下手),,Genki L08,,
+Célèbre,ゆうめい(な)(有名),,Genki L08,,
+Laver,あらう(洗う),,Genki L08,,
+Dire,いう(言う),,Genki L08,,
+"Être en retard, se faire tard",おそくなる(遅くなる),,Genki L08,,
+Prendre un bain,おふろにはいる(お風呂に入る),,Genki L08,,
+Penser,おもう(思う),,Genki L08,,
+"Fabriquer, préparer",つくる(作る),,Genki L08,,
+Tomber (pluie/neige),(あめ/ゆきが)ふる(降る),🌦️,Genki L08,,
+Emporter,もっていく(持っていく),🎒,Genki L08,,
+Jeter,すてる(捨てる),,Genki L08,,
+Commencer,はじめる(始める),,Genki L08,,
+Conduire,うんてんする(運転する),🚗,Genki L08,,
+Faire la lessive,せんたくする(洗濯する),,Genki L08,,
+Nettoyer,そうじする(掃除する),,Genki L08,,
+Cuisiner,りょうりする(料理する),🍳,Genki L08,,
+Oui (familier),うん,,Genki L08,,
+Non (familier),ううん,,Genki L08,,
+Toujours,いつも,,Genki L08,,
+"En retard, tard",おそく(遅く),,Genki L08,,
+Santé ! (on trinque),かんぱい(乾杯),,Genki L08,,
+Tous ensemble,みんなで,,Genki L08,,
+C'est dommage,ざんねん(ですね)(残念),,Genki L08,,
+Pas encore (+ négatif),まだ,,Genki L08,,
+À propos de...,～について,,Genki L08,,
+... degrés,～ど(～度),,Genki L08,,
+Comment,どう,,Genki L08,,
+Portillon de billet (gare),かいさつぐち(改札口),🚆,Hors Genki,,
+Distributeur de billets (train),けんばいき(券売機),🚆,Hors Genki,,
+Guichet des billets,きっぷうりば(切符売場),🚆,Hors Genki,,
+Voie ferrée,せんろ(線路),,Hors Genki,,
+Arrivée,とうちゃく(到着),,Hors Genki,,
+Départ,しゅっぱつ(出発),,Hors Genki,,
+Porte d'embarquement,ゲート,,Hors Genki,,
+Douane,ぜいかん(税関),,Hors Genki,,
+Contrôle des passeports,しゅつにゅうこくしんさ(出入国審査),,Hors Genki,,
+"Couloir, allée",つうろ(通路),,Hors Genki,,
+Tarif (transport),うんちん(運賃),💴,Hors Genki,,
+Navette,シャトルバス,,Hors Genki,,
+Bus de l'aéroport,くうこうバス(空港バス),✈️,Hors Genki,,
+Enregistrement (hôtel),チェックイン,🏨,Hors Genki,,
+Départ (hôtel),チェックアウト,🏨,Hors Genki,,
+Réception,うけつけ(受付),🏨,Hors Genki,,
+Numéro de chambre,へやばんごう(部屋番号),🏨,Hors Genki,,
+Service en chambre,ルームサービス,🏨,Hors Genki,,
+Auberge japonaise traditionnelle,りょかん(旅館),🏨,Hors Genki,,
+Chambre simple,シングルルーム,🏨,Hors Genki,,
+Chambre à lits jumeaux,ツインルーム,🏨,Hors Genki,,
+Coffre-fort,きんこ(金庫),,Hors Genki,,
+Bain public,せんとう(銭湯),,Hors Genki,,
+Réservé aux hommes,だんせいせんよう(男性専用),,Hors Genki,,
+Réservé aux femmes,じょせいせんよう(女性専用),,Hors Genki,,
+Collyre,めぐすり(目薬),,Hors Genki,,
+Antidouleur,いたみどめ(痛み止め),💊,Hors Genki,,
+Diarrhée,げり(下痢),,Hors Genki,,
+Mal de tête,ずつう(頭痛),,Hors Genki,,
+Bandage,ほうたい(包帯),,Hors Genki,,
+Comprimé,じょうざい(錠剤),,Hors Genki,,
+Anti-moustique,むしよけ(虫よけ),,Hors Genki,,
+Crème solaire,ひやけどめ(日焼け止め),,Hors Genki,,
+Pansement,ばんそうこう(絆創膏),,Hors Genki,,
+Timbre,きって(切手),✉️,Hors Genki,,
+Colis,こづつみ(小包),✉️,Hors Genki,,
+Boîte aux lettres,ゆうびんポスト(郵便ポスト),✉️,Hors Genki,,
+Envoi express,そくたつ(速達),📨,Hors Genki,,
+Adresse,じゅうしょ(住所),,Hors Genki,,
+Code postal,ゆうびんばんごう(郵便番号),,Hors Genki,,
+Serviette humide,おしぼり,,Hors Genki,,
+Commander,ちゅうもんする(注文する),,Hors Genki,,
+À emporter,もちかえり(持ち帰り),🥡,Hors Genki,,
+Stand de rue,やたい(屋台),,Hors Genki,,
+Recharger (batterie),じゅうでんする(充電する),📱,Hors Genki,,
+Routeur Wi-Fi,むせんルーター(無線ルーター),,Hors Genki,,
+Carte SIM,SIMカード,📱,Hors Genki,,
+Téléphone portable,けいたい(携帯),📱,Hors Genki,,
+Signal (réseau),じゅしんじょうたい(受信状態),,Hors Genki,,
+Musée,はくぶつかん(博物館),🏛️,Hors Genki,,
+Château,しろ(城),🏯,Hors Genki,,
+Office de tourisme,かんこうあんないじょ(観光案内所),ℹ️,Hors Genki,,
+Guide (livre),ガイドブック,,Hors Genki,,
+Mairie,しやくしょ(市役所),,Hors Genki,,
+Poste de police de quartier,こうばん(交番),🚓,Hors Genki,,
+Caserne de pompiers,しょうぼうしょ(消防署),,Hors Genki,,
+Cou,くび(首),,Hors Genki,,
+Épaule,かた(肩),,Hors Genki,,
+Bras,うで(腕),,Hors Genki,,
+Dos,せなか(背中),,Hors Genki,,
+Poitrine,むね(胸),,Hors Genki,,
+Argent liquide,げんきん(現金),💴,Hors Genki,,
+Carte de crédit,クレジットカード,💴,Hors Genki,,
+Change (devises),りょうがえ(両替),💴,Hors Genki,,
+Distributeur de billets (argent),ATM(えーてぃーえむ),🏧,Hors Genki,,
+Au secours !,たすけて！,🆘,Hors Genki,,
+Ambulance,きゅうきゅうしゃ(救急車),,Hors Genki,,
+Police,けいさつ(警察),🚨,Hors Genki,,
+Accident,じこ(事故),🚨,Hors Genki,,
+Aéroport,くうこう(空港),✈️,Hors Genki,,
+Cinéma,えいがかん(映画館),,Hors Genki,,
+Pharmacie,やっきょく(薬局),💊,Hors Genki,,
+Église,きょうかい(教会),,Hors Genki,,
+Parking,ちゅうしゃじょう(駐車場),,Hors Genki,,
+Dehors,そと(外),,Hors Genki,,
+Corps,からだ(体),,Hors Genki,,
+Tête,あたま(頭),,Hors Genki,,
+"Cœur, esprit",こころ(心),,Hors Genki,,
+"Son, bruit",おと(音),,Hors Genki,,
+Force,ちから(力),,Hors Genki,,
+"Nombre, quantité",かず(数),,Hors Genki,,
+Dans le monde entier,せかいじゅう(世界中),,Hors Genki,,
+"Boutique, magasin",みせ(店),,Hors Genki,,
+Nom,なまえ(名前),,Hors Genki,,
+Nécessaire,ひつよう(な)(必要),,Hors Genki,,
+"Problème, question",もんだい(問題),,Hors Genki,,
+Téléphone,でんわ(電話),📱,Hors Genki,,
+Raison,りゆう(理由),,Hors Genki,,
+Explication,せつめい(説明),,Hors Genki,,
+Pour la première fois,はじめて(初めて),,Hors Genki,,
+"Sentiment, sensation",きもち(気持ち),,Hors Genki,,
+Fort,つよい(強い),,Hors Genki,,
+Léger,かるい(軽い),,Hors Genki,,
+Nombreux,おおい(多い),,Hors Genki,,
+Beau (esthétique),うつくしい(美しい),,Hors Genki,,
+Fille (de qqn),むすめ(娘),👪,Hors Genki,,
+Rester,のこる(残る),,Hors Genki,,
+"Être différent, se tromper",ちがう(違う),,Hors Genki,,
+"Endroit, lieu",ばしょ(場所),,Hors Genki,,
+"Divers, variés",いろいろ(な)(色々),,Hors Genki,,
+Dangereux,きけん(な)(危険),🚨,Hors Genki,,
+Chercher,さがす(探す),🔍,Hors Genki,,
+Escalier,かいだん(階段),,Hors Genki,,
+"Interdit, mauvais",だめ(な),,Hors Genki,,
+Réponse,へんじ(返事),,Hors Genki,,
+Aider,たすける(助ける),,Hors Genki,,
+Moitié,はんぶん(半分),,Hors Genki,,
+Choisir,えらぶ(選ぶ),,Hors Genki,,
+Désagréable ; non merci,いや(な)(嫌),,Hors Genki,,
+"En chemin, en cours de route",とちゅう(途中),🛣️,Hors Genki,,
+Demander (un service),たのむ(頼む),,Hors Genki,,
+Question,しつもん(質問),,Hors Genki,,
+"ah !, oh !, hey!",ああ(嗚呼),,Hors Genki,,
+saluer,あいさつする(挨拶する),,Hors Genki,,
+"bleu (le), vert (le)",あお(青),🔵,Hors Genki,,
+rouge (le),あか(赤),🔴,Hors Genki,,
+clair,あかるい(明るい),,Hors Genki,,
+s'ouvrir,あく(開く),,Hors Genki,,
+donner,あげる(上げる),,Hors Genki,,
+jeu,あそび(遊び),,Hors Genki,,
+"ce côté-là, là-bas (poli)",あちら(彼方),,Hors Genki,,
+"ce côté-là, là-bas (familier)",あっち(彼方),,Hors Genki,,
+après,あと(後),,Hors Genki,,
+"prendre une douche, prendre un bain, se dorer au soleil",あびる(浴びる),,Hors Genki,"prendre une douche, prendre un bain, se dorer au",あびる(浴びる)
+dangereux,あぶない(危ない),🚨,Hors Genki,,
+"excès, trop plein, surplus",あんまり・あまり(余り),,Hors Genki,"excès, trop plein, surplus",あんまり・あま(余り)
+"plaisant, agréable, bien",いい・よい(良い),,Hors Genki,,
+Non,いいえ・いえ(否),,Hors Genki,否 : non,いいえ、いえ
+aller,いく・ゆく(行く),,Hors Genki,aller,いく・ゆく(行くs)
+combien ? (quantité),いくつ(幾つ),,Hors Genki,,
+étang,いけ(池),,Hors Genki,,
+"pierre, roc",いし(石),,Hors Genki,,
+un jour,いちにち(一日),📅,Hors Genki,,
+une semaine,いっしゅうかん(一週間),📅,Hors Genki,,
+ensemble,いっしょ(一緒),,Hors Genki,,
+maintenant,いま(今),,Hors Genki,,
+"bienvenue (dans notre magasin, notre restaurant)",いらっしゃいませ,🙇,Hors Genki,"bienvenue (dans notre magasin, notre restaurant)",いらっしゃいま
+entrée,いりぐち(入り口),,Hors Genki,,
+"introduire, mettre dedans, insérer, préparer (du thé)",いれる(入れる),-,Hors Genki,"introduire, mettre dedans, insérer, préparer (du thé,",いれる(入れる)
+"mince, pâle (pour une couleur)",うすい(薄い),,Hors Genki,,
+chez soi,うちで(内で),,Hors Genki,,
+naître,うまれる(生まれる),,Hors Genki,,
+vendre,うる(売る),,Hors Genki,,
+"manteau, veste",うわぎ(上着),,Hors Genki,,
+"image, dessin",え(絵),,Hors Genki,,
+"oui, en effet, c'est cela",ええ,,Hors Genki,,
+crayon,えんぴつ(鉛筆),,Hors Genki,,
+"être, arriver (poli)",おいでになる(お出でになる),,Hors Genki,,
+foule,おおぜい(大勢),,Hors Genki,,
+poser,おく(置く),,Hors Genki,,
+épouse (d'un autre),おくさん(奥さん),,Hors Genki,,
+"envoyer, expédier, accompagner une personne",おくる(送る),,Hors Genki,,
+"portez-vous bien, prends soin de toi",おげんきで(お元気で),,Hors Genki,,
+oncle (polie),おじさん(伯父さん・叔父さん),,Hors Genki,,
+"pousser, presser",おす(押す),,Hors Genki,,
+garçon,おとこのこ(男の子),,Hors Genki,,
+avant-hier,おととい・いっさくじつ(一昨日),,Hors Genki,avant-hier,おととい・いっ(一昨日)
+"l'année avant l'année dernière, il y a 2 ans",おととし・いっさくねん(一昨年),📅,Hors Genki,"l'année avant l'année dernière, il y a 2 ans",おととし・いっ(一昨年)
+"adulte, grande personne",おとな(大人),,Hors Genki,,
+"identique, égal",おなじ(同じ),,Hors Genki,,
+tante,おば(伯母・叔母),,Hors Genki,,
+tante (polie),おばさん(伯母さん・叔母さん),,Hors Genki,,
+bonjour (le matin),おはようございます(お早う御座います),🌅,Hors Genki,bonjour (le matin),おはようござい(お早う御座います)
+policier (désigné de manière amicale),おまわりさん(お巡りさん),,Hors Genki,,
+"lourd, massif",おもい(重い),,Hors Genki,,
+fille,おんなのこ(女の子),,Hors Genki,,
+compteur pour le nombre de fois,かい(回),,Hors Genki,,
+étranger,がいこくじん(外国人),,Hors Genki,,
+clé,かぎ(鍵),,Hors Genki,,
+"accrocher, porter (des lunettes...), appeler (au téléphone)",かける(掛ける),-,Hors Genki,"accrocher, porter (des lunettes...), appeler (au",かける(掛ける)
+prêter,かす(貸す),,Hors Genki,,
+katakana (un des syllabaires japonais),かたかな(片仮名),,Hors Genki,,
+mois de l'année,がつ(月),📅,Hors Genki,,
+"famille (sa), maison (sa)",かてい(家庭),👪,Hors Genki,,
+"coin (d'une rue, d'un trottoir…), rebord, bord",かど(角),,Hors Genki,,
+épouse (la nôtre),かない(家内),,Hors Genki,,
+"argent, monnaie",かね(金),💴,Hors Genki,,
+vase,かびん(花瓶),,Hors Genki,,
+épicé,からい(辛い),,Hors Genki,,
+"arbre, bois (la matière)",き(木),,Hors Genki,,
+"jaune (le, nom)",きいろ(黄色),,Hors Genki,,
+jaune (adjectif),きいろい(黄色い),,Hors Genki,,
+"disparaître, s'éteindre, s'effacer",きえる(消える),,Hors Genki,,
+nord,きた(北),,Hors Genki,,
+sale,きたない(汚い),,Hors Genki,,
+salon de thé,きっさ(喫茶),☕,Hors Genki,,
+"salon de thé, café (lieux)",きっさてん(喫茶店),☕,Hors Genki,,
+viande de boeuf,ぎゅうにく(牛肉),,Hors Genki,,
+aujourd'hui,きょう・こんにち(今日),,Hors Genki,aujourd'hui,きょう・こんに(今日)
+salle de classe,きょうしつ(教室),,Hors Genki,,
+chaussettes,くつした(靴下),,Hors Genki,,
+sombre,くらい(暗い),,Hors Genki,,
+environ,くらい・ぐらい,,Hors Genki,,
+noir (le),くろ(黒),⚫,Hors Genki,,
+"bien, merveilleux",けっこう(結構),,Hors Genki,,
+mariage,けっこん(結婚),,Hors Genki,,
+"hall d'entrée, vestibule",げんかん(玄関),,Hors Genki,,
+thé noir,こうちゃ(紅茶),☕,Hors Genki,,
+voix,こえ(声),,Hors Genki,,
+mari (de quelqu'un) (polie),ごしゅじん(ご主人),,Hors Genki,,
+répondre,こたえる(答える),,Hors Genki,,
+merci pour ce repas (après avoir mangé),ごちそうさまでした(ご馳走様でした),🍽️,Hors Genki,merci pour ce repas (après avoir mangé),ごちそうさまで(ご馳走様でした)
+de même,こちらこそ,,Hors Genki,,
+"mot, langage, phrase, parole",ことば(言葉),,Hors Genki,,
+"être gêné, être embarrassé",こまる(困る),,Hors Genki,,
+puis-je rentrer ? (dans la maison de quelqu'un),ごめんください(ご免下さい),,Hors Genki,puis-je rentrer ? (dans la maison de quelqu'un,ごめんください(ご免下さい)
+vers (pour l'heure),ころ・ごろ,,Hors Genki,,
+cette sorte de,こんな,,Hors Genki,,
+ans (pour l'âge),さい(歳),,Hors Genki,,
+poisson,さかな・うお(魚),,Hors Genki,,
+"précédent, antérieur",さき(先),,Hors Genki,,
+"fleurir, éclore",さく(咲く),,Hors Genki,,
+"alcool, sake",さけ(酒),,Hors Genki,,
+ouvrir (un parapluie),さす(差す),,Hors Genki,,
+compteur pour les livres,さつ(冊),,Hors Genki,,
+sucre,さとう(砂糖),,Hors Genki,,
+au revoir,さよなら,,Hors Genki,,
+assiette,さら(皿),,Hors Genki,,
+dans deux ans,さらいねん(再来年),,Hors Genki,,
+"promenade, balade",さんぽ(散歩),,Hors Genki,,
+"heure (comme dans : 6h du matin, 18h…)",じ(時),🕐,Hors Genki,,
+sel,しお(塩),,Hors Genki,,
+"mais, cependant, pourtant, toutefois",しかし(併し),,Hors Genki,,
+dictionnaire (courant),じしょ(辞書),,Hors Genki,,
+poser une question,しつもんする(質問する),,Hors Genki,,
+véhicule,じどうしゃ(自動車),,Hors Genki,,
+mourir,しぬ(死ぬ),,Hors Genki,,
+dictionnaire (vieilli),じびき(字引),,Hors Genki,,
+"soi-même, elle-même, lui-même",じぶん(自分),,Hors Genki,,
+se fermer,しまる(閉まる),,Hors Genki,,
+Prendre une photo,しゃしんをとる(写真を撮る),,Hors Genki,写真を撮る : prendre une photo,しゃしんをとる
+"bonne santé, forme",じょうぶ(丈夫),,Hors Genki,,
+sauce soja,しょうゆ(醤油),,Hors Genki,,
+"fumer, respirer, inhaler",すう(吸う),,Hors Genki,,
+immédiatement,すぐに(直ぐに),,Hors Genki,,
+un peu,すこし(少し),,Hors Genki,,
+chaque,ずつ,,Hors Genki,,
+taille (hauteur d'une personne),せい(背),,Hors Genki,,
+élève,せいと(生徒),,Hors Genki,,
+savon,せっけん(石鹸),,Hors Genki,,
+costume d'affaire,せびろ(背広),,Hors Genki,,
+lessive,せんたく(洗濯),,Hors Genki,,
+"totalement, en entier",ぜんぶ(全部),,Hors Genki,,
+"et ensuite, et après",そうして(然うして),,Hors Genki,,
+divers,そのほか(その他),,Hors Genki,,
+"proche de, à côté de",そば(側),,Hors Genki,,
+ciel,そら(空),,Hors Genki,,
+"dans ce cas, alors, donc",それでは(其れでは),,Hors Genki,"dans ce cas, alors, donc",それでわ(其れでは)
+université,だいがく(大学),,Hors Genki,,
+ambassade,たいしかん(大使館),,Hors Genki,,
+"adorable, adoré",だいすき(大好き),,Hors Genki,,
+important,たいせつ(大切),,Hors Genki,,
+cuisine,だいどころ(台所),🍳,Hors Genki,,
+"sortir, partir",だす(出す),,Hors Genki,,
+"marque du pluriel, suffixe pour le pluriel",たち(達),,Hors Genki,,
+bâtiment,たてもの(建物),,Hors Genki,,
+"cigarette, tabac",たばこ(煙草),🚬,Hors Genki,,
+quelqu'un,だれか(誰か),,Hors Genki,,
+"progressivement, petit à petit",だんだん(段々),,Hors Genki,,
+"proche (en distance), près",ちかい(近い),,Hors Genki,,
+"carte, plan",ちず(地図),,Hors Genki,,
+marron clair,ちゃいろ(茶色),,Hors Genki,,
+"bol à riz, tasse à thé",ちゃわん(茶碗),🍵,Hors Genki,,
+pendant,ちゅう(中),,Hors Genki,,
+"juste, exact",ちょうど(丁度),,Hors Genki,,
+clair de lune,つきあかり(月明かり),,Hors Genki,,
+"arriver, atteindre",つく(着く),,Hors Genki,,
+"faire des efforts, s'appliquer, travailler",つとめる(努める),,Hors Genki,,
+main,て(手),,Hors Genki,,
+"être capable de faire, être fait",できる(出来る),,Hors Genki,,
+sortie,でぐち(出口),,Hors Genki,,
+"donc, alors, et bien",では,,Hors Genki,,
+allumer la lumière,でんきをつける(電気を点ける),,Hors Genki,,
+"il n'y a pas de quoi, de rien",どういたしまして(どう致しまして),,Hors Genki,"il n'y a pas de quoi, de rien",どういたしまし(どう致しまして)
+animal,どうぶつ(動物),,Hors Genki,,
+merci beaucoup,どうもありがとうございます(どうも有難う御座います),,Hors Genki,merci beaucoup,どうもありがと(どうも有難う御座います)
+"long, distant",とおい(遠い),,Hors Genki,,
+quel côté ?,どちら(何方),,Hors Genki,,
+"beaucoup, extrêmement",とても(迚も),,Hors Genki,,
+qui ? (poli),どなた(何方),,Hors Genki,,
+"voler, s'envoler, bondir",とぶ(飛ぶ・跳ぶ),,Hors Genki,,
+"rester (au même endroit), stopper, s'arrêter",とまる・とどまる(止まる・留まる),,Hors Genki,"rester (au même endroit), stopper, s'arrêter,",とまる・とどま(止まる・留まる)
+"ami, compagnon",ともだち(友達),,Hors Genki,,
+oiseau,とり(鳥),,Hors Genki,,
+poulet,とりにく(鶏肉),,Hors Genki,,
+"qui n'existe pas, qui n'est pas là",ない(無い),,Hors Genki,"qui n'existe pas, qui n'est pas là, qui n'est pas",ない(無い)
+"chanter (oiseau), aboyer, miauler, grogner",なく(鳴く),,Hors Genki,,
+vacances d'été,なつやすみ(夏休み),🏖️,Hors Genki,,
+"etc, et cetera",など(等),,Hors Genki,,
+"se mettre en rangs, faire la queue, rivaliser, égaler",ならぶ(並ぶ),,Hors Genki,,
+aligner,ならべる(並べる),,Hors Genki,,
+ouest,にし(西),,Hors Genki,,
+langue japonaise,にほんご(日本語),,Hors Genki,,
+jardin,にわ(庭),,Hors Genki,,
+"enlever (des habits), se déshabiller",ぬぐ(脱ぐ),,Hors Genki,,
+cendrier,はいざら(灰皿),,Hors Genki,,
+carte postale,はがき(葉書),,Hors Genki,,
+boite,はこ(箱),,Hors Genki,,
+début,はじめ(初め),,Hors Genki,,
+vingt ans (être âgé de),はたち(二十歳),,Hors Genki,,
+"discours, conversation",はなし(話),🗣️,Hors Genki,,
+"s'éclaircir, s'ensoleiller",はれる(晴れる),,Hors Genki,,
+soir,ばん(晩),🌆,Hors Genki,,
+numéro,ばんごう(番号),,Hors Genki,,
+est,ひがし(東),,Hors Genki,,
+Compteur pour les petits animaux,ひき(匹),,Hors Genki,rouleau de tissu,ひき(匹)
+"bas, faible (température, rang, degré…)",ひくい(低い),,Hors Genki,,
+un mois,ひとつき(一月),📅,Hors Genki,,
+hiragana (un des syllabaires japonais),ひらがな(平仮名),,Hors Genki,,
+midi,ひる(昼),🕐,Hors Genki,,
+enveloppe,ふうとう(封筒),,Hors Genki,,
+porc,ぶたにく(豚肉),,Hors Genki,,
+"gros, épais",ふとい(太い),,Hors Genki,,
+minute,ふん(分),,Hors Genki,,
+"phrase, style d'écriture, texte",ぶんしょう(文章),,Hors Genki,,
+"côté (d'un triangle par ex.), les alentours",へん(辺),,Hors Genki,,
+"études, travail",べんきょう(勉強),,Hors Genki,,
+chapeau,ぼうし(帽子),,Hors Genki,,
+"divers, autre",ほか(他),,Hors Genki,,
+"désiré, voulu",ほしい(欲しい),,Hors Genki,,
+"fin, ténu",ほそい(細い),,Hors Genki,,
+livre,ほん(本),,Hors Genki,,
+bibliothèque (rangement),ほんだな(本棚),,Hors Genki,,
+"vrai, véritable",ほんとう(本当),,Hors Genki,,
+"vraiment, réellement",ほんとうに(本当に),,Hors Genki,,
+tous les matins,まいあさ(毎朝),🌅,Hors Genki,,
+tous les mois,まいつき(毎月),📅,Hors Genki,,
+tous les ans,まいとし・まいねん(毎年),,Hors Genki,tous les ans,まいとし・まい(毎年・毎年)
+"tourner, se courber, se plier",まがる(曲がる),,Hors Genki,,
+"peu appétissant, sans goût",まずい(不味い),,Hors Genki,,
+encore,また(復),,Hors Genki,,
+"pas encore (+négatif), encore (+positif)",まだ・いまだ(未だ),,Hors Genki,,
+"droit devant, en face",まっすぐ(真っ直ぐ),,Hors Genki,,
+"rond, circulaire",まるい(丸い),,Hors Genki,,
+dix-mille,まん(万),,Hors Genki,,
+stylo-plume,まんねんひつ(万年筆),,Hors Genki,,
+"polir, nettoyer, faire briller",みがく(磨く),,Hors Genki,,
+"montrer, afficher, laisser montrer",みせる(見せる),👀,Hors Genki,,
+chemin,みち(道),,Hors Genki,,
+tout le monde,みなさん(皆さん),,Hors Genki,,
+sud,みなみ(南),,Hors Genki,,
+oreille,みみ(耳),,Hors Genki,,
+de l'autre côté,むこう(向こう),,Hors Genki,,
+plus,もっと,,Hors Genki,,
+"chose, objet",もの(物),,Hors Genki,,
+porte,もん(門),,Hors Genki,,
+"maraîcher, marchand de fruits et légumes",やおや(八百屋),🥦,Hors Genki,,
+"fin d'après-midi, crépuscule",ゆうがた(夕方),🌇,Hors Genki,,
+vêtements occidentaux,ようふく(洋服),👕,Hors Genki,,
+"côté (d'un boîte, d'un bâtiment...)",よこ(横),,Hors Genki,,
+appeler,よぶ(呼ぶ),,Hors Genki,,
+nuit,よる・よ(夜),🌙,Hors Genki,,
+"magnifique, splendide, impressionnant",りっぱ(立派),,Hors Genki,,
+étudiant venant de l'étranger,りゅうがくせい(留学生),,Hors Genki,,
+parents (père et mère),りょうしん(両親),👪,Hors Genki,,
+réfrigérateur,れいぞうこ(冷蔵庫),,Hors Genki,,
+exercice,れんしゅう(練習),,Hors Genki,,
+"remettre, livrer, transmettre",わたす(渡す),,Hors Genki,,
+traverser,わたる(渡る),,Hors Genki,,
+salutation,あいさつ(挨拶),,Hors Genki,,
+s'excuser,あやまる(謝る),,Hors Genki,,
+"vivre, exister",いきる(生きる),,Hors Genki,,
+fil,いと(糸),,Hors Genki,,
+"frapper (une personne), battre",うつ(打つ・撃つ),,Hors Genki,,
+"mouvement, exercice",うんどう(運動),⚽,Hors Genki,,
+toît,おくじょう(屋上),,Hors Genki,,
+"dire, parler (poli)",おっしゃる(仰る),,Hors Genki,,
+jouet,おもちゃ・がんぐ(玩具),,Hors Genki,jouet,おもちゃ・がん(玩具)
+"conférence, réunion, meeting",かいぎ(会議),,Hors Genki,,
+"forme, aspect, apparence",かたち(形),,Hors Genki,,
+"faire des aller-et-retours, faire la navette, fréquenter",かよう(通う),,Hors Genki,"faire des aller-et-retours, faire la navette, fréquenter,",かよう(通う)
+être audible,きこえる(聞こえる),,Hors Genki,,
+train express,きゅうこう(急行),🚆,Hors Genki,,
+comparer,くらべる(比べる),,Hors Genki,,
+absolument pas,けっして(決して),,Hors Genki,,
+"de cette manière, comme cela",こう(斯う),,Hors Genki,,
+fonctionnaire,こうむいん(公務員),,Hors Genki,,
+"petit, détaillé",こまかい(細かい),,Hors Genki,,
+le premier,さいしょ(最初),,Hors Genki,,
+toucher,さわる(触る),👆,Hors Genki,,
+malpoli,しつれい(失礼),,Hors Genki,,
+libre,じゆう(自由),,Hors Genki,,
+roman,しょうせつ(小説),,Hors Genki,,
+"inquiétudes, angoisses",しんぱい(心配),,Hors Genki,,
+"tous, complètement",すっかり,,Hors Genki,,
+"Occident, pays occidentaux",せいよう(西洋),,Hors Genki,"Occident, pays occidentaux",せいよう(西洋 np)
+obtention d'un diplôme,そつぎょう(卒業),,Hors Genki,,
+"comme, tellement",そんなに,,Hors Genki,,
+"demander, se renseigner",たずねる(尋ねる),,Hors Genki,,
+"être suffisant, être assez",たりる(足りる),,Hors Genki,,
+"attraper, capturer",つかまえる(捕まえる),,Hors Genki,,
+emmener,つれる(連れる),,Hors Genki,,
+"de loin, à distance",とおく(遠く),,Hors Genki,,
+"arrêter, stopper",とめる(止める),,Hors Genki,,
+autant que possible,なるべく(成る可く),,Hors Genki,,
+"se ressembler, être similaire",にる(似る),,Hors Genki,,
+"situation, cas",ばあい(場合),,Hors Genki,,
+"hanami, contemplation de la floraison des cerisiers",はなみ(花見),,Hors Genki,,
+extrêmement,ひじょうに(非常に),,Hors Genki,,
+profond,ふかい(深い),,Hors Genki,,
+littérature,ぶんがく(文学),,Hors Genki,,
+"louer, admirer",ほめる(褒める),,Hors Genki,,
+"tel quel, comme, parce que",まま,,Hors Genki,,
+"tout le monde, tout",みな・みんな(皆),,Hors Genki,,
+"dire, raconter (poli)",もうしあげる(申し上げる),,Hors Genki,,
+comme je le pensais,やっぱり・やはり,,Hors Genki,comme je le pensais,やっぱり・やは
+préparation,ようい(用意),,Hors Genki,,
+absence (de chez soi),るす(留守),,Hors Genki,,

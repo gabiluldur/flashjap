@@ -476,3 +476,6 @@ textarea { background: var(--surface-2); border: 1px solid var(--line); border-r
 .wiz-col > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wiz-col select { width: 100%; }
 #wizDyn { margin-top: 18px; }
+
+/* ---------- Remerciements (tout en bas, très discret) ---------- */
+.credits { text-align: center; font-size: .66rem; letter-spacing: .04em; color: var(--muted); opacity: .38; padding: 4px 16px calc(22px + env(safe-area-inset-bottom)); user-select: none; }

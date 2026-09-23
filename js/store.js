@@ -82,18 +82,38 @@
     let duplicates = 0;
     let imagesUpdated = 0;
     let catFilled = 0;
+    let textFixed = 0;
     const catConflicts = [];
     // Une carte modifiée garde son identifiant d'origine : on reconnaît donc aussi un doublon par son texte actuel
     // (recto + verso), pour qu'un import ne recrée ni l'ancienne ni la nouvelle version d'une carte corrigée.
     const byContent = new Map(store.state.cards.map((c) => [c.recto + '\u0001' + c.verso, c]));
     for (const c of parsed) {
-      const existing = store.map.get(c.id) || byContent.get(c.recto + '\u0001' + c.verso);
+      let existing = store.map.get(c.id) || byContent.get(c.recto + '\u0001' + c.verso);
+      let fixed = false;
+      // Correction d'un pack : la ligne donne l'ancien texte. Si la carte d'origine est là et n'a pas été modifiée par
+      // l'utilisateur, on la corrige sur place (même identifiant, progression conservée), sans doublon. Si
+      // l'utilisateur l'a modifiée lui-même, on garde sa version et on n'en ajoute pas une seconde.
+      if (!existing && c.was) {
+        const old = store.map.get(FJ.csv.cardId(c.was.recto, c.was.verso));
+        if (old) {
+          existing = old;
+          if (old.recto === c.was.recto && old.verso === c.was.verso) {
+            byContent.delete(old.recto + '\u0001' + old.verso);
+            old.recto = c.recto;
+            old.verso = c.verso;
+            byContent.set(old.recto + '\u0001' + old.verso, old);
+            fixed = true;
+            textFixed++;
+          }
+        }
+      }
       if (existing) {
-        duplicates++;
+        if (!fixed) duplicates++;
         let changed = false;
         for (const f of ['rimg', 'vimg', 'emoji']) {
           if (c[f] && existing[f] !== c[f]) { existing[f] = c[f]; changed = true; }
         }
+        if (c.emojiClear && existing.emoji) { delete existing.emoji; changed = true; }
         if (changed) imagesUpdated++;
         if (c.cat) {
           if (!existing.cat) { existing.cat = c.cat; catFilled++; }
@@ -113,7 +133,7 @@
       added++;
     }
     store.save();
-    return { added, duplicates, imagesUpdated, catFilled, catConflicts };
+    return { added, duplicates, imagesUpdated, catFilled, textFixed, catConflicts };
   };
 
   // Applique les changements de catégorie refusés par défaut par addCards (après confirmation de l'utilisateur).
