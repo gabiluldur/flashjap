@@ -1,6 +1,8 @@
 # Vos cartes et fichiers personnels : jamais publiés
 data/
 *.csv
+# ... sauf les packs de démarrage publics (contenu générique, pas vos données)
+!starter/*.csv
 
 # Divers
 Thumbs.db

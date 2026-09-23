@@ -32,6 +32,12 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Les règles de sécurité Firestore se publient dans la console Firebase (*Firestore → Règles*) : chaque compte n'accède qu'à `users/{son uid}`, et le site étant public, seul le compte du propriétaire est accepté.
 - Première utilisation : se connecter, puis importer le CSV **sur un seul appareil** ; les autres n'ont qu'à se connecter.
 
+## Packs de démarrage
+- `starter/vocab-genki.csv` (1000 mots) et `starter/kanji-genki.csv` (145 kanjis, déjà écrits kanji → lecture(s) + sens) : fichiers publics, versionnés avec le code (contrairement à `data/`, réservé à vos données personnelles).
+- Accessibles via deux boutons (accueil, état vide + section Cartes → « Packs de démarrage »), qui passent par le même chemin que l'import CSV classique : purement additif, jamais de remplacement.
+- Colonne `kanji_only` (valeurs `off`/`on`, lue par `js/csv.js`) : le pack kanji la met à `off` sur toutes ses cartes, pour ne pas dupliquer son propre travail dans le mode Kanji Only (chaque carte y est déjà construite comme kanji → sens).
+- Pour mettre à jour ces fichiers plus tard : même format CSV que d'habitude (`recto_texte,verso_texte,emoji[,kanji_only]`).
+
 ## Petits mots des amis (feedback)
 - Tout compte connecté voit un bouton « ✉️ Envoyer un mot au créateur » : message court (100 caractères) + un smiley au choix (😍 🙂 😐 🐛 💡), avec une case « envoyer anonymement » (le prénom Google est alors omis à l'affichage, mais le compte reste techniquement associé côté base pour la modération).
 - Collection Firestore à part (`feedback`, hors de `users/{uid}`) : n'importe qui de connecté peut y déposer un mot (create seul, jamais modifiable après coup), seul le compte propriétaire (défini dans les règles, voir `data/firestore.rules`) peut les lire ou les supprimer.

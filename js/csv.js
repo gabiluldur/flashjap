@@ -88,6 +88,7 @@
     const vii = head.findIndex((h) => ['verso_image', 'verso_img'].includes(h));
 
     const ei = head.findIndex((h) => ['emoji', 'émoji'].includes(h)); // un seul emoji par carte, facultatif
+    const ki = head.findIndex((h) => ['kanji_only', 'kanjionly'].includes(h)); // "on"/"force" ou "off" : voir js/kanji.js
 
     const cards = [];
     let skipped = 0;
@@ -102,6 +103,9 @@
       if (rimg) card.rimg = rimg;
       if (vimg) card.vimg = vimg;
       if (emoji) card.emoji = emoji;
+      const kanjiOnly = (row[ki] || '').trim().toLowerCase();
+      if (kanjiOnly === 'off') card.kanjiForce = false;
+      else if (kanjiOnly === 'on' || kanjiOnly === 'force') card.kanjiForce = true;
       cards.push(card);
     }
     return { cards, skipped, error: null };

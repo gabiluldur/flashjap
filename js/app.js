@@ -377,8 +377,13 @@
 
     const startMain = c.total
       ? startBlock('main', c, 'Commencer la révision')
-      : `<div class="empty"><p>Aucune carte pour le moment.<br>Importez votre fichier CSV pour commencer.</p>
-         <button class="btn primary big" data-action="import-csv">Importer un CSV</button></div>`;
+      : `<div class="empty"><p>Aucune carte pour le moment.</p>
+         <button class="btn primary big" data-action="starter-vocab">📦 Commencer avec le pack de base (1000 mots)</button>
+         <p class="muted small" style="margin:10px 0 6px">ou</p>
+         <div class="actions" style="justify-content:center">
+           <button class="btn" data-action="import-csv">Importer votre CSV</button>
+           <button class="btn" data-action="add-card">＋ Ajouter une carte</button>
+         </div></div>`;
 
     const extras = [];
     if (c.priority) extras.push(`★ ${plural(c.priority, 'carte prioritaire', 'cartes prioritaires')}`);
@@ -455,6 +460,14 @@
           <button class="btn" data-action="import-csv">Importer un CSV</button>
           <button class="btn" data-action="words">Voir mes mots (${fmtN(c.total + c.aside)})</button>
         </div>
+        <details>
+          <summary>Packs de démarrage</summary>
+          <p class="muted small">Ajoute des cartes toutes prêtes (jamais de remplacement, seulement de l'ajout — comme un import CSV classique).</p>
+          <div class="actions">
+            <button class="btn" data-action="starter-vocab">📦 Vocabulaire de base (1000 mots)</button>
+            <button class="btn" data-action="starter-kanji">🈶 Kanji de base (145 kanjis)</button>
+          </div>
+        </details>
         <details>
           <summary>Données</summary>
           <p class="muted small">Chaque carte est enregistrée dès que vous la validez, sur cet appareil : pas besoin de réimporter le CSV ni de sauvegarder à la main.</p>
@@ -1018,6 +1031,25 @@
     if (view === 'words') renderWords(); else renderHome();
   }
 
+  // Pack de démarrage (starter/*.csv, dans le dépôt public) : même chemin que l'import CSV normal — additif,
+  // jamais de remplacement. Le fichier reste dans le repo, pas besoin de le télécharger à part.
+  async function importStarter(label, path) {
+    try {
+      const res = await fetch(path, { cache: 'no-store' });
+      if (!res.ok) throw new Error('http ' + res.status);
+      const text = await res.text();
+      const parsed = FJ.csv.parseCards(text);
+      if (parsed.error) return toast(`${label} : ${parsed.error}`);
+      const { added, duplicates } = store.addCards(parsed.cards);
+      const parts = [plural(added, 'carte ajoutée', 'cartes ajoutées')];
+      if (duplicates) parts.push(plural(duplicates, 'déjà présente', 'déjà présentes'));
+      toast(`${label} : ${parts.join(' · ')}`);
+      if (view === 'words') renderWords(); else renderHome();
+    } catch (e) {
+      toast(`${label} : chargement impossible pour le moment.`);
+    }
+  }
+
   function exportJson() {
     const blob = new Blob([store.exportJson()], { type: 'application/json' });
     const a = document.createElement('a');
@@ -1081,6 +1113,8 @@
     'chart-range'(el) { store.state.settings.chartRange = Number(el.dataset.val); persist(); refreshChart(); },
     'set-reverse'(el) { store.state.settings.reverse = el.dataset.val === '1'; persist(); renderHome(); },
     'add-card'() { addedThisSession = []; renderAddCard(); },
+    'starter-vocab': () => importStarter('Vocabulaire de base', 'starter/vocab-genki.csv'),
+    'starter-kanji': () => importStarter('Kanji de base', 'starter/kanji-genki.csv'),
     'add-kanji-mode'(el) {
       addKanjiMode = el.dataset.val;
       document.querySelectorAll('[data-action="add-kanji-mode"]').forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
