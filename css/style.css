@@ -463,3 +463,9 @@ textarea { background: var(--surface-2); border: 1px solid var(--line); border-r
 .w-cat { color: var(--muted); font-size: .8rem; }
 .add-form select { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; font-size: 1rem; width: 100%; }
 .add-form select + input { margin-top: 8px; }
+
+/* ---------- "Je savais, mais pas le kanji" ---------- */
+.controls-extra { margin-top: 10px; }
+.controls-extra:empty { display: none; }
+.controls-extra .btn { width: 100%; border-style: dashed; color: var(--ink); }
+.controls-extra .btn span { color: var(--xp); font-weight: 700; }

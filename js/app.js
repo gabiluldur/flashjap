@@ -154,14 +154,16 @@
 
     const due = pool.filter((c) => P(c).stage >= 1 && P(c).stage < srs.VALIDATED && P(c).due <= now).sort((a, b) => P(a).due - P(b).due);
     const fresh = pool.filter((c) => P(c).stage === 0);
-    const prioFresh = fresh.filter((c) => c.prio); // les nouvelles cartes prioritaires ignorent la limite
-    let normal = fresh.filter((c) => !c.prio);
+    // Priorité : ★ (partout) ou, en Kanji Only, "je savais le mot mais pas le kanji" (c.kprio)
+    const isPrio = (c) => !!(c.prio || (track === 'kanji' && c.kprio));
+    const prioFresh = fresh.filter(isPrio); // les nouvelles cartes prioritaires ignorent la limite
+    let normal = fresh.filter((c) => !isPrio(c));
     if (settings.shuffle) normal = shuffle(normal);
     if (settings.newPerSession >= 0) normal = normal.slice(0, settings.newPerSession);
 
     let queue = [...due, ...prioFresh, ...normal];
     if (settings.shuffle) queue = shuffle(queue);
-    queue.sort((a, b) => (b.prio ? 1 : 0) - (a.prio ? 1 : 0)); // prioritaires d'abord (tri stable)
+    queue.sort((a, b) => (isPrio(b) ? 1 : 0) - (isPrio(a) ? 1 : 0)); // prioritaires d'abord (tri stable)
     return { items: queue.map((c) => ({ id: c.id, practice: false })), dueN: due.length, newN: queue.length - due.length };
   }
 
@@ -592,6 +594,7 @@
           </div>
         </div>
         <div class="controls" id="controls"></div>
+        <div class="controls-extra" id="controlsExtra"></div>
         <div class="tools">
           <button class="btn ghost small-text" id="prioBtn" data-action="prio"></button>
           <button class="btn ghost small-text" data-action="master" title="Je maîtrise ce mot : il ne reviendra plus en révision">✓ Masterisé</button>
@@ -605,6 +608,15 @@
     updatePrioBtn(card);
   }
 
+  // "Je savais le mot mais pas son kanji" : proposé en révision classique, sur une vraie révision (pas une repasse),
+  // pour une carte qui a une version Kanji Only.
+  function canNoKanji() {
+    if (!sess || sess.track !== 'main') return false;
+    const item = sess.queue[sess.idx];
+    const card = item && store.byId(item.id);
+    return !!card && !item.practice && !!kanji.view(card);
+  }
+
   function renderControls() {
     $('#controls').innerHTML = sess.flipped
       ? `<button class="btn ko big" data-action="ko">✗ À revoir</button>
@@ -612,6 +624,18 @@
          <button class="btn ok big" data-action="ok">✓ Je savais</button>`
       : `<button class="btn primary big" data-action="flip">Retourner</button>
          <button class="btn big small" data-action="skip" title="Repasser à la fin de la boucle" aria-label="Repasser à la fin">↻</button>`;
+    $('#controlsExtra').innerHTML = sess.flipped && canNoKanji()
+      ? '<button class="btn kanji-miss" data-action="ok-kanji" title="Réussi en révision classique, et ce mot passe en priorité dans Kanji Only">✓ Je savais, mais pas le kanji <span lang="ja">漢</span></button>'
+      : '';
+  }
+
+  // Ce mot a été réussi en classique mais pas son kanji : il passe en tête de la prochaine session Kanji Only,
+  // à réviser tout de suite. Sa progression Kanji déjà validée repart de l'étape 1.
+  function flagKanjiPriority(card, now) {
+    const kp = store.ensureProgress(card, 'kanji');
+    if (kp.stage >= srs.VALIDATED) kp.stage = 1;
+    if (kp.stage >= 1) kp.due = now;
+    card.kprio = true;
   }
 
   function updatePrioBtn(card) {
@@ -671,9 +695,11 @@
     }, ADVANCE_DELAY);
   }
 
+  // kind : 'ok' | 'ko' | 'skip' | 'ok-kanji' (réussi, mais le kanji est à retravailler)
   function grade(kind) {
     if (!sess || sess.busy) return;
     if (kind !== 'skip' && !sess.flipped) return;
+    if (kind === 'ok-kanji' && !canNoKanji()) return;
     sess.busy = true;
 
     const s = store.state;
@@ -688,7 +714,7 @@
     if (kind === 'skip') {
       sess.queue.push({ id: item.id, practice: item.practice });
     } else {
-      const ok = kind === 'ok';
+      const ok = kind === 'ok' || kind === 'ok-kanji';
       flash = ok ? 'flash-ok' : 'flash-ko';
       sound = ok ? 'ok' : 'ko';
 
@@ -710,8 +736,11 @@
         ok ? sess.ok++ : sess.ko++;
         sess.done.add(item.id);
         if (!ok) sess.queue.push({ id: item.id, practice: true });
+        if (sess.track === 'kanji') delete card.kprio; // la priorité Kanji ne dure que jusqu'à cette révision
+        if (kind === 'ok-kanji') flagKanjiPriority(card, now);
 
-        if (ok) pop(`+${xp} XP`, r.validated ? 'Carte validée !' : `Revient ${srs.fmtDue(r.due, now)}`);
+        if (kind === 'ok-kanji') pop(`+${xp} XP`, `Revient ${srs.fmtDue(r.due, now)} · kanji en priorité`);
+        else if (ok) pop(`+${xp} XP`, r.validated ? 'Carte validée !' : `Revient ${srs.fmtDue(r.due, now)}`);
         else pop('À revoir', `Revient ${srs.fmtDue(r.due, now)}`, 'miss');
         if (r.validated) sound = 'validated';
       }
@@ -1176,7 +1205,7 @@
         <div class="word-main" data-action="w-toggle" data-id="${c.id}" role="button" tabindex="0">
           <div class="w-text">
             <div class="w-a" lang="${lang(first(c.recto))}">${c.prio ? '<span class="star">★</span> ' : ''}${c.emoji ? esc(c.emoji) + ' ' : ''}${esc(first(c.recto))}</div>
-            <div class="w-b" lang="${lang(first(c.verso))}">${esc(first(c.verso))}${c.cat ? ` <span class="w-cat">· ${esc(c.cat)}</span>` : ''}</div>
+            <div class="w-b" lang="${lang(first(c.verso))}">${esc(first(c.verso))}${c.cat ? ` <span class="w-cat">· ${esc(c.cat)}</span>` : ''}${c.kprio ? ' <span class="w-cat">· 漢 en priorité</span>' : ''}</div>
           </div>${pill}
         </div>${actions}</div>`;
     };
@@ -1279,6 +1308,7 @@
     start: (el) => startSession((el && el.dataset.track) || 'main'),
     flip,
     ok: () => grade('ok'),
+    'ok-kanji': () => grade('ok-kanji'),
     ko: () => grade('ko'),
     skip: () => grade('skip'),
     speak: (el) => speakJapanese(el.dataset.text),
@@ -1422,6 +1452,7 @@
       else if (k === 'ArrowDown' || k === '2') { e.preventDefault(); grade('skip'); }
     } else if (k === 'ArrowLeft' || k === '1') grade('ko');
     else if (k === 'ArrowRight' || k === '3') grade('ok');
+    else if (k === 'k' || k === 'K') grade('ok-kanji'); // "je savais, mais pas le kanji" (si proposé)
     else if (k === 'ArrowDown' || k === '2') { e.preventDefault(); grade('skip'); }
     if (k === 'Escape') quitSession();
   });

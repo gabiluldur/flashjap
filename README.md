@@ -42,6 +42,10 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Mes mots → toucher une carte → « ✎ Modifier » : recto, verso (notes sur les lignes suivantes), emoji, catégorie (avec création), réglage Kanji Only, et deux menus de maîtrise (classique : Nouvelle, Étapes 1–8, Validée, Masterisée ; Kanji Only : sans « Masterisée »).
 - La carte garde son identifiant : la progression est conservée. `store.addCards` reconnaît aussi un doublon par son texte actuel, donc réimporter le CSV d'origine (ou la version corrigée) ne recrée rien. Corriger une maîtrise ne donne ni ne retire d'XP ; passer en « Masterisée » marque `masterXp` pour éviter un double gain plus tard.
 
+## « Je savais, mais pas le kanji »
+- En révision classique, après avoir retourné une carte qui a une version Kanji Only (hors repasse de fin de boucle) : bouton « ✓ Je savais, mais pas le kanji 漢 » (raccourci clavier : K). La carte compte comme réussie normalement (XP, planning, combo) **et** passe en tête de la prochaine session Kanji Only (`card.kprio`), à réviser tout de suite ; si sa progression Kanji était validée, elle repart de l'étape 1.
+- La priorité Kanji est effacée dès que la carte est révisée en Kanji Only (elle reste tant qu'elle ne l'a pas été) et ne s'applique qu'à cette piste.
+
 ## Packs de démarrage
 - `starter/vocab-genki.csv` (1000 mots) et `starter/kanji-genki.csv` (145 kanjis, déjà écrits kanji → lecture(s) + sens) : fichiers publics, versionnés avec le code (contrairement à `data/`, réservé à vos données personnelles).
 - Accessibles via deux boutons (accueil, état vide + section Cartes → « Packs de démarrage »), qui passent par le même chemin que l'import CSV classique : purement additif, jamais de remplacement.
