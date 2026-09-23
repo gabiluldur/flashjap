@@ -245,8 +245,7 @@
     }[u.status] || '';
     return `<div class="sync-row"><div><b>${esc(u.email || 'Connecté')}</b><p class="muted small sync-${u.status}">${esc(label)}</p></div>
         <button class="btn" data-action="sync-signout">Se déconnecter</button>
-      </div>
-      <button class="btn ghost small-text" data-action="feedback" style="margin-top:8px">✉️ Envoyer un mot au créateur</button>`;
+      </div>`;
   }
 
   // Distance en français pour un horodatage passé (petits mots des amis)
@@ -259,60 +258,76 @@
     return `il y a ${Math.round(h / 24)} j`;
   }
 
+  // ---------- Petits mots publics : un mur de messages courts, sans réponse, un envoi par jour ----------
   const MOODS = ['😍', '🙂', '😐', '🐛', '💡'];
-  let feedbackMood = null;
+  const SEEN_KEY = 'flashjap.notesSeen';
+  const noteDraft = { open: false, text: '', mood: null, anon: false };
 
-  function renderFeedbackForm() {
-    view = 'feedback';
-    feedbackMood = null;
-    $('#app').innerHTML = `
-      <section class="panel">
-        <div class="words-head">
-          <button class="btn ghost" data-action="home">← Accueil</button>
-          <h2 style="margin:0">Un mot pour le créateur</h2>
-        </div>
-        <form id="feedbackForm" class="add-form">
-          <label for="fbText">Votre message (facultatif)</label>
-          <textarea id="fbText" rows="3" maxlength="100" placeholder="Un merci, un bug, une idée…"></textarea>
-          <label>Comment ça se passe ? (facultatif)</label>
-          <div class="mood-row">
-            ${MOODS.map((m) => `<button type="button" class="mood" data-action="fb-mood" data-val="${m}" aria-pressed="false">${m}</button>`).join('')}
-          </div>
-          <label class="checkbox-row"><input type="checkbox" id="fbAnon"> Envoyer anonymement (votre prénom ne sera pas affiché)</label>
-          <button class="btn primary big" type="submit">Envoyer</button>
-        </form>
-      </section>`;
-    $('#fbText').focus();
+  function seenNotes() {
+    try { return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); } catch (e) { return new Set(); }
   }
 
-  async function submitFeedback(e) {
+  function dismissNote(id) {
+    const seen = seenNotes();
+    seen.add(id);
+    // on ne garde que les 200 derniers identifiants lus (les vieux mots ne s'affichent plus de toute façon)
+    try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seen].slice(-200))); } catch (e) { /* stockage indisponible */ }
+    refreshNotes();
+  }
+
+  function notesInner() {
+    const nu = FJ.notesUi || { items: [], sentToday: false };
+    const seen = seenNotes();
+    const items = nu.items.filter((n) => !seen.has(n.id));
+    const bubbles = items.map((n) => `
+      <div class="note">
+        <div class="note-head">
+          ${n.mood ? `<span class="note-mood">${esc(n.mood)}</span>` : ''}
+          <b>${esc(n.name || 'Anonyme')}</b>
+          <span class="muted small">${agoText(n.createdAt)}</span>
+          <button class="note-x" data-action="note-dismiss" data-id="${esc(n.id)}" aria-label="Fermer ce mot" title="Fermer">✕</button>
+        </div>
+        ${n.text ? `<p class="note-text">${esc(n.text)}</p>` : ''}
+      </div>`).join('');
+    const form = nu.sentToday
+      ? '<p class="muted small" style="margin:10px 0 0">Votre mot du jour est parti. À demain pour un nouveau !</p>'
+      : `<details id="noteDetails"${noteDraft.open ? ' open' : ''}>
+          <summary>✏️ Laisser un petit mot</summary>
+          <form id="noteForm" class="add-form">
+            <p class="note-public">🌍 Votre mot sera <b>visible par tous les utilisateurs</b> de l'appli. Un seul par jour, sans réponse possible.</p>
+            <textarea id="noteText" rows="2" maxlength="100" placeholder="Un merci, une astuce, un encouragement… (100 caractères)">${esc(noteDraft.text)}</textarea>
+            <div class="mood-row">
+              ${MOODS.map((m) => `<button type="button" class="mood" data-action="note-mood" data-val="${m}" aria-pressed="${noteDraft.mood === m}">${m}</button>`).join('')}
+            </div>
+            <label class="checkbox-row"><input type="checkbox" id="noteAnon"${noteDraft.anon ? ' checked' : ''}> Rester anonyme (votre prénom ne sera pas affiché)</label>
+            <button class="btn primary" type="submit" style="margin-top:10px">Publier</button>
+          </form>
+        </details>`;
+    return `<h2>💬 Petits mots</h2>${bubbles || '<p class="muted small" style="margin:0">Aucun nouveau mot pour le moment.</p>'}${form}`;
+  }
+
+  // Ne touche qu'à cette zone (jamais tout l'accueil) pour ne pas perdre un mot en cours de rédaction
+  function refreshNotes() {
+    const box = $('#notesBox');
+    if (box) box.innerHTML = notesInner();
+  }
+
+  async function submitNote(e) {
     e.preventDefault();
-    const text = $('#fbText').value.trim();
-    const anonymous = $('#fbAnon').checked;
-    if (!text && !feedbackMood) return toast('Ajoutez un message ou choisissez un smiley.');
+    const text = $('#noteText').value.trim();
+    if (!text && !noteDraft.mood) return toast('Ajoutez un message ou choisissez un smiley.');
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
-    const ok = await (FJ.sync && FJ.sync.sendFeedback({ text, mood: feedbackMood, anonymous }));
-    btn.disabled = false;
-    if (ok) { toast('Message envoyé, merci !', true); sess = null; renderHome(); }
-    else toast('Envoi impossible : vérifiez votre connexion.');
-  }
-
-  // Boîte de réception des petits mots : uniquement construite/affichée pour le compte propriétaire
-  // (FJ.feedbackUi.isOwner n'est mis à true par js/sync.js qu'après vérification de l'e-mail connecté).
-  function feedbackInner() {
-    const items = (FJ.feedbackUi && FJ.feedbackUi.items) || [];
-    if (!items.length) return '<p class="muted small" style="text-align:center">Rien pour l\'instant.</p>';
-    return items.map((it) => `
-      <div class="fb-item">
-        <div class="fb-head">
-          ${it.mood ? `<span class="fb-mood">${esc(it.mood)}</span>` : ''}
-          <b>${esc(it.name || 'Anonyme')}</b>
-          <span class="muted small">${agoText(it.createdAt)}</span>
-          <button class="btn ghost small-text" data-action="fb-delete" data-id="${it.id}" aria-label="Supprimer">✕</button>
-        </div>
-        ${it.text ? `<p class="fb-text">${esc(it.text)}</p>` : ''}
-      </div>`).join('');
+    const res = await (FJ.sync ? FJ.sync.sendNote({ text, mood: noteDraft.mood, anonymous: $('#noteAnon').checked }) : 'error');
+    if (res === 'ok') {
+      Object.assign(noteDraft, { open: false, text: '', mood: null, anon: $('#noteAnon').checked });
+      if (FJ.notesUi) FJ.notesUi.sentToday = true;
+      toast('Mot publié, merci !', true);
+    } else if (res === 'already') {
+      if (FJ.notesUi) FJ.notesUi.sentToday = true;
+      toast("Vous avez déjà publié un mot aujourd'hui.");
+    } else toast('Envoi impossible : vérifiez votre connexion.');
+    refreshNotes();
   }
 
   function updateSyncBadge() {
@@ -329,6 +344,7 @@
     updateSyncBadge();
     const box = $('#syncBox');
     if (box) box.innerHTML = syncInner();
+    if (view === 'home' && !!$('#notesBox') && FJ.syncUi.phase !== 'signedin') renderHome(); // déconnexion : la zone disparaît
   }
 
   // Appelé quand des données arrivent d'un autre appareil : rafraîchit l'affichage sans toucher à une session en cours.
@@ -338,11 +354,14 @@
     else if (view === 'words') renderWordsList();
   }
 
-  function feedbackChanged() {
-    if (view === 'home') renderHome();
+  function notesChanged() {
+    if (view !== 'home') return;
+    const shown = !!$('#notesBox');
+    if (shown !== (FJ.syncUi.phase === 'signedin')) renderHome(); // la zone apparaît / disparaît avec la connexion
+    else refreshNotes();
   }
 
-  FJ.ui = { refresh, syncChanged, feedbackChanged, toast };
+  FJ.ui = { refresh, syncChanged, notesChanged, toast };
 
   // ---------- Accueil ----------
   function startBlock(track, counts, label) {
@@ -373,7 +392,6 @@
   // Le tiroir des réglages de révision (engrenage de la bulle "Réviser") est fermé par défaut : on cache le
   // paramétrage pour alléger l'accueil. Il s'applique à la révision classique ET à Kanji Only.
   let settingsOpen = false;
-  let feedbackOpen = false; // boîte "Petits mots" (propriétaire) : garde son état ouvert/fermé d'un rafraîchissement à l'autre
 
   const GEAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
 
@@ -474,7 +492,6 @@
           ${filterNote()}
           ${k.total ? `<div class="kanji-block">
             <h3 class="sub">Kanji Only</h3>
-            <p class="muted small">Le japonais d'abord, pour apprendre à reconnaître les kanjis. ${fmtN(k.total)} cartes concernées, avec une progression à part.</p>
             ${startBlock('kanji', kp, 'Réviser les kanjis')}
             <div style="margin-top:12px">${stackBlock(k)}</div>
           </div>` : ''}
@@ -492,17 +509,8 @@
     if (c.mastered) extras.push(`✓ ${plural(c.mastered, 'mot masterisé', 'mots masterisés')}`);
     if (c.aside) extras.push(`⏸ ${c.aside} de côté`);
 
-    // Petits mots des amis (propriétaire uniquement) : rien à l'écran tant qu'il n'y en a pas
-    const mails = FJ.feedbackUi && FJ.feedbackUi.isOwner ? FJ.feedbackUi.items : [];
-    const feedback = mails.length
-      ? `<section class="panel" id="feedbackBox"><details id="fbDetails"${feedbackOpen ? ' open' : ''}>
-          <summary>💌 Petits mots (${mails.length})</summary>${feedbackInner()}</details></section>`
-      : '';
-
     $('#app').innerHTML = `
       ${review}
-
-      ${feedback}
 
       <section class="panel">
         <h2>Ma progression</h2>
@@ -552,6 +560,8 @@
           </div>
         </details>
       </section>
+
+      ${FJ.syncUi.phase === 'signedin' ? `<section class="panel notes" id="notesBox">${notesInner()}</section>` : ''}
 
       <section class="panel sync-panel" id="syncBox">${syncInner()}</section>`;
   }
@@ -1682,12 +1692,11 @@
     'import-json': () => $('#jsonFile').click(),
     'export-json': exportJson,
     'sync-signin': () => FJ.sync && FJ.sync.signIn(),
-    feedback: renderFeedbackForm,
-    'fb-mood'(el) {
-      feedbackMood = feedbackMood === el.dataset.val ? null : el.dataset.val;
-      document.querySelectorAll('[data-action="fb-mood"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.val === feedbackMood)));
+    'note-mood'(el) {
+      noteDraft.mood = noteDraft.mood === el.dataset.val ? null : el.dataset.val;
+      document.querySelectorAll('[data-action="note-mood"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.val === noteDraft.mood)));
     },
-    'fb-delete': (el) => FJ.sync && FJ.sync.deleteFeedback(el.dataset.id),
+    'note-dismiss': (el) => dismissNote(el.dataset.id),
     'sync-signout': () => FJ.sync && FJ.sync.signOut(),
     reset() {
       const online = FJ.syncUi.phase === 'signedin';
@@ -1730,18 +1739,20 @@
 
   // L'événement "toggle" ne remonte pas : on l'écoute en phase de capture pour mémoriser l'état de "Petits mots"
   document.addEventListener('toggle', (e) => {
-    if (e.target.id === 'fbDetails') feedbackOpen = e.target.open;
+    if (e.target.id === 'noteDetails') noteDraft.open = e.target.open;
   }, true);
 
   document.addEventListener('submit', (e) => {
     if (e.target.id === 'addForm') submitAddCard(e);
-    else if (e.target.id === 'feedbackForm') submitFeedback(e);
+    else if (e.target.id === 'noteForm') submitNote(e);
     else if (e.target.id === 'editForm') submitEditCard(e);
   });
 
   document.addEventListener('input', (e) => {
     if (e.target.id === 'addRecto' || e.target.id === 'addVerso') {
       updateAddPreview();
+    } else if (e.target.id === 'noteText') {
+      noteDraft.text = e.target.value;
     } else if (e.target.id === 'wordsSearch') {
       wordsQuery = e.target.value;
       renderWordsList();

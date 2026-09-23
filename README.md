@@ -38,7 +38,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Accueil, engrenage de la bulle « Réviser » → tiroir de réglages (fermé par défaut), rubrique « Leçons à réviser » (visible dès qu'une carte a une catégorie) : sélection (`settings.catPool`, `null` = toutes) qui filtre les sessions classique **et** Kanji Only (nouvelles + à réviser). Toucher une leçon depuis « Toutes » l'isole ; ensuite chaque touche ajoute/retire une leçon ; le tirage est aléatoire si « Mélanger les cartes » est actif. Tiroir fermé, une sélection active reste visible sous le bouton de révision (📚 nom des leçons, point sur l'engrenage) avec le rappel des révisions dues hors sélection et un bouton « Les inclure ».
 
 ## Organisation de l'accueil
-- Ordre : bulle **Réviser** (classique + Kanji Only ; l'engrenage ouvre le tiroir « leçons + options de session »), « Petits mots » (propriétaire, seulement s'il y en a, replié avec compteur), **Ma progression** (mémoire, compteurs, graphique par jour), **Cartes**, puis la connexion / synchronisation tout en bas.
+- Ordre : bulle **Réviser** (classique + Kanji Only ; l'engrenage ouvre le tiroir « leçons + options de session »), **Ma progression** (mémoire, compteurs, graphique par jour), **Cartes**, puis la connexion / synchronisation tout en bas.
 - Les réglages de session (sens, mélange, nouvelles par session, sons) s'appliquent aussi à Kanji Only, sauf le sens des cartes.
 - Ajout de carte : menu Catégorie (dernière utilisée mémorisée) + « Nouvelle catégorie… » (une catégorie créée pendant une sélection en cours rejoint cette sélection). Mes mots : filtre et affichage par catégorie.
 
@@ -63,12 +63,11 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Colonne `kanji_only` (valeurs `off`/`on`, lue par `js/csv.js`) : le pack kanji la met à `off` sur toutes ses cartes, pour ne pas dupliquer son propre travail dans le mode Kanji Only (chaque carte y est déjà construite comme kanji → sens).
 - Pour mettre à jour ces fichiers plus tard : même format CSV que d'habitude (`recto_texte,verso_texte,emoji[,kanji_only]`).
 
-## Petits mots des amis (feedback)
-- Tout compte connecté voit un bouton « ✉️ Envoyer un mot au créateur » : message court (100 caractères) + un smiley au choix (😍 🙂 😐 🐛 💡), avec une case « envoyer anonymement » (le prénom Google est alors omis à l'affichage, mais le compte reste techniquement associé côté base pour la modération).
-- Collection Firestore à part (`feedback`, hors de `users/{uid}`) : n'importe qui de connecté peut y déposer un mot (create seul, jamais modifiable après coup), seul le compte propriétaire (défini dans les règles, voir `data/firestore.rules`) peut les lire ou les supprimer.
-- Visible uniquement sur le compte propriétaire, en haut de l'accueil (« 💌 Petits mots »), avec suppression individuelle. Rien d'imposé côté amis (pas de pop-up).
-- Aucune adresse e-mail codée dans `js/sync.js` (le code est public) : le statut "propriétaire" se déduit du succès ou de l'échec de la lecture Firestore elle-même, jamais d'une comparaison client-side.
-- Règles à publier : voir `data/firestore.rules`.
+## Petits mots publics
+- Zone discrète en bas de l'accueil (au-dessus de la connexion), visible une fois connecté : les mots des 7 derniers jours, sans pop-up. Chaque bulle a une petite ✕ pour la fermer une fois lue (mémorisé sur l'appareil).
+- « ✏️ Laisser un petit mot » : 100 caractères max + un smiley (😍 🙂 😐 🐛 💡) + case « rester anonyme » (sinon le prénom Google est affiché). Le formulaire précise que le mot est **visible par tous les utilisateurs**. Pas de réponses, pas de chat.
+- Un seul mot par personne et par jour : appliqué côté serveur (identifiant du document `{uid}_{jour}`, un second envoi le même jour est refusé par les règles) et rappelé dans l'interface.
+- Collection Firestore `notes` : lecture pour tout compte connecté admis, création seule (jamais modifiable), suppression réservée au propriétaire (modération depuis la console Firebase). Règles : `data/firestore.rules`.
 
 ## Règles
 - Échelle de Leitner : 10 min → 1 j → 2 j → 3 j → 1 sem → 2 sem → 1 mois → 3 mois → **validée**.
