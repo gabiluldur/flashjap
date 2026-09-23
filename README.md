@@ -35,7 +35,11 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 ## Catégories (leçons) et sélection à réviser
 - Une seule catégorie par carte (`card.cat`, ex. `Genki L03`). Colonne CSV `categorie` (aussi `catégorie`, `category`, `cat`, `lecon`, `leçon`, `lesson`, `deck`).
 - Réimporter un CSV catégorisé range les cartes existantes sans toucher à leur progression : la catégorie n'est complétée que si la carte n'en avait pas ; si elle en a déjà une autre, l'appli demande avant de la remplacer (par défaut : on garde celle de l'utilisateur).
-- Accueil, panneau « Leçons à réviser » (visible dès qu'une carte a une catégorie) : sélection (`settings.catPool`, `null` = toutes) qui filtre les sessions classique **et** Kanji Only (nouvelles + à réviser). Toucher une leçon depuis « Toutes » l'isole ; ensuite chaque touche ajoute/retire une leçon ; le tirage est aléatoire si « Mélanger les cartes » est actif. Les révisions dues hors sélection sont signalées avec un bouton « Les inclure ».
+- Accueil, engrenage de la bulle « Réviser » → tiroir de réglages (fermé par défaut), rubrique « Leçons à réviser » (visible dès qu'une carte a une catégorie) : sélection (`settings.catPool`, `null` = toutes) qui filtre les sessions classique **et** Kanji Only (nouvelles + à réviser). Toucher une leçon depuis « Toutes » l'isole ; ensuite chaque touche ajoute/retire une leçon ; le tirage est aléatoire si « Mélanger les cartes » est actif. Tiroir fermé, une sélection active reste visible sous le bouton de révision (📚 nom des leçons, point sur l'engrenage) avec le rappel des révisions dues hors sélection et un bouton « Les inclure ».
+
+## Organisation de l'accueil
+- Ordre : bulle **Réviser** (classique + Kanji Only ; l'engrenage ouvre le tiroir « leçons + options de session »), « Petits mots » (propriétaire, seulement s'il y en a, replié avec compteur), **Ma progression** (mémoire, compteurs, graphique par jour), **Cartes**, puis la connexion / synchronisation tout en bas.
+- Les réglages de session (sens, mélange, nouvelles par session, sons) s'appliquent aussi à Kanji Only, sauf le sens des cartes.
 - Ajout de carte : menu Catégorie (dernière utilisée mémorisée) + « Nouvelle catégorie… » (une catégorie créée pendant une sélection en cours rejoint cette sélection). Mes mots : filtre et affichage par catégorie.
 
 ## Modifier une carte

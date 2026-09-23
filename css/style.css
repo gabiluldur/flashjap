@@ -48,7 +48,7 @@ body {
 
 [lang="ja"] { font-family: "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", "Meiryo", "Hiragino Sans", system-ui, sans-serif; }
 
-button, select, input { font: inherit; color: inherit; }
+button, select, input, textarea { font: inherit; color: inherit; }
 
 .muted { color: var(--muted); }
 
@@ -478,4 +478,25 @@ textarea { background: var(--surface-2); border: 1px solid var(--line); border-r
 #wizDyn { margin-top: 18px; }
 
 /* ---------- Remerciements (tout en bas, très discret) ---------- */
-.credits { text-align: center; font-size: .66rem; letter-spacing: .04em; color: var(--muted); opacity: .38; padding: 4px 16px calc(22px + env(safe-area-inset-bottom)); user-select: none; }
+.credits { text-align: center; font-size: .66rem; letter-spacing: .04em; color: var(--muted); opacity: .19; padding: 4px 16px calc(22px + env(safe-area-inset-bottom)); user-select: none; }
+
+/* ---------- Accueil : bulle "Réviser", réglages repliables, "Ma progression" ---------- */
+.review-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.review-head h2 { margin: 0; }
+.gear { position: relative; width: 36px; height: 36px; border: 0; background: transparent; color: var(--muted); border-radius: 50%; display: grid; place-items: center; cursor: pointer; transition: background .15s, color .15s; }
+.gear:hover, .gear[aria-expanded="true"] { background: var(--surface-2); color: var(--ink); }
+.gear svg { width: 20px; height: 20px; }
+.gear[aria-expanded="true"] svg { transform: rotate(45deg); transition: transform .25s; }
+.gear.on::after { content: ""; position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; border-radius: 50%; background: var(--xp); border: 2px solid var(--surface); }
+.settings { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+.set-block { margin-bottom: 14px; }
+.set-block .chips { margin-bottom: 10px; }
+h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px; }
+.kanji-block, .prog-sec + .prog-sec { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 14px; }
+.kanji-block .muted.small { margin: 0 0 4px; }
+.prog-sec .stack { margin-top: 0; }
+.filter-note { text-align: center; font-size: .86rem; color: var(--muted); margin: 10px 0 0; line-height: 1.8; }
+.linkish { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 2px 4px; font: inherit; border-radius: 6px; }
+.linkish:hover { background: var(--surface-2); }
+#feedbackBox summary { cursor: pointer; font-weight: 600; padding: 2px 0; }
+#feedbackBox details[open] summary { margin-bottom: 8px; }

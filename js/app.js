@@ -370,27 +370,72 @@
     renderHome();
   }
 
-  // Sélection des leçons/catégories à réviser (le "pool"). Par défaut toutes ; toucher une leçon depuis "Toutes"
-  // l'isole (mode concentration), ensuite chaque touche ajoute ou retire une leçon. Panneau masqué tant qu'aucune
-  // carte n'a de catégorie.
-  function catPanel() {
+  // Le tiroir des réglages de révision (engrenage de la bulle "Réviser") est fermé par défaut : on cache le
+  // paramétrage pour alléger l'accueil. Il s'applique à la révision classique ET à Kanji Only.
+  let settingsOpen = false;
+  let feedbackOpen = false; // boîte "Petits mots" (propriétaire) : garde son état ouvert/fermé d'un rafraîchissement à l'autre
+
+  const GEAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+
+  // Leçons/catégories à réviser (le "pool") : par défaut toutes ; toucher une leçon depuis "Toutes" l'isole (mode
+  // concentration), ensuite chaque touche ajoute ou retire une leçon. Absent tant qu'aucune carte n'a de catégorie.
+  function catChips() {
     const list = store.categoryList(Date.now());
     if (!list.some((e) => e.key !== '')) return '';
     const pool = store.state.settings.catPool;
-    const inPool = (key) => !pool || pool.includes(key);
     const chips = list.map((e) => `<button class="chip" data-action="cat-toggle" data-key="${esc(e.key)}" aria-pressed="${!!pool && pool.includes(e.key)}"
       title="${esc(`${plural(e.total, 'carte', 'cartes')} · ${e.due} à réviser · ${e.fresh} nouvelles`)}">${esc(e.key || 'Sans catégorie')}${e.due ? ` <b class="badge-due">${e.due}</b>` : ''}</button>`).join('');
-    const outsideDue = list.filter((e) => !inPool(e.key)).reduce((n, e) => n + e.due, 0);
-    const outside = outsideDue
-      ? `<p class="small" style="margin:10px 0 0">⏳ ${plural(outsideDue, 'révision en attente', 'révisions en attente')} dans d'autres leçons.
-           <button class="btn ghost small-text" data-action="cat-add-due">Les inclure</button></p>`
-      : '';
-    return `<section class="panel" id="catBox">
-      <h2>Leçons à réviser</h2>
+    return `<div class="set-block">
+      <h3 class="sub">Leçons à réviser</h3>
       <div class="chips"><button class="chip" data-action="cat-all" aria-pressed="${!pool}">Toutes</button>${chips}</div>
       <p class="muted small" style="margin:0">${pool ? `${plural(pool.length, 'leçon sélectionnée', 'leçons sélectionnées')} : les cartes sont tirées au hasard parmi elles.` : 'Touchez une leçon pour ne réviser qu\'elle, puis ajoutez-en d\'autres quand vous êtes prêt.'}</p>
-      ${outside}
-    </section>`;
+    </div>`;
+  }
+
+  // Rappel discret sous le bouton de révision quand une sélection de leçons est active (le tiroir étant fermé) :
+  // on sait toujours pourquoi la file est réduite, et les révisions dues hors sélection ne s'accumulent pas en silence.
+  function filterNote() {
+    const pool = store.state.settings.catPool;
+    if (!pool) return '';
+    const names = pool.map((k) => k || 'Sans catégorie');
+    const label = names.length <= 2 ? names.join(' · ') : `${names.slice(0, 2).join(' · ')} +${names.length - 2}`;
+    const outsideDue = store.categoryList(Date.now()).filter((e) => !pool.includes(e.key)).reduce((n, e) => n + e.due, 0);
+    return `<p class="filter-note"><button class="linkish" data-action="toggle-settings" title="Modifier la sélection">📚 ${esc(label)}</button>${outsideDue
+      ? `<br>⏳ ${plural(outsideDue, 'révision en attente', 'révisions en attente')} hors sélection · <button class="linkish" data-action="cat-add-due">Les inclure</button>`
+      : ''}</p>`;
+  }
+
+  function optionsHtml() {
+    const s = store.state;
+    return `<div class="options">
+      <div class="opt-row"><span>Sens des cartes <small class="muted">(hors Kanji Only)</small></span>
+        <div class="segment" role="group" aria-label="Sens des cartes">
+          <button data-action="set-reverse" data-val="0" aria-pressed="${!s.settings.reverse}">Recto → Verso</button>
+          <button data-action="set-reverse" data-val="1" aria-pressed="${s.settings.reverse}">Verso → Recto</button>
+        </div>
+      </div>
+      <div class="opt-row"><label for="optShuffle">Mélanger les cartes</label>
+        <span class="switch"><input type="checkbox" id="optShuffle" data-setting="shuffle" ${s.settings.shuffle ? 'checked' : ''}><i></i></span>
+      </div>
+      <div class="opt-row"><label for="optNew">Nouvelles cartes par session</label>
+        <select id="optNew" data-setting="newPerSession">
+          ${[[0, 'Aucune'], [5, '5'], [10, '10'], [20, '20'], [50, '50'], [-1, 'Toutes']]
+            .map(([v, l]) => `<option value="${v}" ${s.settings.newPerSession === v ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+      </div>
+      <div class="opt-row"><label for="optSound">Sons</label>
+        <span class="switch"><input type="checkbox" id="optSound" data-setting="sound" ${s.settings.sound ? 'checked' : ''}><i></i></span>
+      </div>
+    </div>`;
+  }
+
+  function settingsPanel() {
+    return `<div class="settings">
+      <p class="muted small" style="margin:0 0 12px">Ces réglages s'appliquent à la révision classique et à Kanji Only.</p>
+      ${catChips()}
+      <h3 class="sub">Sessions</h3>
+      ${optionsHtml()}
+    </div>`;
   }
 
   function stackBlock(c) {
@@ -417,84 +462,68 @@
     const kp = store.counts(now, 'kanji', true);
     const todayReviews = (s.daily[store.dayKey()] || {}).reviews || 0;
 
-    const startMain = c.total
-      ? startBlock('main', cp, 'Commencer la révision')
-      : `<div class="empty"><p>Aucune carte pour le moment.</p>
+    // Bulle principale : la révision. L'engrenage ouvre le tiroir des réglages (sélection de leçons + options de session).
+    const review = c.total
+      ? `<section class="panel review">
+          <div class="review-head">
+            <h2>Réviser</h2>
+            <button class="gear${s.settings.catPool ? ' on' : ''}" data-action="toggle-settings" aria-expanded="${settingsOpen}" aria-label="Réglages de révision" title="Réglages de révision">${GEAR_SVG}</button>
+          </div>
+          ${settingsOpen ? settingsPanel() : ''}
+          ${startBlock('main', cp, 'Commencer la révision')}
+          ${filterNote()}
+          ${k.total ? `<div class="kanji-block">
+            <h3 class="sub">Kanji Only</h3>
+            <p class="muted small">Le japonais d'abord, pour apprendre à reconnaître les kanjis. ${fmtN(k.total)} cartes concernées, avec une progression à part.</p>
+            ${startBlock('kanji', kp, 'Réviser les kanjis')}
+            <div style="margin-top:12px">${stackBlock(k)}</div>
+          </div>` : ''}
+        </section>`
+      : `<section class="panel"><div class="empty"><p>Aucune carte pour le moment.</p>
          <button class="btn primary big" data-action="starter-vocab">📦 Commencer avec le pack de base (1000 mots)</button>
          <p class="muted small" style="margin:10px 0 6px">ou</p>
          <div class="actions" style="justify-content:center">
            <button class="btn" data-action="import-csv">Importer votre CSV</button>
            <button class="btn" data-action="add-card">＋ Ajouter une carte</button>
-         </div></div>`;
+         </div></div></section>`;
 
     const extras = [];
     if (c.priority) extras.push(`★ ${plural(c.priority, 'carte prioritaire', 'cartes prioritaires')}`);
     if (c.mastered) extras.push(`✓ ${plural(c.mastered, 'mot masterisé', 'mots masterisés')}`);
     if (c.aside) extras.push(`⏸ ${c.aside} de côté`);
 
-    const showFeedback = FJ.feedbackUi && FJ.feedbackUi.isOwner;
+    // Petits mots des amis (propriétaire uniquement) : rien à l'écran tant qu'il n'y en a pas
+    const mails = FJ.feedbackUi && FJ.feedbackUi.isOwner ? FJ.feedbackUi.items : [];
+    const feedback = mails.length
+      ? `<section class="panel" id="feedbackBox"><details id="fbDetails"${feedbackOpen ? ' open' : ''}>
+          <summary>💌 Petits mots (${mails.length})</summary>${feedbackInner()}</details></section>`
+      : '';
+
     $('#app').innerHTML = `
-      <section class="panel sync-panel" id="syncBox">${syncInner()}</section>
+      ${review}
 
-      ${showFeedback ? `<section class="panel" id="feedbackBox">
-        <h2>💌 Petits mots${FJ.feedbackUi.items.length ? ` (${FJ.feedbackUi.items.length})` : ''}</h2>
-        ${feedbackInner()}
-      </section>` : ''}
-
-      <section class="panel">${startMain}</section>
-
-      ${catPanel()}
-
-      ${k.total ? `<section class="panel">
-        <h2>Kanji Only</h2>
-        <p class="muted small">Le japonais d'abord, pour apprendre à reconnaître les kanjis. ${fmtN(k.total)} cartes concernées, avec une progression à part.</p>
-        ${startBlock('kanji', kp, 'Réviser les kanjis')}
-        <div style="margin-top:12px">${stackBlock(k)}</div>
-      </section>` : ''}
+      ${feedback}
 
       <section class="panel">
-        <h2>Options de session</h2>
-        <div class="options">
-          <div class="opt-row"><span>Sens des cartes <small class="muted">(hors Kanji Only)</small></span>
-            <div class="segment" role="group" aria-label="Sens des cartes">
-              <button data-action="set-reverse" data-val="0" aria-pressed="${!s.settings.reverse}">Recto → Verso</button>
-              <button data-action="set-reverse" data-val="1" aria-pressed="${s.settings.reverse}">Verso → Recto</button>
-            </div>
-          </div>
-          <div class="opt-row"><label for="optShuffle">Mélanger les cartes</label>
-            <span class="switch"><input type="checkbox" id="optShuffle" data-setting="shuffle" ${s.settings.shuffle ? 'checked' : ''}><i></i></span>
-          </div>
-          <div class="opt-row"><label for="optNew">Nouvelles cartes par session</label>
-            <select id="optNew" data-setting="newPerSession">
-              ${[[0, 'Aucune'], [5, '5'], [10, '10'], [20, '20'], [50, '50'], [-1, 'Toutes']]
-                .map(([v, l]) => `<option value="${v}" ${s.settings.newPerSession === v ? 'selected' : ''}>${l}</option>`).join('')}
-            </select>
-          </div>
-          <div class="opt-row"><label for="optSound">Sons</label>
-            <span class="switch"><input type="checkbox" id="optSound" data-setting="sound" ${s.settings.sound ? 'checked' : ''}><i></i></span>
+        <h2>Ma progression</h2>
+        <div class="prog-sec">
+          <h3 class="sub">Mémoire</h3>
+          ${stackBlock(c)}
+          <p class="recent">Aujourd'hui : ${plural(todayReviews, 'carte revue', 'cartes revues')} · 7 derniers jours : ${fmtN(store.periodTotals(7))}${extras.length ? '<br>' + extras.join(' · ') : ''}</p>
+        </div>
+        <div class="prog-sec">
+          <h3 class="sub">Compteurs</h3>
+          <div class="tiles">
+            <div class="tile"><b>${fmtN(s.stats.reviews)}</b><small>cartes révisées</small></div>
+            <div class="tile"><b>${fmtN(s.stats.sessions)}</b><small>sessions de révision</small></div>
+            <div class="tile"><b>${fmtN(c.known)}</b><small>mots connus</small></div>
+            <div class="tile"><b>${srs.fmtDuration(s.stats.ms)}</b><small>temps en session</small></div>
           </div>
         </div>
-      </section>
-
-      <section class="panel">
-        <h2>Ma mémoire</h2>
-        ${stackBlock(c)}
-        <p class="recent">Aujourd'hui : ${plural(todayReviews, 'carte revue', 'cartes revues')} · 7 derniers jours : ${fmtN(store.periodTotals(7))}${extras.length ? '<br>' + extras.join(' · ') : ''}</p>
-      </section>
-
-      <section class="panel">
-        <h2>Mes compteurs</h2>
-        <div class="tiles">
-          <div class="tile"><b>${fmtN(s.stats.reviews)}</b><small>cartes révisées</small></div>
-          <div class="tile"><b>${fmtN(s.stats.sessions)}</b><small>sessions de révision</small></div>
-          <div class="tile"><b>${fmtN(c.known)}</b><small>mots connus</small></div>
-          <div class="tile"><b>${srs.fmtDuration(s.stats.ms)}</b><small>temps en session</small></div>
+        <div class="prog-sec">
+          <h3 class="sub">Par jour</h3>
+          <div id="chartBox">${chartInner()}</div>
         </div>
-      </section>
-
-      <section class="panel">
-        <h2>Progression par jour</h2>
-        <div id="chartBox">${chartInner()}</div>
       </section>
 
       <section class="panel">
@@ -522,7 +551,9 @@
             <button class="btn danger" data-action="reset">Tout réinitialiser</button>
           </div>
         </details>
-      </section>`;
+      </section>
+
+      <section class="panel sync-panel" id="syncBox">${syncInner()}</section>`;
   }
 
   // ---------- Session ----------
@@ -531,6 +562,7 @@
   function startSession(track) {
     const q = buildQueue(track);
     if (!q.items.length) return;
+    settingsOpen = false; // au retour de la session, le tiroir des réglages est refermé
     sess = {
       track,
       queue: q.items,
@@ -1628,6 +1660,7 @@
       document.querySelectorAll('[data-action="edit-kanji-mode"]').forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
       $('#edKanjiHint').textContent = ADD_KANJI_HINTS[edit.kanjiMode];
     },
+    'toggle-settings'() { settingsOpen = !settingsOpen; renderHome(); },
     'cat-all'() { setPool(null); },
     'cat-toggle'(el) {
       const key = el.dataset.key;
@@ -1694,6 +1727,11 @@
       if (file) (el.id === 'csvFile' ? importCsv : importJson)(file);
     }
   });
+
+  // L'événement "toggle" ne remonte pas : on l'écoute en phase de capture pour mémoriser l'état de "Petits mots"
+  document.addEventListener('toggle', (e) => {
+    if (e.target.id === 'fbDetails') feedbackOpen = e.target.open;
+  }, true);
 
   document.addEventListener('submit', (e) => {
     if (e.target.id === 'addForm') submitAddCard(e);
