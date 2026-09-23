@@ -1,146 +1,146 @@
-recto_texte,verso_texte,emoji,kanji_only
-一,いち / ひと— : un,🈶,off
-二,に / ふた— : deux,🈶,off
-三,さん / みっ— : trois,🈶,off
-四,し / よん・よっ— : quatre,🈶,off
-五,ご / いつ— : cinq,🈶,off
-六,ろく / むっ— : six,🈶,off
-七,しち・なな : sept,🈶,off
-八,はち / やっ— : huit,🈶,off
-九,きゅう / ここの— : neuf,🈶,off
-十,じゅう / とお : dix,🈶,off
-百,ひゃく : cent,🈶,off
-千,せん : mille,🈶,off
-万,まん : dix mille,🈶,off
-円,えん / まる— : yen ; cercle,🈶,off
-時,じ / とき : heure ; moment,🈶,off
-日,にち・にっ— / ひ : jour ; soleil,🈶,off
-本,ほん / もと : livre ; origine,🈶,off
-人,じん・にん / ひと : personne,🈶,off
-月,げつ・がつ / つき : mois ; lune,🈶,off
-火,か / ひ : feu,🈶,off
-水,すい / みず : eau,🈶,off
-木,もく / き : arbre,🈶,off
-金,きん / かね : or ; argent,🈶,off
-土,ど / つち : terre,🈶,off
-曜,よう : jour de la semaine,🈶,off
-上,じょう / うえ・のぼ— : dessus ; monter,🈶,off
-下,か / した・くだ— : dessous ; descendre,🈶,off
-中,ちゅう / なか : milieu ; intérieur,🈶,off
-半,はん : demi,🈶,off
-山,さん / やま : montagne,🈶,off
-川,かわ・がわ : rivière,🈶,off
-元,げん / もと : origine,🈶,off
-気,き : esprit ; ambiance,🈶,off
-天,てん : ciel,🈶,off
-私,"し / わたし : je, moi ; privé",🈶,off
-今,こん / いま : maintenant,🈶,off
-田,た・だ : rizière,🈶,off
-女,じょ / おんな : femme,🈶,off
-男,だん / おとこ : homme,🈶,off
-見,けん / み— : voir,🈶,off
-行,こう・ぎょう / い— : aller,🈶,off
-食,しょく / た— : manger,🈶,off
-飲,いん / の— : boire,🈶,off
-東,とう / ひがし : est,🈶,off
-西,せい / にし : ouest,🈶,off
-南,なん / みなみ : sud,🈶,off
-北,ほく / きた : nord,🈶,off
-口,こう / くち : bouche ; entrée,🈶,off
-出,しゅつ / で—・だ— : sortir,🈶,off
-右,う / みぎ : droite,🈶,off
-左,さ / ひだり : gauche,🈶,off
-分,ふん・ぷん / わ— : minute ; diviser,🈶,off
-先,せん / さき : avant ; précédent,🈶,off
-生,せい / う— : naître ; élève,🈶,off
-大,だい・たい / おお— : grand,🈶,off
-学,がく / まな— : apprendre,🈶,off
-外,がい / そと : extérieur,🈶,off
-国,こく / くに : pays,🈶,off
-京,きょう : capitale,🈶,off
-子,し / こ : enfant,🈶,off
-小,しょう / ちい— : petit,🈶,off
-会,かい / あ— : se réunir ; rencontrer,🈶,off
-社,しゃ : société,🈶,off
-父,ふ / ちち : père,🈶,off
-母,ぼ / はは : mère,🈶,off
-高,こう / たか— : haut ; cher,🈶,off
-校,こう : école,🈶,off
-毎,まい : chaque,🈶,off
-語,ご : langue ; mot,🈶,off
-文,ぶん : phrase ; texte,🈶,off
-帰,き / かえ— : rentrer,🈶,off
-入,にゅう / はい—・い— : entrer,🈶,off
-員,いん : membre,🈶,off
-新,しん / あたら— : nouveau,🈶,off
-聞,ぶん / き— : écouter ; journal,🈶,off
-作,さく / つく— : fabriquer,🈶,off
-仕,し / つか— : servir,🈶,off
-事,じ / ごと・こと : chose ; affaire,🈶,off
-電,でん : électricité,🈶,off
-車,しゃ / くるま : voiture,🈶,off
-休,きゅう / やす— : se reposer,🈶,off
-言,げん / い— : dire,🈶,off
-読,どく / よ— : lire,🈶,off
-思,し / おも— : penser,🈶,off
-次,じ / つぎ : suivant,🈶,off
-何,なに・なん : quoi,🈶,off
-午,ご : midi,🈶,off
-後,ご / あと・うし— : après,🈶,off
-前,ぜん / まえ : avant ; devant,🈶,off
-名,めい・みょう / な : nom,🈶,off
-白,はく / しろ— : blanc,🈶,off
-雨,う / あめ : pluie,🈶,off
-書,しょ / か— : écrire,🈶,off
-友,ゆう / とも : ami,🈶,off
-間,かん / あいだ : intervalle ; entre,🈶,off
-家,か / いえ : maison,🈶,off
-話,わ / はな— : parler,🈶,off
-少,しょう / すこ— : peu,🈶,off
-古,こ / ふる— : vieux (objet),🈶,off
-知,ち / し— : savoir,🈶,off
-来,らい / く—・き— : venir,🈶,off
-住,じゅう / す— : habiter,🈶,off
-正,しょう / ただ— : correct ; janvier,🈶,off
-年,ねん / とし : année,🈶,off
-売,ばい / う— : vendre,🈶,off
-買,ばい / か— : acheter,🈶,off
-町,"ちょう / まち : ville, quartier",🈶,off
-長,ちょう / なが— : long ; chef,🈶,off
-道,どう / みち : chemin,🈶,off
-雪,せつ / ゆき : neige,🈶,off
-立,りつ / た— : se tenir debout,🈶,off
-自,じ : soi-même,🈶,off
-夜,や / よる : nuit,🈶,off
-朝,ちょう / あさ : matin,🈶,off
-持,"じ / も— : tenir, porter",🈶,off
-手,しゅ / て : main,🈶,off
-紙,し / かみ : papier,🈶,off
-好,こう / す—・この : aimer,🈶,off
-近,きん / ちか— : proche,🈶,off
-明,めい / あか— : clair ; brillant,🈶,off
-病,びょう : maladie,🈶,off
-院,いん : établissement (hôpital...),🈶,off
-映,えい / うつ— : refléter,🈶,off
-画,"が・かく : image, dessin",🈶,off
-歌,か / うた— : chanter,🈶,off
-市,し / いち : ville,🈶,off
-所,"じょ・しょ / ところ : lieu, endroit",🈶,off
-勉,べん : s'efforcer,🈶,off
-強,きょう / つよ— : fort,🈶,off
-有,"ゆう / あ— : exister, avoir",🈶,off
-旅,りょ / たび : voyage,🈶,off
-昔,むかし : autrefois,🈶,off
-々,(répétition du kanji précédent),🈶,off
-神,じん・しん / かみ : dieu,🈶,off
-早,そう / はや— : tôt,🈶,off
-起,き / お— : se lever,🈶,off
-牛,ぎゅう / うし : vache,🈶,off
-使,し / つか— : utiliser,🈶,off
-働,どう / はたら— : travailler,🈶,off
-連,"れん / つ— : lier, emmener",🈶,off
-別,べつ / わか— : séparer,🈶,off
-度,ど : fois ; degré,🈶,off
-赤,せき / あか— : rouge,🈶,off
-青,せい / あお— : bleu,🈶,off
-色,しき・しょく / いろ : couleur,🈶,off
+recto_texte,verso_texte,emoji,categorie,kanji_only
+一,いち / ひと— : un,🈶,Genki L03,off
+二,に / ふた— : deux,🈶,Genki L03,off
+三,さん / みっ— : trois,🈶,Genki L03,off
+四,し / よん・よっ— : quatre,🈶,Genki L03,off
+五,ご / いつ— : cinq,🈶,Genki L03,off
+六,ろく / むっ— : six,🈶,Genki L03,off
+七,しち・なな : sept,🈶,Genki L03,off
+八,はち / やっ— : huit,🈶,Genki L03,off
+九,きゅう / ここの— : neuf,🈶,Genki L03,off
+十,じゅう / とお : dix,🈶,Genki L03,off
+百,ひゃく : cent,🈶,Genki L03,off
+千,せん : mille,🈶,Genki L03,off
+万,まん : dix mille,🈶,Genki L03,off
+円,えん / まる— : yen ; cercle,🈶,Genki L03,off
+時,じ / とき : heure ; moment,🈶,Genki L03,off
+日,にち・にっ— / ひ : jour ; soleil,🈶,Genki L04,off
+本,ほん / もと : livre ; origine,🈶,Genki L04,off
+人,じん・にん / ひと : personne,🈶,Genki L04,off
+月,げつ・がつ / つき : mois ; lune,🈶,Genki L04,off
+火,か / ひ : feu,🈶,Genki L04,off
+水,すい / みず : eau,🈶,Genki L04,off
+木,もく / き : arbre,🈶,Genki L04,off
+金,きん / かね : or ; argent,🈶,Genki L04,off
+土,ど / つち : terre,🈶,Genki L04,off
+曜,よう : jour de la semaine,🈶,Genki L04,off
+上,じょう / うえ・のぼ— : dessus ; monter,🈶,Genki L04,off
+下,か / した・くだ— : dessous ; descendre,🈶,Genki L04,off
+中,ちゅう / なか : milieu ; intérieur,🈶,Genki L04,off
+半,はん : demi,🈶,Genki L04,off
+山,さん / やま : montagne,🈶,Genki L05,off
+川,かわ・がわ : rivière,🈶,Genki L05,off
+元,げん / もと : origine,🈶,Genki L05,off
+気,き : esprit ; ambiance,🈶,Genki L05,off
+天,てん : ciel,🈶,Genki L05,off
+私,"し / わたし : je, moi ; privé",🈶,Genki L05,off
+今,こん / いま : maintenant,🈶,Genki L05,off
+田,た・だ : rizière,🈶,Genki L05,off
+女,じょ / おんな : femme,🈶,Genki L05,off
+男,だん / おとこ : homme,🈶,Genki L05,off
+見,けん / み— : voir,🈶,Genki L05,off
+行,こう・ぎょう / い— : aller,🈶,Genki L05,off
+食,しょく / た— : manger,🈶,Genki L05,off
+飲,いん / の— : boire,🈶,Genki L05,off
+東,とう / ひがし : est,🈶,Genki L06,off
+西,せい / にし : ouest,🈶,Genki L06,off
+南,なん / みなみ : sud,🈶,Genki L06,off
+北,ほく / きた : nord,🈶,Genki L06,off
+口,こう / くち : bouche ; entrée,🈶,Genki L06,off
+出,しゅつ / で—・だ— : sortir,🈶,Genki L06,off
+右,う / みぎ : droite,🈶,Genki L06,off
+左,さ / ひだり : gauche,🈶,Genki L06,off
+分,ふん・ぷん / わ— : minute ; diviser,🈶,Genki L06,off
+先,せん / さき : avant ; précédent,🈶,Genki L06,off
+生,せい / う— : naître ; élève,🈶,Genki L06,off
+大,だい・たい / おお— : grand,🈶,Genki L06,off
+学,がく / まな— : apprendre,🈶,Genki L06,off
+外,がい / そと : extérieur,🈶,Genki L06,off
+国,こく / くに : pays,🈶,Genki L06,off
+京,きょう : capitale,🈶,Genki L07,off
+子,し / こ : enfant,🈶,Genki L07,off
+小,しょう / ちい— : petit,🈶,Genki L07,off
+会,かい / あ— : se réunir ; rencontrer,🈶,Genki L07,off
+社,しゃ : société,🈶,Genki L07,off
+父,ふ / ちち : père,🈶,Genki L07,off
+母,ぼ / はは : mère,🈶,Genki L07,off
+高,こう / たか— : haut ; cher,🈶,Genki L07,off
+校,こう : école,🈶,Genki L07,off
+毎,まい : chaque,🈶,Genki L07,off
+語,ご : langue ; mot,🈶,Genki L07,off
+文,ぶん : phrase ; texte,🈶,Genki L07,off
+帰,き / かえ— : rentrer,🈶,Genki L07,off
+入,にゅう / はい—・い— : entrer,🈶,Genki L07,off
+員,いん : membre,🈶,Genki L08,off
+新,しん / あたら— : nouveau,🈶,Genki L08,off
+聞,ぶん / き— : écouter ; journal,🈶,Genki L08,off
+作,さく / つく— : fabriquer,🈶,Genki L08,off
+仕,し / つか— : servir,🈶,Genki L08,off
+事,じ / ごと・こと : chose ; affaire,🈶,Genki L08,off
+電,でん : électricité,🈶,Genki L08,off
+車,しゃ / くるま : voiture,🈶,Genki L08,off
+休,きゅう / やす— : se reposer,🈶,Genki L08,off
+言,げん / い— : dire,🈶,Genki L08,off
+読,どく / よ— : lire,🈶,Genki L08,off
+思,し / おも— : penser,🈶,Genki L08,off
+次,じ / つぎ : suivant,🈶,Genki L08,off
+何,なに・なん : quoi,🈶,Genki L08,off
+午,ご : midi,🈶,Genki L09,off
+後,ご / あと・うし— : après,🈶,Genki L09,off
+前,ぜん / まえ : avant ; devant,🈶,Genki L09,off
+名,めい・みょう / な : nom,🈶,Genki L09,off
+白,はく / しろ— : blanc,🈶,Genki L09,off
+雨,う / あめ : pluie,🈶,Genki L09,off
+書,しょ / か— : écrire,🈶,Genki L09,off
+友,ゆう / とも : ami,🈶,Genki L09,off
+間,かん / あいだ : intervalle ; entre,🈶,Genki L09,off
+家,か / いえ : maison,🈶,Genki L09,off
+話,わ / はな— : parler,🈶,Genki L09,off
+少,しょう / すこ— : peu,🈶,Genki L09,off
+古,こ / ふる— : vieux (objet),🈶,Genki L09,off
+知,ち / し— : savoir,🈶,Genki L09,off
+来,らい / く—・き— : venir,🈶,Genki L09,off
+住,じゅう / す— : habiter,🈶,Genki L10,off
+正,しょう / ただ— : correct ; janvier,🈶,Genki L10,off
+年,ねん / とし : année,🈶,Genki L10,off
+売,ばい / う— : vendre,🈶,Genki L10,off
+買,ばい / か— : acheter,🈶,Genki L10,off
+町,"ちょう / まち : ville, quartier",🈶,Genki L10,off
+長,ちょう / なが— : long ; chef,🈶,Genki L10,off
+道,どう / みち : chemin,🈶,Genki L10,off
+雪,せつ / ゆき : neige,🈶,Genki L10,off
+立,りつ / た— : se tenir debout,🈶,Genki L10,off
+自,じ : soi-même,🈶,Genki L10,off
+夜,や / よる : nuit,🈶,Genki L10,off
+朝,ちょう / あさ : matin,🈶,Genki L10,off
+持,"じ / も— : tenir, porter",🈶,Genki L10,off
+手,しゅ / て : main,🈶,Genki L11,off
+紙,し / かみ : papier,🈶,Genki L11,off
+好,こう / す—・この : aimer,🈶,Genki L11,off
+近,きん / ちか— : proche,🈶,Genki L11,off
+明,めい / あか— : clair ; brillant,🈶,Genki L11,off
+病,びょう : maladie,🈶,Genki L11,off
+院,いん : établissement (hôpital...),🈶,Genki L11,off
+映,えい / うつ— : refléter,🈶,Genki L11,off
+画,"が・かく : image, dessin",🈶,Genki L11,off
+歌,か / うた— : chanter,🈶,Genki L11,off
+市,し / いち : ville,🈶,Genki L11,off
+所,"じょ・しょ / ところ : lieu, endroit",🈶,Genki L11,off
+勉,べん : s'efforcer,🈶,Genki L11,off
+強,きょう / つよ— : fort,🈶,Genki L11,off
+有,"ゆう / あ— : exister, avoir",🈶,Genki L11,off
+旅,りょ / たび : voyage,🈶,Genki L11,off
+昔,むかし : autrefois,🈶,Genki L12,off
+々,(répétition du kanji précédent),🈶,Genki L12,off
+神,じん・しん / かみ : dieu,🈶,Genki L12,off
+早,そう / はや— : tôt,🈶,Genki L12,off
+起,き / お— : se lever,🈶,Genki L12,off
+牛,ぎゅう / うし : vache,🈶,Genki L12,off
+使,し / つか— : utiliser,🈶,Genki L12,off
+働,どう / はたら— : travailler,🈶,Genki L12,off
+連,"れん / つ— : lier, emmener",🈶,Genki L12,off
+別,べつ / わか— : séparer,🈶,Genki L12,off
+度,ど : fois ; degré,🈶,Genki L12,off
+赤,せき / あか— : rouge,🈶,Genki L12,off
+青,せい / あお— : bleu,🈶,Genki L12,off
+色,しき・しょく / いろ : couleur,🈶,Genki L12,off

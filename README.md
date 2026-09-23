@@ -53,6 +53,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 
 ## Packs de démarrage
 - `starter/vocab-genki.csv` (1000 mots) et `starter/kanji-genki.csv` (145 kanjis, déjà écrits kanji → lecture(s) + sens) : fichiers publics, versionnés avec le code (contrairement à `data/`, réservé à vos données personnelles).
+- Les deux packs sont **catégorisés par leçon de Genki** (colonne `categorie`) : vocabulaire `Genki L01`–`Genki L12` + `Hors Genki` (408 mots), kanji `Genki L03`–`Genki L12`. Ré-importer un pack sur un compte qui a déjà ces cartes les range dans leur leçon sans rien recréer ni toucher à la progression (les textes sont identiques, donc mêmes cartes).
 - Accessibles via deux boutons (accueil, état vide + section Cartes → « Packs de démarrage »), qui passent par le même chemin que l'import CSV classique : purement additif, jamais de remplacement.
 - Colonne `kanji_only` (valeurs `off`/`on`, lue par `js/csv.js`) : le pack kanji la met à `off` sur toutes ses cartes, pour ne pas dupliquer son propre travail dans le mode Kanji Only (chaque carte y est déjà construite comme kanji → sens).
 - Pour mettre à jour ces fichiers plus tard : même format CSV que d'habitude (`recto_texte,verso_texte,emoji[,kanji_only]`).
