@@ -91,22 +91,51 @@
       return true;
     }
 
+    // Les compteurs (XP, cartes révisées, sessions, temps, et le détail par jour) ne font que croître : on les
+    // fusionne en gardant le plus grand de chaque côté, jamais "le dernier écrit gagne". Sinon un appareil resté
+    // en retard (hors-ligne, cache) qui envoie plus tard ses chiffres écrase la progression de l'autre.
+    // `stats.epoch` marque une réinitialisation / restauration volontaire : une époque plus récente remplace tout.
+    function maxInto(target, source) {
+      for (const k of Object.keys(source || {})) {
+        if (typeof source[k] === 'number') target[k] = Math.max(target[k] || 0, source[k]);
+        else if (target[k] === undefined) target[k] = source[k];
+      }
+    }
+
+    function mergeCounters(s, data) {
+      const rs = data.stats || {};
+      const re = rs.epoch || 0;
+      const le = (s.stats && s.stats.epoch) || 0;
+      if (re > le) { // le serveur vient d'une réinitialisation / restauration plus récente : il fait foi
+        s.stats = Object.assign({}, rs);
+        s.daily = JSON.parse(JSON.stringify(data.daily || {}));
+        return;
+      }
+      if (re < le) return; // notre réinitialisation est plus récente : on la garde
+      s.stats = s.stats || {};
+      maxInto(s.stats, rs);
+      s.daily = s.daily || {};
+      for (const day of Object.keys(data.daily || {})) {
+        s.daily[day] = s.daily[day] || {};
+        maxInto(s.daily[day], data.daily[day]);
+      }
+    }
+
     function applyRemoteMeta(data) {
       if (!data) { shadowMeta = null; return false; }
       const s = store.state;
+      const before = metaBody();
       const lu = s.metaU || 0;
       const ru = data._u || 0;
       lastU = Math.max(lastU, ru);
-      if (ru > lu) {
-        s.stats = data.stats || s.stats;
-        s.daily = data.daily || s.daily;
+      mergeCounters(s, data);
+      if (ru > lu) { // réglages : le plus récent gagne
         s.settings = Object.assign({}, s.settings, data.settings);
         s.metaU = ru;
-        shadowMeta = metaBody();
-        return true;
       }
-      shadowMeta = ru === lu ? canon({ stats: data.stats, daily: data.daily, settings: data.settings }) : metaBody();
-      return false;
+      // Le serveur a `data` ; si notre fusion contient davantage, le prochain envoi le corrigera.
+      shadowMeta = canon({ stats: data.stats, daily: data.daily, settings: data.settings });
+      return metaBody() !== before;
     }
 
     function afterRemote(changed) {
@@ -204,6 +233,7 @@
     function replaceAll() {
       shadow.clear();
       shadowMeta = null;
+      store.state.stats.epoch = nextU(); // nouvelle époque : les autres appareils adoptent ces compteurs tels quels
       return push(true);
     }
 

@@ -98,11 +98,12 @@ function stopSync() {
 // ---------- Petits mots publics ("notes") ----------
 // Un mur de messages courts, visibles par tous les comptes connectés (pas de réponses, pas de chat).
 // Limite d'un mot par personne et par jour, appliquée côté serveur par les règles Firestore grâce à l'identifiant
-// du document, "{uid}_{numéro du jour UTC}" : un second envoi le même jour vise un document déjà existant et est refusé.
+// du document, "{uid}_{numéro du jour local}" : un second envoi le même jour vise un document déjà existant et est refusé.
 const notes = (FJ.notesUi = FJ.notesUi || {});
 Object.assign(notes, { items: [], sentToday: false });
 let unsubNotes = null;
-const dayNumber = () => Math.floor(Date.now() / 86400000);
+// Numéro du jour à l'heure locale de l'appareil : la limite se renouvelle à minuit chez soi (pas 24 h après l'envoi).
+const dayNumber = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
 const NOTE_DAYS = 7; // on n'affiche que les mots récents
 
 function startNotes(uid) {
