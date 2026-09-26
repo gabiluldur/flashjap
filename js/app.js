@@ -326,7 +326,8 @@
     } else if (res === 'already') {
       if (FJ.notesUi) FJ.notesUi.sentToday = true;
       toast("Vous avez déjà publié un mot aujourd'hui.");
-    } else toast('Envoi impossible : vérifiez votre connexion.');
+    } else if (res === 'denied') toast("Envoi refusé par le serveur (règles Firestore à mettre à jour). Prévenez l'administrateur.");
+    else toast('Envoi impossible : vérifiez votre connexion.');
     refreshNotes();
   }
 

@@ -206,9 +206,12 @@ FJ.sync = {
     const clean = (text || '').trim().slice(0, 100);
     if (!clean && !mood) return 'error';
     if (notes.sentToday) return 'already';
+    const day = dayNumber();
+    const ref = doc(db, 'notes', user.uid + '_' + day);
     try {
-      await setDoc(doc(db, 'notes', user.uid + '_' + dayNumber()), {
+      await setDoc(ref, {
         uid: user.uid,
+        day,
         text: clean,
         mood: mood || null,
         name: anonymous ? null : ((user.displayName || '').split(' ')[0] || null), // prénom seulement
@@ -216,7 +219,9 @@ FJ.sync = {
       });
       return 'ok';
     } catch (e) {
-      return ((e && e.code) || '').includes('permission-denied') ? 'already' : 'error';
+      if (!((e && e.code) || '').includes('permission-denied')) return 'error';
+      // Refusé : soit le mot du jour existe vraiment déjà, soit les règles Firestore ne conviennent pas. On vérifie.
+      try { return (await getDoc(ref)).exists() ? 'already' : 'denied'; } catch (e2) { return 'denied'; }
     }
   },
 };
