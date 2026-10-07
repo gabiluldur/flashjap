@@ -48,15 +48,21 @@
       });
       // Environ un confetti sur quatre devient un sprite : chauve-souris (qui plane en oscillant) ou bonbon (qui tourne)
       const r = Math.random();
-      const kind = r < 0.12 ? 'bat' : r < 0.18 ? 'candyA' : r < 0.25 ? 'candyB' : '';
+      const kind = r < 0.13 ? 'bat' : r < 0.19 ? 'candyA' : r < 0.25 ? 'candyB' : '';
       if (kind && spriteReady(kind)) {
         const p = parts[parts.length - 1];
         p.sprite = SPRITES[kind];
-        p.size = kind === 'bat' ? 20 + Math.random() * 12 : 22 + Math.random() * 12;
+        p.size = kind === 'bat' ? 26 + Math.random() * 14 : 22 + Math.random() * 12;
         p.phase = Math.random() * Math.PI * 2;
         p.bat = kind === 'bat';
         if (p.bat) { p.vx *= 0.8; p.vr = 0; }
-        else p.vr = (Math.random() - 0.5) * 0.18;
+        else {
+          // les bonbons retombent lentement : gravité réduite, et un élan réduit pour ne pas sortir de l'écran par le haut
+          p.vr = (Math.random() - 0.5) * 0.12;
+          p.vx *= 0.58;
+          p.vy *= 0.58;
+          p.g = 0.3;
+        }
       }
     }
 
@@ -65,7 +71,7 @@
       ctx.clearRect(0, 0, W, H);
       let alive = 0;
       for (const p of parts) {
-        p.vy += 0.32;
+        p.vy += 0.32 * (p.g || 1);
         p.vx *= 0.992;
         p.vy *= 0.992;
         p.x += p.vx;
@@ -89,7 +95,7 @@
         else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
         ctx.restore();
       }
-      if (alive && ++frame < 320) requestAnimationFrame(tick);
+      if (alive && ++frame < 640) requestAnimationFrame(tick); // les bonbons, plus lents, ont besoin de plus de temps
       else canvas.remove();
     })();
   }
