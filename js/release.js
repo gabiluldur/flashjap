@@ -11,8 +11,8 @@
   // Aperçu sans rien déclencher chez les autres : ajouter ?news=1 à l'adresse de l'appli.
   FJ.release = {
     version: '1.1.0',
-    announce: false,
-    title: 'Quoi de neuf ?',
+    announce: true,
+    title: 'Spooky Édition',
     items: [
       '💬 Petits mots publics : un mot par jour, visible de tous, dans une zone discrète en bas de l\'accueil.',
       '📦 Mises à jour : de nouveaux paquets de cartes à intégrer quand vous voulez, avec aperçu du contenu.',
