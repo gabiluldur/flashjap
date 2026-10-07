@@ -46,7 +46,7 @@
         color: COLORS[(Math.random() * COLORS.length) | 0],
         round: Math.random() < 0.25,
       });
-      // Environ un confetti sur quatre devient un sprite : chauve-souris (qui plane en oscillant) ou bonbon (qui tourne)
+      // Environ un confetti sur quatre devient un sprite : chauve-souris (qui s'envole sur le côté) ou bonbon (qui retombe lentement)
       const r = Math.random();
       const kind = r < 0.13 ? 'bat' : r < 0.19 ? 'candyA' : r < 0.25 ? 'candyB' : '';
       if (kind && spriteReady(kind)) {
@@ -55,8 +55,13 @@
         p.size = kind === 'bat' ? 26 + Math.random() * 14 : 22 + Math.random() * 12;
         p.phase = Math.random() * Math.PI * 2;
         p.bat = kind === 'bat';
-        if (p.bat) { p.vx *= 0.8; p.vr = 0; }
-        else {
+        if (p.bat) {
+          // légère, elle monte puis file vers le bord le plus proche : gravité faible + poussée latérale (voir tick)
+          p.vr = 0;
+          p.vx *= 0.7;
+          p.vy *= 0.4;
+          p.g = 0.12;
+        } else {
           // les bonbons retombent lentement : gravité réduite, et un élan réduit pour ne pas sortir de l'écran par le haut
           p.vr = (Math.random() - 0.5) * 0.12;
           p.vx *= 0.58;
@@ -66,25 +71,40 @@
       }
     }
 
-    let frame = 0;
-    (function tick() {
+    // L'animation suit le temps réel (et non le nombre d'images affichées) : même vitesse sur un écran 60 Hz ou 144 Hz.
+    // Les vitesses ci-dessus sont exprimées "par image à 60 Hz" ; `dt` vaut 1 pour une image à 60 Hz.
+    const STEP = 1000 / 60;
+    let last = null;
+    let t0 = null;
+    function tick(now) {
+      if (last === null) { last = now; t0 = now; }
+      const dt = Math.min((now - last) / STEP, 3); // plafonné : pas de saut si l'onglet était en pause
+      last = now;
+      const t = (now - t0) / STEP; // temps écoulé, en images à 60 Hz
+      const drag = Math.pow(0.992, dt);
       ctx.clearRect(0, 0, W, H);
       let alive = 0;
       for (const p of parts) {
-        p.vy += 0.32 * (p.g || 1);
-        p.vx *= 0.992;
-        p.vy *= 0.992;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.rot += p.vr;
-        if (p.y > H + 20) continue;
+        p.vy += 0.32 * (p.g || 1) * dt;
+        if (p.bat) {
+          p.vx += (p.x < W / 2 ? -1 : 1) * 0.16 * dt; // la chauve-souris file vers le côté le plus proche
+          p.vy += Math.sin(t * 0.07 + p.phase) * 0.04 * dt + (p.y < H * 0.08 ? 0.5 * dt : 0); // flotte, sans quitter l'écran par le haut
+        }
+        p.vx *= drag;
+        p.vy *= drag;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.rot += p.vr * dt;
+        if (p.y > H + 20 || (p.bat && (p.x < -60 || p.x > W + 60))) continue;
         alive++;
         ctx.save();
         ctx.translate(p.x, p.y);
         if (p.sprite) {
-          // la chauve-souris flotte : elle retombe moins vite et balance doucement d'un côté à l'autre
-          if (p.bat) { p.vy -= 0.12; ctx.rotate(Math.sin(frame * 0.08 + p.phase) * 0.45); }
-          else ctx.rotate(p.rot);
+          if (p.bat) {
+            // inclinée dans le sens du vol, avec un battement d'ailes (écrasement vertical)
+            ctx.rotate(Math.max(-0.5, Math.min(0.5, p.vx * 0.04)));
+            ctx.scale(1, 0.62 + 0.38 * Math.abs(Math.sin(t * 0.22 + p.phase)));
+          } else ctx.rotate(p.rot);
           ctx.drawImage(p.sprite, -p.size / 2, -p.size / 2, p.size, p.size);
           ctx.restore();
           continue;
@@ -95,9 +115,10 @@
         else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
         ctx.restore();
       }
-      if (alive && ++frame < 640) requestAnimationFrame(tick); // les bonbons, plus lents, ont besoin de plus de temps
+      if (alive && t < 640) requestAnimationFrame(tick); // les bonbons, plus lents, ont besoin de plus de temps
       else canvas.remove();
-    })();
+    }
+    requestAnimationFrame(tick);
   }
 
   // Compteur qui monte de 0 à la valeur cible
