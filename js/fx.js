@@ -3,6 +3,17 @@
 
   const COLORS = ['#e0ad3c', '#d1435b', '#3f6fd8', '#22a58f', '#9a5bd6', '#f08a1c', '#ffffff'];
 
+  // Petits sprites mêlés aux confettis : chauves-souris et bonbons (chargés une fois ; tant qu'un sprite n'est pas
+  // prêt, ses places sont simplement tenues par des confettis classiques).
+  const SPRITE_FILES = { bat: 'assets/confetti/bat.svg', candyA: 'assets/confetti/candy-a.svg', candyB: 'assets/confetti/candy-b.svg' };
+  const SPRITES = {};
+  for (const k of Object.keys(SPRITE_FILES)) {
+    const img = new Image();
+    img.src = SPRITE_FILES[k];
+    SPRITES[k] = img;
+  }
+  const spriteReady = (k) => SPRITES[k] && SPRITES[k].complete && SPRITES[k].naturalWidth > 0;
+
   // Confettis : deux canons en bas de l'écran, sur un canvas temporaire (aucune dépendance).
   function confetti({ count = 120 } = {}) {
     if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -35,6 +46,18 @@
         color: COLORS[(Math.random() * COLORS.length) | 0],
         round: Math.random() < 0.25,
       });
+      // Environ un confetti sur quatre devient un sprite : chauve-souris (qui plane en oscillant) ou bonbon (qui tourne)
+      const r = Math.random();
+      const kind = r < 0.12 ? 'bat' : r < 0.18 ? 'candyA' : r < 0.25 ? 'candyB' : '';
+      if (kind && spriteReady(kind)) {
+        const p = parts[parts.length - 1];
+        p.sprite = SPRITES[kind];
+        p.size = kind === 'bat' ? 20 + Math.random() * 12 : 22 + Math.random() * 12;
+        p.phase = Math.random() * Math.PI * 2;
+        p.bat = kind === 'bat';
+        if (p.bat) { p.vx *= 0.8; p.vr = 0; }
+        else p.vr = (Math.random() - 0.5) * 0.18;
+      }
     }
 
     let frame = 0;
@@ -52,6 +75,14 @@
         alive++;
         ctx.save();
         ctx.translate(p.x, p.y);
+        if (p.sprite) {
+          // la chauve-souris flotte : elle retombe moins vite et balance doucement d'un côté à l'autre
+          if (p.bat) { p.vy -= 0.12; ctx.rotate(Math.sin(frame * 0.08 + p.phase) * 0.45); }
+          else ctx.rotate(p.rot);
+          ctx.drawImage(p.sprite, -p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+          continue;
+        }
         ctx.rotate(p.rot);
         ctx.fillStyle = p.color;
         if (p.round) { ctx.beginPath(); ctx.arc(0, 0, p.h, 0, Math.PI * 2); ctx.fill(); }

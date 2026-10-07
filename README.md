@@ -98,3 +98,6 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 
 ## Citrouille
 - En bas de l'appli, un sprite tiré au hasard parmi 7 (`assets/pumpkins/p0..p6.svg`), jamais le même deux chargements de suite (dernier tirage retenu sur l'appareil). Un toucher la fait rebondir, et un reflet brillant la balaie de temps en temps : un dégradé masqué par la silhouette du sprite (donc pas de reflet si l'appli est ouverte directement depuis le fichier, le navigateur refuse alors le masque).
+
+## Confettis
+- Environ un confetti sur quatre est un petit sprite (`assets/confetti/` : chauve-souris violette qui plane en balançant, deux bonbons qui tournent), dessiné sur le même canvas que les confettis classiques (`js/fx.js`). Tant qu'un sprite n'est pas chargé, ses places sont tenues par des confettis ordinaires.

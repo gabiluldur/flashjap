@@ -1,7 +1,7 @@
 // Service worker : l'appli fonctionne hors-ligne, et les mises à jour arrivent dès qu'on est en ligne.
 // Stratégie "réseau d'abord" (toujours revalidée) avec repli sur le cache. Ne touche pas aux requêtes vers d'autres
 // domaines (Firebase, Google) : celles-ci gèrent leur propre cache hors-ligne.
-const CACHE = 'flashjap-v14';
+const CACHE = 'flashjap-v15';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/levels.js', 'js/srs.js', 'js/csv.js', 'js/kanji.js',
@@ -10,6 +10,7 @@ const SHELL = [
   'icons/icon-192.png', 'icons/icon-512.png',
   'assets/pumpkins/p0.svg', 'assets/pumpkins/p1.svg', 'assets/pumpkins/p2.svg', 'assets/pumpkins/p3.svg',
   'assets/pumpkins/p4.svg', 'assets/pumpkins/p5.svg', 'assets/pumpkins/p6.svg',
+  'assets/confetti/bat.svg', 'assets/confetti/candy-a.svg', 'assets/confetti/candy-b.svg',
 ];
 
 self.addEventListener('install', (event) => {
