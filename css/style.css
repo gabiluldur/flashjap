@@ -534,24 +534,13 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 
 /* ---------- Combo 10+ : feu doux derrière la carte et arc de lumière sur son contour (tout est lent) ---------- */
 @property --a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-.burn { position: absolute; inset: 0; z-index: -1; pointer-events: none; --h: 1; }
-.session[data-heat="4"] .burn { --h: 1.35; }
+.burn { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .burn-glow {
   position: absolute; inset: 4px; border-radius: var(--radius);
   box-shadow: 0 0 36px 12px rgba(255, 112, 36, .42), 0 -10px 48px 12px rgba(255, 186, 56, .30);
   animation: burn-breathe 5.5s ease-in-out infinite;
 }
 .session[data-heat="4"] .burn-glow { box-shadow: 0 0 44px 16px rgba(255, 112, 36, .5), 0 -12px 56px 16px rgba(255, 200, 70, .38); }
-/* des flammes qui lèchent le bord haut de la carte (leur base est cachée derrière elle) */
-.fl {
-  position: absolute; left: var(--x); bottom: calc(100% - 14px);
-  width: 15%; margin-left: -7.5%; height: calc(44px * var(--k, 1) * var(--h));
-  transform-origin: 50% 100%;
-  background: radial-gradient(ellipse 50% 75% at 50% 85%, #fff2a0 0 18%, #ffb42e 45%, #ff6a1e 72%, transparent 100%);
-  border-radius: 50% 50% 40% 40% / 75% 75% 25% 25%;
-  filter: blur(2.5px); opacity: .8;
-  animation: lick var(--d, 3.6s) ease-in-out var(--t, 0s) infinite;
-}
 /* de rares braises qui montent doucement */
 .em {
   position: absolute; left: var(--x); top: 4px; width: 4px; height: 4px; border-radius: 50%;
@@ -559,11 +548,6 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
   animation: ember var(--d, 6s) linear var(--t, 0s) infinite;
 }
 @keyframes burn-breathe { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
-@keyframes lick {
-  0%, 100% { transform: scale(1, .82) skewX(-3deg); opacity: .7; }
-  35% { transform: scale(1.06, 1.12) skewX(3deg); opacity: .95; }
-  65% { transform: scale(.94, .95) skewX(-1deg); opacity: .8; }
-}
 @keyframes ember { 0% { transform: translate(0, 8px) scale(1); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate(8px, -60px) scale(.3); opacity: 0; } }
 
 .sheen { position: absolute; inset: 0; border-radius: var(--radius); overflow: hidden; pointer-events: none; z-index: 3; --wave: #ffc65a; }

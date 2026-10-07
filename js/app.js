@@ -663,16 +663,13 @@
     updatePrioBtn(card);
   }
 
-  // Dès 10 réussites d'affilée : un feu doux derrière la carte (lueur, flammes qui lèchent le bord haut, braises qui montent)
+  // Dès 10 réussites d'affilée : une grosse lueur de braise qui respire derrière la carte, de rares braises qui montent,
   // et un arc de lumière qui parcourt lentement son contour. Tout est lent : aucune pression.
-  const FLAMES = 8;
   const EMBERS = 6;
   function burnHtml() {
-    const flames = Array.from({ length: FLAMES }, (_, i) =>
-      `<i class="fl" style="--x:${Math.round(7 + i * (86 / (FLAMES - 1)))}%;--d:${(3.2 + (i % 3) * 0.7).toFixed(1)}s;--t:${(-(i * 0.83) % 4).toFixed(2)}s;--k:${(0.8 + ((i * 5) % 4) * 0.12).toFixed(2)}"></i>`).join('');
     const embers = Array.from({ length: EMBERS }, (_, i) =>
       `<b class="em" style="--x:${Math.round(12 + i * 15)}%;--d:${(5.5 + (i % 3)).toFixed(1)}s;--t:${(-(i * 1.9) % 7).toFixed(2)}s"></b>`).join('');
-    return `<div class="burn" aria-hidden="true"><i class="burn-glow"></i>${flames}${embers}</div>`;
+    return `<div class="burn" aria-hidden="true"><i class="burn-glow"></i>${embers}</div>`;
   }
   function ringHtml() {
     return '<div class="sheen" aria-hidden="true"><i class="sheen-ring"></i></div>';

@@ -75,7 +75,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - « Toutes les mises à jour » garde tous les paquets (les nouveaux arrivants les retrouvent après le pack de base). Le choix intégré / plus tard est dans les réglages, donc synchronisé entre appareils.
 - Firestore : collection `packs` (lecture pour les comptes admis, écriture propriétaire seul, 900 Ko max par paquet) et document sentinelle `config/admin` lisible par le seul propriétaire. Règles : `data/firestore.rules`.
 ## Combos
-- Dès 10 réussites d'affilée, un feu doux brûle derrière la carte (lueur, flammes, braises) et un arc de lumière fait lentement le tour de son contour (9 s par tour) ; au-delà de 10 le compteur tremble. Rien de tout cela si l'appareil demande de réduire les animations.
+- Dès 10 réussites d'affilée, une grosse lueur de braise dont l'intensité varie lentement brûle derrière la carte, avec de rares braises qui montent et un arc de lumière fait lentement le tour de son contour (9 s par tour) ; au-delà de 10 le compteur tremble. Rien de tout cela si l'appareil demande de réduire les animations.
 - Une série de 3 réussites ou plus qui s'achève (sur un échec, ou à la fin de la session) laisse un **point** sous le compteur, de la couleur de la chaleur atteinte (3, 5, 10, 20). Les repasses de fin de boucle n'interrompent pas la série.
 - À la fin de la session, chaque point rapporte **1 XP bonus**, compté dans une petite animation du bilan (le total « XP gagnés » l'inclut).
 
