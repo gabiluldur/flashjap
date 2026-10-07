@@ -515,3 +515,46 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 .pack .actions { margin-top: 10px; }
 .packs details { margin-top: 10px; }
 .packs input[type="text"], .packs input[type="file"] { width: 100%; }
+
+/* ---------- Points de combo (un par série terminée) ---------- */
+.combo-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.combo-wrap .combo { flex: none; max-width: 100%; }
+.combo-dots, .bonus-dots { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.dot { display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--xp); }
+.dot[data-heat="2"] { background: #f0952a; }
+.dot[data-heat="3"] { background: #ee6a2c; box-shadow: 0 0 5px color-mix(in srgb, #ee6a2c 60%, transparent); }
+.dot[data-heat="4"] { background: linear-gradient(135deg, #ff5a36, #ffb32b); box-shadow: 0 0 7px color-mix(in srgb, #ff7a3c 70%, transparent); }
+.dot.new { animation: dot-in .55s cubic-bezier(.2, 1.8, .4, 1); }
+.bonus { margin: 14px 0 18px; }
+.bonus-dots { justify-content: center; gap: 6px; margin-bottom: 6px; }
+.bonus .dot { width: 11px; height: 11px; }
+.bonus .dot.pop { opacity: 0; animation: dot-in .5s cubic-bezier(.2, 1.8, .4, 1) forwards; }
+.bonus p { margin: 0; text-align: center; }
+@keyframes dot-in { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.7); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+
+/* ---------- Scintillement du contour de la carte (10 réussites d'affilée ou plus) ---------- */
+.sparkles { position: absolute; inset: -3px; pointer-events: none; z-index: 3; }
+.sparkles i {
+  position: absolute; left: var(--x); top: var(--y);
+  width: calc(9px * var(--s, 1)); height: calc(9px * var(--s, 1));
+  margin: calc(-4.5px * var(--s, 1)) 0 0 calc(-4.5px * var(--s, 1));
+  background: var(--spark, #ffc65a);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  opacity: 0;
+  animation: twinkle 1.8s ease-in-out infinite;
+  animation-delay: var(--t, 0s);
+}
+.session[data-heat="4"] .sparkles i { --spark: #fff0c0; }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0); } 40% { opacity: .95; transform: scale(1) rotate(45deg); } 65% { opacity: .15; transform: scale(.55) rotate(90deg); } }
+
+/* ---------- Annonce de mise à jour ---------- */
+.news-box { padding-top: 18px; }
+.news-ver { display: inline-block; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.news-box ul { margin: 0 0 18px; padding-left: 20px; color: var(--muted); line-height: 1.5; }
+.news-box li { margin-bottom: 8px; }
+.news-box li::marker { color: var(--xp); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkles { display: none; }
+  .dot.new, .bonus .dot.pop { animation: none; opacity: 1; }
+}

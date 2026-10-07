@@ -74,6 +74,16 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Les autres comptes voient sur l'accueil « 📦 Nouveau paquet disponible : souhaitez-vous l'intégrer ? » avec **Voir le contenu** (lecture seule), **Intégrer** ou **Plus tard**. Intégration additive (même chemin que l'import CSV : dédoublonnage, progression intacte, catégories complétées). Pas de pop-up.
 - « Toutes les mises à jour » garde tous les paquets (les nouveaux arrivants les retrouvent après le pack de base). Le choix intégré / plus tard est dans les réglages, donc synchronisé entre appareils.
 - Firestore : collection `packs` (lecture pour les comptes admis, écriture propriétaire seul, 900 Ko max par paquet) et document sentinelle `config/admin` lisible par le seul propriétaire. Règles : `data/firestore.rules`.
+## Combos
+- Dès 10 réussites d'affilée, le contour de la carte scintille légèrement ; au-delà de 10 le compteur tremble (réduit si « réduire les animations » est activé).
+- Une série de 3 réussites ou plus qui s'achève (sur un échec, ou à la fin de la session) laisse un **point** sous le compteur, de la couleur de la chaleur atteinte (3, 5, 10, 20). Les repasses de fin de boucle n'interrompent pas la série.
+- À la fin de la session, chaque point rapporte **1 XP bonus**, compté dans une petite animation du bilan (le total « XP gagnés » l'inclut).
+
+## Annonce de mise à jour (« Quoi de neuf ? »)
+- `js/release.js` porte le numéro de version (affiché en tout petit en bas de l'accueil) et le contenu de l'annonce. Fenêtre unique : affichée une seule fois par appareil et par version, jamais à un tout nouvel utilisateur, jamais pendant une session.
+- Pour annoncer : augmenter `version`, réécrire `items`, passer `announce` à `true`, publier. Aperçu sans effet sur les autres : `?news=1` à la fin de l'adresse.
+- Intégrer un paquet de mises à jour joue un petit son de cinq notes (`pack` dans `js/audio.js`).
+
 ## Règles
 - Échelle de Leitner : 10 min → 1 j → 2 j → 3 j → 1 sem → 2 sem → 1 mois → 3 mois → **validée**.
   Un échec renvoie à l'étape 1 (10 min). Les intervalles en jours reviennent à 4 h du matin du jour cible.
@@ -83,5 +93,5 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Rangs : un tous les 5 niveaux (Pousse, Bambou, Bronze, Argent, Or, Jade, Saphir, Rubis, Améthyste, Dragon).
 
 ## Fichiers
-- `js/csv.js` import CSV · `js/srs.js` Leitner + XP · `js/levels.js` niveaux · `js/store.js` stockage · `js/audio.js` sons · `js/app.js` interface.
+- `js/csv.js` import CSV · `js/srs.js` Leitner + XP · `js/levels.js` niveaux · `js/store.js` stockage · `js/audio.js` sons · `js/release.js` version + annonce · `js/app.js` interface.
 - `js/store.js` est le seul point d'accès aux données : c'est là que se branchera la synchro plus tard.

@@ -587,6 +587,9 @@
       combo: 0,
       bestCombo: 0,
       bump: false,
+      dots: [], // une série de combo terminée (3 réussites d'affilée ou plus) laisse un point : { h: chaleur atteinte, n: longueur }
+      dotFresh: false,
+      bonusDone: false,
       xp: 0,
       startXp: store.state.stats.xp,
       ok: 0,
@@ -630,10 +633,14 @@
         <div class="s-top">
           <button class="btn ghost" data-action="quit">✕ Terminer</button>
           <span class="s-count">${sess.done.size} / ${sess.total}</span>
-          <span class="combo" id="combo"></span>
+          <div class="combo-wrap">
+            <span class="combo" id="combo"></span>
+            <div class="combo-dots" id="comboDots">${dotsHtml()}</div>
+          </div>
         </div>
         <div class="bar thin"><div class="fill" style="width:${pct}%"></div></div>
         <div class="scene" id="scene">
+          ${sess.combo >= 10 ? sparklesHtml() : ''}
           <div class="fcard${sess.track === 'kanji' ? ' kanji' : ''}" id="fcard" role="button" tabindex="0" aria-label="Retourner la carte" data-action="flip">
             <div class="face front"><span class="tag">${tag}</span>${speakBtn(q)}${imgHtml(qi)}${textBlock(q)}</div>
             <div class="face back">${speakBtn(a)}${card.emoji ? `<div class="card-emoji" aria-hidden="true">${esc(card.emoji)}</div>` : ''}${imgHtml(ai)}${textBlock(a)}</div>
@@ -651,7 +658,31 @@
     renderControls();
     updateCombo(sess.bump);
     sess.bump = false;
+    sess.dotFresh = false;
     updatePrioBtn(card);
+  }
+
+  // Scintillement léger sur le contour de la carte dès 10 réussites d'affilée (positions fixes le long du bord,
+  // phases décalées : des étincelles qui s'allument et s'éteignent, sans jamais clignoter d'un bloc).
+  const SPARKS = [[8, 0], [31, 0], [57, 0], [84, 0], [100, 18], [100, 52], [100, 83], [90, 100], [62, 100], [35, 100], [12, 100], [0, 74], [0, 41], [0, 12]];
+  function sparklesHtml() {
+    return `<div class="sparkles" aria-hidden="true">${SPARKS.map(([x, y], i) =>
+      `<i style="--x:${x}%;--y:${y}%;--t:${(-((i * 0.37) % 1.8)).toFixed(2)}s;--s:${(i % 3) ? 1 : 1.35}"></i>`).join('')}</div>`;
+  }
+
+  // Les points de combo : un par série terminée, de la couleur de la chaleur atteinte
+  function dotsHtml() {
+    return sess.dots.map((d, i) =>
+      `<i class="dot${sess.dotFresh && i === sess.dots.length - 1 ? ' new' : ''}" data-heat="${d.h}" title="Série de ${d.n}"></i>`).join('');
+  }
+
+  // Une série de combo vient de s'achever (échec, ou fin de session) : elle laisse un point si elle comptait.
+  function endStreak() {
+    const h = heatOf(sess.combo);
+    if (!h) return false;
+    sess.dots.push({ h, n: sess.combo });
+    sess.dotFresh = true;
+    return true;
   }
 
   // "Je savais le mot mais pas son kanji" : proposé en révision classique, sur une vraie révision (pas une repasse),
@@ -770,6 +801,7 @@
         pop(ok ? 'Bien vu !' : 'On la reverra', '', ok ? '' : 'miss');
       } else {
         if (!sess.counted) { sess.counted = true; s.stats.sessions++; }
+        if (!ok) endStreak(); // l'échec achève la série : elle laisse son point
         sess.combo = ok ? sess.combo + 1 : 0;
         sess.bestCombo = Math.max(sess.bestCombo, sess.combo);
         sess.bump = ok;
@@ -896,6 +928,15 @@
 
   function renderSummary() {
     view = 'summary';
+    // Bonus des séries de combo : la série en cours s'achève avec la session ; chaque point rapporte 1 XP
+    if (!sess.bonusDone) {
+      sess.bonusDone = true;
+      endStreak();
+      sess.combo = 0;
+      if (sess.dots.length) { gainXp(sess.dots.length); persist(); }
+    }
+    const bonus = sess.dots.length;
+    const bonusMs = Math.min(1800, 400 + 130 * bonus); // durée totale de la petite animation
     const done = sess.done.size;
     const rate = sess.ok + sess.ko ? Math.round((sess.ok / (sess.ok + sess.ko)) * 100) : 0;
     const more = buildQueue(sess.track).items.length > 0;
@@ -926,6 +967,10 @@
           <div class="tile"><b>${srs.fmtDuration(sess.ms)}</b><small>temps passé</small></div>
           <div class="tile"><b>×${sess.bestCombo}</b><small>meilleur combo</small></div>
         </div>
+        ${bonus ? `<div class="bonus">
+          <div class="bonus-dots">${sess.dots.map((d, i) => `<i class="dot pop" data-heat="${d.h}" title="Série de ${d.n}" style="animation-delay:${Math.round((bonusMs - 300) / bonus * i)}ms"></i>`).join('')}</div>
+          <p class="muted small">Séries de combo : <b id="bonusXp">+0</b> XP bonus <span class="muted">(inclus ci-dessus)</span></p>
+        </div>` : ''}
         <div class="actions" style="justify-content:center">
           <button class="btn primary" data-action="home">Retour à l'accueil</button>
           ${more ? `<button class="btn" data-action="start" data-track="${sess.track}">Nouvelle session</button>` : ''}
@@ -938,6 +983,7 @@
     audio.play('victory');
     FJ.fx.confetti({ count: [0, 70, 120, 180][stars] });
     FJ.fx.countUp($('#sumXp'), sess.xp, 1000, '+');
+    if (bonus) FJ.fx.countUp($('#bonusXp'), bonus, bonusMs, '+');
     setTimeout(() => { const f = $('#sumFill'); if (f) f.style.width = to.pct + '%'; }, 80);
   }
 
@@ -1688,6 +1734,7 @@
     if (res.error || !res.cards.length) return toast('Ce paquet est illisible.');
     const parts = await runImport(res.cards);
     setPackStatus(id, 'done');
+    audio.play('pack');
     toast(`${p.title} : ${parts.join(' · ')}`);
     renderHome();
   }
@@ -1857,6 +1904,7 @@
       document.querySelectorAll('[data-action="note-mood"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.val === noteDraft.mood)));
     },
     'note-dismiss': (el) => dismissNote(el.dataset.id),
+    'news-close': closeNews,
     'pack-view': (el) => renderPackView(el.dataset.id),
     'pack-integrate': (el) => integratePack(el.dataset.id),
     'pack-later'(el) { setPackStatus(el.dataset.id, 'later'); refreshPacks(); },
@@ -1878,6 +1926,7 @@
   };
 
   document.addEventListener('click', (e) => {
+    if (e.target.id === 'news') return closeNews(); // clic sur le fond
     const el = e.target.closest('[data-action]');
     if (el && actions[el.dataset.action]) actions[el.dataset.action](el);
   });
@@ -1942,6 +1991,7 @@
   $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(false); });
 
   document.addEventListener('keydown', (e) => {
+    if (newsOpen()) { if (e.key === 'Escape') closeNews(); return; }
     if (modalOpen()) { // pendant une confirmation, seules Échap (annuler) et le focus sur les boutons comptent
       if (e.key === 'Escape') closeModal(false);
       return;
@@ -1977,6 +2027,48 @@
     if (view === 'home') renderHome(); // rafraîchit le nombre de cartes "à réviser"
   });
 
+  // ---------- Annonce de mise à jour (une seule fois par appareil) ----------
+  // Contenu et déclenchement : js/release.js. La version déjà annoncée est retenue sur l'appareil.
+  const NEWS_KEY = 'flashjap.newsSeen';
+  const newsOpen = () => !!$('#news');
+
+  function closeNews() {
+    const el = $('#news');
+    if (el) el.remove();
+  }
+
+  function showNews() {
+    const r = FJ.release;
+    if (!r || newsOpen()) return;
+    const el = document.createElement('div');
+    el.id = 'news';
+    el.className = 'modal';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-labelledby', 'newsTitle');
+    el.innerHTML = `<div class="modal-box news-box">
+      <span class="news-ver">Version ${esc(r.version)}</span>
+      <h3 id="newsTitle">${esc(r.title || 'Quoi de neuf ?')}</h3>
+      <ul>${r.items.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+      <div class="modal-actions"><button class="btn primary" type="button" data-action="news-close">Compris</button></div>
+    </div>`;
+    document.body.appendChild(el);
+    el.querySelector('button').focus();
+  }
+
+  function maybeAnnounce() {
+    const r = FJ.release;
+    if (!r) return;
+    if (/[?&]news=1\b/.test(location.search)) return showNews(); // aperçu : ne retient rien
+    if (!r.announce || !r.items || !r.items.length) return;
+    let seen = null;
+    try { seen = localStorage.getItem(NEWS_KEY); } catch (e) { return; } // sans stockage, on ne risquerait que de répéter l'annonce
+    if (seen === r.version) return;
+    try { localStorage.setItem(NEWS_KEY, r.version); } catch (e) { return; } // retenue dès l'affichage : elle ne revient pas
+    const brandNew = !store.state.cards.length && !store.state.stats.reviews; // un tout nouvel utilisateur n'a rien à "rattraper"
+    if (!brandNew) showNews();
+  }
+
   // ---------- Démarrage ----------
   store.load();
   audio.enabled = store.state.settings.sound;
@@ -1984,4 +2076,6 @@
   updateHeader();
   updateSyncBadge();
   renderHome();
+  if (FJ.release) { const c = document.querySelector('.credits'); if (c) c.textContent += ' · v' + FJ.release.version; }
+  setTimeout(maybeAnnounce, 700);
 })();
