@@ -56,11 +56,11 @@
         p.phase = Math.random() * Math.PI * 2;
         p.bat = kind === 'bat';
         if (p.bat) {
-          // légère, elle monte puis file vers le bord le plus proche : gravité faible + poussée latérale (voir tick)
+          // légère, elle prend de l'altitude en ondulant et sort par le haut de l'écran : gravité inversée (voir tick)
           p.vr = 0;
           p.vx *= 0.7;
-          p.vy *= 0.4;
-          p.g = 0.12;
+          p.vy *= 0.5;
+          p.g = -0.16;
         } else {
           // les bonbons retombent lentement : gravité réduite, et un élan réduit pour ne pas sortir de l'écran par le haut
           p.vr = (Math.random() - 0.5) * 0.12;
@@ -87,15 +87,14 @@
       for (const p of parts) {
         p.vy += 0.32 * (p.g || 1) * dt;
         if (p.bat) {
-          p.vx += (p.x < W / 2 ? -1 : 1) * 0.16 * dt; // la chauve-souris file vers le côté le plus proche
-          p.vy += Math.sin(t * 0.07 + p.phase) * 0.04 * dt + (p.y < H * 0.08 ? 0.5 * dt : 0); // flotte, sans quitter l'écran par le haut
+          p.vx += Math.sin(t * 0.09 + p.phase) * 0.12 * dt; // elle ondule de gauche à droite en montant
         }
         p.vx *= drag;
         p.vy *= drag;
         p.x += p.vx * dt;
         p.y += p.vy * dt;
         p.rot += p.vr * dt;
-        if (p.y > H + 20 || (p.bat && (p.x < -60 || p.x > W + 60))) continue;
+        if (p.y > H + 20 || (p.bat && p.y < -60)) continue; // les chauves-souris disparaissent par le haut
         alive++;
         ctx.save();
         ctx.translate(p.x, p.y);
