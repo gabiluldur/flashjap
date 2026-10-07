@@ -532,32 +532,59 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 .bonus p { margin: 0; text-align: center; }
 @keyframes dot-in { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.7); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 
-/* ---------- Reflet et vague de lumière sur la carte (10 réussites d'affilée ou plus) ---------- */
+/* ---------- Combo 10+ : feu doux derrière la carte et arc de lumière sur son contour (tout est lent) ---------- */
 @property --a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.burn { position: absolute; inset: 0; z-index: -1; pointer-events: none; --h: 1; }
+.session[data-heat="4"] .burn { --h: 1.35; }
+.burn-glow {
+  position: absolute; inset: 4px; border-radius: var(--radius);
+  box-shadow: 0 0 36px 12px rgba(255, 112, 36, .42), 0 -10px 48px 12px rgba(255, 186, 56, .30);
+  animation: burn-breathe 5.5s ease-in-out infinite;
+}
+.session[data-heat="4"] .burn-glow { box-shadow: 0 0 44px 16px rgba(255, 112, 36, .5), 0 -12px 56px 16px rgba(255, 200, 70, .38); }
+/* des flammes qui lèchent le bord haut de la carte (leur base est cachée derrière elle) */
+.fl {
+  position: absolute; left: var(--x); bottom: calc(100% - 14px);
+  width: 15%; margin-left: -7.5%; height: calc(44px * var(--k, 1) * var(--h));
+  transform-origin: 50% 100%;
+  background: radial-gradient(ellipse 50% 75% at 50% 85%, #fff2a0 0 18%, #ffb42e 45%, #ff6a1e 72%, transparent 100%);
+  border-radius: 50% 50% 40% 40% / 75% 75% 25% 25%;
+  filter: blur(2.5px); opacity: .8;
+  animation: lick var(--d, 3.6s) ease-in-out var(--t, 0s) infinite;
+}
+/* de rares braises qui montent doucement */
+.em {
+  position: absolute; left: var(--x); top: 4px; width: 4px; height: 4px; border-radius: 50%;
+  background: #ffb43a; box-shadow: 0 0 6px 1px rgba(255, 138, 42, .8); opacity: 0;
+  animation: ember var(--d, 6s) linear var(--t, 0s) infinite;
+}
+@keyframes burn-breathe { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
+@keyframes lick {
+  0%, 100% { transform: scale(1, .82) skewX(-3deg); opacity: .7; }
+  35% { transform: scale(1.06, 1.12) skewX(3deg); opacity: .95; }
+  65% { transform: scale(.94, .95) skewX(-1deg); opacity: .8; }
+}
+@keyframes ember { 0% { transform: translate(0, 8px) scale(1); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate(8px, -60px) scale(.3); opacity: 0; } }
+
 .sheen { position: absolute; inset: 0; border-radius: var(--radius); overflow: hidden; pointer-events: none; z-index: 3; --wave: #ffc65a; }
 .session[data-heat="4"] .sheen { --wave: #fff0c0; }
 .sheen i { position: absolute; inset: 0; border-radius: inherit; }
-/* la vague : un arc de lumière qui court le long du contour */
+/* l'arc de lumière : un tour de contour en 9 secondes */
 .sheen-ring {
   padding: 3px;
   background: conic-gradient(from var(--a), transparent 0 52%, color-mix(in srgb, var(--wave) 70%, transparent) 90%, var(--wave) 99%, transparent 100%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  animation: wave-run 3.4s linear infinite;
-}
-/* le reflet : une bande de lumière qui balaie la carte, puis une pause */
-.sheen-glint {
-  background: linear-gradient(110deg, transparent 38%, rgba(255, 214, 140, .14) 46%, rgba(255, 255, 255, .24) 50%, rgba(255, 214, 140, .14) 54%, transparent 62%) 100% 0 / 260% 100% no-repeat;
-  animation: glint 3.4s ease-in-out .5s infinite;
+  animation: wave-run 9s linear infinite;
 }
 @keyframes wave-run { to { --a: 360deg; } }
 @keyframes glint { 0% { background-position: 100% 0; } 45%, 100% { background-position: 0 0; } }
 
-/* ---------- Citrouille du bas de page (sprite tiré au hasard à chaque chargement) ---------- */
-.pumpkin { position: relative; width: 68px; height: 68px; margin: 22px auto 0; pointer-events: none; user-select: none; }
+/* ---------- Citrouille du bas de page (sprite tiré au hasard à chaque chargement ; un toucher la fait rebondir) ---------- */
+.pumpkin { position: relative; width: 68px; height: 68px; margin: 22px auto 0; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transform-origin: 50% 100%; }
 .pumpkin[hidden] { display: none; }
-.pumpkin img, .pumpkin .shine { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pumpkin img, .pumpkin .shine { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .pumpkin img { object-fit: contain; filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .22)); }
 .pumpkin .shine {
   -webkit-mask-size: contain; mask-size: contain;
@@ -565,6 +592,16 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
   -webkit-mask-position: center; mask-position: center;
   background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .85) 50%, transparent 62%) 100% 0 / 260% 100% no-repeat;
   animation: glint 4.6s ease-in-out 1.2s infinite;
+}
+.pumpkin.bounce { animation: pumpkin-bounce .95s cubic-bezier(.3, .6, .4, 1); }
+@keyframes pumpkin-bounce {
+  0% { transform: translateY(0) scale(1, 1); }
+  14% { transform: translateY(0) scale(1.22, .78); }
+  38% { transform: translateY(-28px) scale(.9, 1.14); }
+  58% { transform: translateY(0) scale(1.15, .86); }
+  74% { transform: translateY(-8px) scale(.97, 1.04); }
+  88% { transform: translateY(0) scale(1.04, .96); }
+  100% { transform: translateY(0) scale(1, 1); }
 }
 
 /* ---------- Annonce de mise à jour ---------- */
@@ -575,7 +612,9 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 .news-box li::marker { color: var(--xp); }
 
 @media (prefers-reduced-motion: reduce) {
-  .sheen { display: none; }
+  .sheen, .burn .em { display: none; }
+  .burn i { animation: none !important; }
+  .pumpkin.bounce { animation: none; }
   .pumpkin .shine { animation: none; opacity: 0; }
   .dot.new, .bonus .dot.pop { animation: none; opacity: 1; }
 }

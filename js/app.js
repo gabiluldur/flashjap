@@ -640,7 +640,8 @@
         </div>
         <div class="bar thin"><div class="fill" style="width:${pct}%"></div></div>
         <div class="scene" id="scene">
-          ${sess.combo >= 10 ? sheenHtml() : ''}
+          ${sess.combo >= 10 ? burnHtml() : ''}
+          ${sess.combo >= 10 ? ringHtml() : ''}
           <div class="fcard${sess.track === 'kanji' ? ' kanji' : ''}" id="fcard" role="button" tabindex="0" aria-label="Retourner la carte" data-action="flip">
             <div class="face front"><span class="tag">${tag}</span>${speakBtn(q)}${imgHtml(qi)}${textBlock(q)}</div>
             <div class="face back">${speakBtn(a)}${card.emoji ? `<div class="card-emoji" aria-hidden="true">${esc(card.emoji)}</div>` : ''}${imgHtml(ai)}${textBlock(a)}</div>
@@ -662,9 +663,19 @@
     updatePrioBtn(card);
   }
 
-  // Dès 10 réussites d'affilée : un reflet qui balaie la carte et une vague de lumière qui court le long de son contour.
-  function sheenHtml() {
-    return '<div class="sheen" aria-hidden="true"><i class="sheen-ring"></i><i class="sheen-glint"></i></div>';
+  // Dès 10 réussites d'affilée : un feu doux derrière la carte (lueur, flammes qui lèchent le bord haut, braises qui montent)
+  // et un arc de lumière qui parcourt lentement son contour. Tout est lent : aucune pression.
+  const FLAMES = 8;
+  const EMBERS = 6;
+  function burnHtml() {
+    const flames = Array.from({ length: FLAMES }, (_, i) =>
+      `<i class="fl" style="--x:${Math.round(7 + i * (86 / (FLAMES - 1)))}%;--d:${(3.2 + (i % 3) * 0.7).toFixed(1)}s;--t:${(-(i * 0.83) % 4).toFixed(2)}s;--k:${(0.8 + ((i * 5) % 4) * 0.12).toFixed(2)}"></i>`).join('');
+    const embers = Array.from({ length: EMBERS }, (_, i) =>
+      `<b class="em" style="--x:${Math.round(12 + i * 15)}%;--d:${(5.5 + (i % 3)).toFixed(1)}s;--t:${(-(i * 1.9) % 7).toFixed(2)}s"></b>`).join('');
+    return `<div class="burn" aria-hidden="true"><i class="burn-glow"></i>${flames}${embers}</div>`;
+  }
+  function ringHtml() {
+    return '<div class="sheen" aria-hidden="true"><i class="sheen-ring"></i></div>';
   }
 
   // Les points de combo : un par série terminée, de la couleur de la chaleur atteinte
@@ -2083,6 +2094,13 @@
     const shine = box.querySelector('.shine');
     shine.style.webkitMaskImage = shine.style.maskImage = `url(${src})`;
     box.hidden = false;
+    // Un toucher la fait rebondir (rejouable à volonté : on relance l'animation à chaque fois)
+    box.addEventListener('click', () => {
+      box.classList.remove('bounce');
+      void box.offsetWidth;
+      box.classList.add('bounce');
+    });
+    box.addEventListener('animationend', (e) => { if (e.target === box) box.classList.remove('bounce'); });
   }
 
   // ---------- Démarrage ----------
