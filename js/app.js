@@ -516,7 +516,7 @@
       ${packsVisible() ? `<section class="panel packs" id="packsBox">${packsInner()}</section>` : ''}
 
       <section class="panel">
-        <h2>Ma progression</h2>
+        <h2>🧠 Ma progression</h2>
         <div class="prog-sec">
           <h3 class="sub">Mémoire</h3>
           ${stackBlock(c)}
