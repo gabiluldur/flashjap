@@ -14,10 +14,10 @@
     announce: true,
     title: 'Spooky Édition',
     items: [
-      '💬 Petits mots publics : un mot par jour, visible de tous, dans une zone discrète en bas de l\'accueil.',
+      '💬 Petits mots publics : un mot par jour, visible de tous.',
       '📦 Mises à jour : de nouveaux paquets de cartes à intégrer quand vous voulez, avec aperçu du contenu.',
-      '✨ Combos : un feu doux derrière la carte dès 10 réussites d\'affilée, et chaque série laisse un point qui rapporte 1 XP bonus en fin de session.',
-      '🎃 Halloween : une citrouille au bas de l\'appli (touchez-la !), et des chauves-souris et des bonbons dans les confettis.',
+      '✨ Combos : améliorations visuelles et système.',
+      '🎃 Halloween : ahouuuuuuu ! 怖い ですね',
       '🛠 Correctif : l\'XP ne recule plus d\'un appareil à l\'autre.',
     ],
   };
