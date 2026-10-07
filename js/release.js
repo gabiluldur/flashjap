@@ -16,7 +16,7 @@
     items: [
       '💬 Petits mots publics : un mot par jour, visible de tous, dans une zone discrète en bas de l\'accueil.',
       '📦 Mises à jour : de nouveaux paquets de cartes à intégrer quand vous voulez, avec aperçu du contenu.',
-      '✨ Combos : le contour de la carte scintille dès 10 réussites d\'affilée, et chaque série laisse un point qui rapporte 1 XP bonus en fin de session.',
+      '✨ Combos : reflet et vague de lumière sur la carte dès 10 réussites d\'affilée, et chaque série laisse un point qui rapporte 1 XP bonus en fin de session.',
       '🛠 Correctif : l\'XP ne recule plus d\'un appareil à l\'autre.',
     ],
   };

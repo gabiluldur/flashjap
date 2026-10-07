@@ -640,7 +640,7 @@
         </div>
         <div class="bar thin"><div class="fill" style="width:${pct}%"></div></div>
         <div class="scene" id="scene">
-          ${sess.combo >= 10 ? sparklesHtml() : ''}
+          ${sess.combo >= 10 ? sheenHtml() : ''}
           <div class="fcard${sess.track === 'kanji' ? ' kanji' : ''}" id="fcard" role="button" tabindex="0" aria-label="Retourner la carte" data-action="flip">
             <div class="face front"><span class="tag">${tag}</span>${speakBtn(q)}${imgHtml(qi)}${textBlock(q)}</div>
             <div class="face back">${speakBtn(a)}${card.emoji ? `<div class="card-emoji" aria-hidden="true">${esc(card.emoji)}</div>` : ''}${imgHtml(ai)}${textBlock(a)}</div>
@@ -662,12 +662,9 @@
     updatePrioBtn(card);
   }
 
-  // Scintillement léger sur le contour de la carte dès 10 réussites d'affilée (positions fixes le long du bord,
-  // phases décalées : des étincelles qui s'allument et s'éteignent, sans jamais clignoter d'un bloc).
-  const SPARKS = [[8, 0], [31, 0], [57, 0], [84, 0], [100, 18], [100, 52], [100, 83], [90, 100], [62, 100], [35, 100], [12, 100], [0, 74], [0, 41], [0, 12]];
-  function sparklesHtml() {
-    return `<div class="sparkles" aria-hidden="true">${SPARKS.map(([x, y], i) =>
-      `<i style="--x:${x}%;--y:${y}%;--t:${(-((i * 0.37) % 1.8)).toFixed(2)}s;--s:${(i % 3) ? 1 : 1.35}"></i>`).join('')}</div>`;
+  // Dès 10 réussites d'affilée : un reflet qui balaie la carte et une vague de lumière qui court le long de son contour.
+  function sheenHtml() {
+    return '<div class="sheen" aria-hidden="true"><i class="sheen-ring"></i><i class="sheen-glint"></i></div>';
   }
 
   // Les points de combo : un par série terminée, de la couleur de la chaleur atteinte
@@ -2069,6 +2066,25 @@
     if (!brandNew) showNews();
   }
 
+  // ---------- Citrouille du bas de page ----------
+  // Un des 7 sprites (assets/pumpkins/p0..p6.svg), tiré au hasard à chaque chargement, jamais le même deux fois de suite.
+  const PUMPKINS = 7;
+  function showPumpkin() {
+    const box = $('#pumpkin');
+    if (!box) return;
+    let last = -1;
+    try { last = Number(localStorage.getItem('flashjap.pumpkin')); } catch (e) { /* facultatif */ }
+    let n;
+    do { n = Math.floor(Math.random() * PUMPKINS); } while (n === last && PUMPKINS > 1);
+    try { localStorage.setItem('flashjap.pumpkin', String(n)); } catch (e) { /* facultatif */ }
+    const src = `assets/pumpkins/p${n}.svg`;
+    box.querySelector('img').src = src;
+    // Le reflet est un dégradé masqué par la silhouette de la citrouille : il ne brille que sur elle
+    const shine = box.querySelector('.shine');
+    shine.style.webkitMaskImage = shine.style.maskImage = `url(${src})`;
+    box.hidden = false;
+  }
+
   // ---------- Démarrage ----------
   store.load();
   audio.enabled = store.state.settings.sound;
@@ -2077,5 +2093,6 @@
   updateSyncBadge();
   renderHome();
   if (FJ.release) { const c = document.querySelector('.credits'); if (c) c.textContent += ' · v' + FJ.release.version; }
+  showPumpkin();
   setTimeout(maybeAnnounce, 700);
 })();

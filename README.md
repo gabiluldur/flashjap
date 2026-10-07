@@ -75,7 +75,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - « Toutes les mises à jour » garde tous les paquets (les nouveaux arrivants les retrouvent après le pack de base). Le choix intégré / plus tard est dans les réglages, donc synchronisé entre appareils.
 - Firestore : collection `packs` (lecture pour les comptes admis, écriture propriétaire seul, 900 Ko max par paquet) et document sentinelle `config/admin` lisible par le seul propriétaire. Règles : `data/firestore.rules`.
 ## Combos
-- Dès 10 réussites d'affilée, le contour de la carte scintille légèrement ; au-delà de 10 le compteur tremble (réduit si « réduire les animations » est activé).
+- Dès 10 réussites d'affilée, un reflet balaie la carte et une vague de lumière court le long de son contour ; au-delà de 10 le compteur tremble. Rien de tout cela si l'appareil demande de réduire les animations.
 - Une série de 3 réussites ou plus qui s'achève (sur un échec, ou à la fin de la session) laisse un **point** sous le compteur, de la couleur de la chaleur atteinte (3, 5, 10, 20). Les repasses de fin de boucle n'interrompent pas la série.
 - À la fin de la session, chaque point rapporte **1 XP bonus**, compté dans une petite animation du bilan (le total « XP gagnés » l'inclut).
 
@@ -95,3 +95,6 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 ## Fichiers
 - `js/csv.js` import CSV · `js/srs.js` Leitner + XP · `js/levels.js` niveaux · `js/store.js` stockage · `js/audio.js` sons · `js/release.js` version + annonce · `js/app.js` interface.
 - `js/store.js` est le seul point d'accès aux données : c'est là que se branchera la synchro plus tard.
+
+## Citrouille
+- En bas de l'appli, un sprite tiré au hasard parmi 7 (`assets/pumpkins/p0..p6.svg`), jamais le même deux chargements de suite (dernier tirage retenu sur l'appareil). Un reflet brillant la balaie de temps en temps : un dégradé masqué par la silhouette du sprite (donc pas de reflet si l'appli est ouverte directement depuis le fichier, le navigateur refuse alors le masque).

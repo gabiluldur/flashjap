@@ -532,20 +532,40 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 .bonus p { margin: 0; text-align: center; }
 @keyframes dot-in { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.7); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 
-/* ---------- Scintillement du contour de la carte (10 réussites d'affilée ou plus) ---------- */
-.sparkles { position: absolute; inset: -3px; pointer-events: none; z-index: 3; }
-.sparkles i {
-  position: absolute; left: var(--x); top: var(--y);
-  width: calc(9px * var(--s, 1)); height: calc(9px * var(--s, 1));
-  margin: calc(-4.5px * var(--s, 1)) 0 0 calc(-4.5px * var(--s, 1));
-  background: var(--spark, #ffc65a);
-  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
-  opacity: 0;
-  animation: twinkle 1.8s ease-in-out infinite;
-  animation-delay: var(--t, 0s);
+/* ---------- Reflet et vague de lumière sur la carte (10 réussites d'affilée ou plus) ---------- */
+@property --a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.sheen { position: absolute; inset: 0; border-radius: var(--radius); overflow: hidden; pointer-events: none; z-index: 3; --wave: #ffc65a; }
+.session[data-heat="4"] .sheen { --wave: #fff0c0; }
+.sheen i { position: absolute; inset: 0; border-radius: inherit; }
+/* la vague : un arc de lumière qui court le long du contour */
+.sheen-ring {
+  padding: 3px;
+  background: conic-gradient(from var(--a), transparent 0 52%, color-mix(in srgb, var(--wave) 70%, transparent) 90%, var(--wave) 99%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: wave-run 3.4s linear infinite;
 }
-.session[data-heat="4"] .sparkles i { --spark: #fff0c0; }
-@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0); } 40% { opacity: .95; transform: scale(1) rotate(45deg); } 65% { opacity: .15; transform: scale(.55) rotate(90deg); } }
+/* le reflet : une bande de lumière qui balaie la carte, puis une pause */
+.sheen-glint {
+  background: linear-gradient(110deg, transparent 38%, rgba(255, 214, 140, .14) 46%, rgba(255, 255, 255, .24) 50%, rgba(255, 214, 140, .14) 54%, transparent 62%) 100% 0 / 260% 100% no-repeat;
+  animation: glint 3.4s ease-in-out .5s infinite;
+}
+@keyframes wave-run { to { --a: 360deg; } }
+@keyframes glint { 0% { background-position: 100% 0; } 45%, 100% { background-position: 0 0; } }
+
+/* ---------- Citrouille du bas de page (sprite tiré au hasard à chaque chargement) ---------- */
+.pumpkin { position: relative; width: 68px; height: 68px; margin: 22px auto 0; pointer-events: none; user-select: none; }
+.pumpkin[hidden] { display: none; }
+.pumpkin img, .pumpkin .shine { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pumpkin img { object-fit: contain; filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .22)); }
+.pumpkin .shine {
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .85) 50%, transparent 62%) 100% 0 / 260% 100% no-repeat;
+  animation: glint 4.6s ease-in-out 1.2s infinite;
+}
 
 /* ---------- Annonce de mise à jour ---------- */
 .news-box { padding-top: 18px; }
@@ -555,6 +575,7 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 .news-box li::marker { color: var(--xp); }
 
 @media (prefers-reduced-motion: reduce) {
-  .sparkles { display: none; }
+  .sheen { display: none; }
+  .pumpkin .shine { animation: none; opacity: 0; }
   .dot.new, .bonus .dot.pop { animation: none; opacity: 1; }
 }
