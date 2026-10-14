@@ -104,4 +104,5 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Les confettis suivent le temps réel (`requestAnimationFrame` + `dt`) : même vitesse sur un écran 60 Hz et 144 Hz.
 
 ## Mode sombre
-- Par défaut l'appli suit le réglage de l'appareil. L'interrupteur ☀️/🌙 (tout en bas) impose clair ou sombre ; le choix est retenu sur l'appareil (`localStorage`, clé `flashjap.theme`) et appliqué avant le premier affichage (petit script dans `index.html`), donc sans flash. Les couleurs sont des variables CSS : thème sombre sous `:root[data-theme="dark"]`, et sous `prefers-color-scheme` tant que rien n'est imposé.
+- **Sombre par défaut**, quel que soit le réglage de l'appareil. L'interrupteur ☀️/🌙 (tout en bas de l'**accueil** uniquement) passe en clair ; seul ce choix « clair » est retenu sur l'appareil (`localStorage`, clé `flashjap.theme`). Un petit script de `index.html` pose `data-theme` sur `<html>` avant le premier affichage, donc sans flash.
+- Les couleurs sont des variables CSS : le clair est le thème de base, le sombre vit sous `:root[data-theme="dark"]`. L'écran affiché est publié sur `<body data-view>` (voir `setView` dans `js/app.js`), ce qui permet au CSS de ne montrer l'interrupteur que sur l'accueil.

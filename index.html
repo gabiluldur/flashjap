@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>Flash Jap</title>
-  <script>/* thème choisi : appliqué avant le premier affichage, pour éviter un flash clair */try { var t = localStorage.getItem("flashjap.theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { /* facultatif */ }</script>
+  <script>/* thème : sombre par défaut ; seul un choix explicite « clair » (interrupteur) est retenu. Appliqué avant le premier affichage, sans flash. */var t = "dark"; try { if (localStorage.getItem("flashjap.theme") === "light") t = "light"; } catch (e) { /* facultatif */ } document.documentElement.dataset.theme = t;</script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

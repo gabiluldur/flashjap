@@ -15,6 +15,11 @@
   const MASTER_XP = 100; // bonus unique quand on déclare un mot "masterisé"
 
   let view = 'home'; // home | session | summary | words
+  // L'écran affiché est aussi publié sur <body> (data-view) : le CSS s'en sert, par exemple pour n'afficher l'interrupteur de thème que sur l'accueil.
+  function setView(v) {
+    view = v;
+    document.body.dataset.view = v;
+  }
   let sess = null;
   let wordsFilter = 'all';
   let wordsQuery = '';
@@ -472,7 +477,7 @@
   }
 
   function renderHome() {
-    view = 'home';
+    setView('home');
     const s = store.state;
     const now = Date.now();
     const c = store.counts(now, 'main');
@@ -616,7 +621,7 @@
   function renderSession() {
     if ('speechSynthesis' in window) speechSynthesis.cancel(); // pas de lecture qui continue sur la carte suivante
     if (sess.idx >= sess.queue.length) return sess.done.size ? renderSummary() : (sess = null, renderHome());
-    view = 'session';
+    setView('session');
     sess.flipped = false;
     sess.busy = false;
     sess.cardStart = Date.now();
@@ -932,7 +937,7 @@
   }
 
   function renderSummary() {
-    view = 'summary';
+    setView('summary');
     // Bonus des séries de combo : la série en cours s'achève avec la session ; chaque point rapporte 1 XP
     if (!sess.bonusDone) {
       sess.bonusDone = true;
@@ -1009,7 +1014,7 @@
   const KANJI_MODES = [['auto', 'Auto'], ['force', 'Kanji'], ['off', 'Classique']];
 
   function renderAddCard() {
-    view = 'add';
+    setView('add');
     addKanjiMode = 'auto';
     $('#app').innerHTML = `
       <section class="panel">
@@ -1270,7 +1275,7 @@
   }
 
   function renderWizard() {
-    view = 'import';
+    setView('import');
     if (!wiz || wiz.stage === 'source') {
       $('#app').innerHTML = `
         <section class="panel">
@@ -1415,7 +1420,7 @@
   function renderEditCard(id) {
     const card = store.byId(id);
     if (!card) return renderWords();
-    view = 'edit';
+    setView('edit');
     const kview = card.state !== 'mastered' && kanji.view(card) ? true : card.kanjiForce === true;
     edit = {
       id,
@@ -1526,7 +1531,7 @@
   }
 
   function renderWords() {
-    view = 'words';
+    setView('words');
     const cards = store.state.cards;
     const count = (f) => (['aside', 'removed', 'mastered'].includes(f) ? cards.filter((c) => c.state === f).length : null);
     $('#app').innerHTML = `
@@ -1719,7 +1724,7 @@
   function renderPackView(id) {
     const p = packById(id);
     if (!p) return renderHome();
-    view = 'pack';
+    setView('pack');
     const cards = FJ.csv.parseCards(p.csv).cards || [];
     const o = ownedKeys();
     const fresh = cards.filter((c) => !isOwned(c, o)).length;
@@ -2043,12 +2048,11 @@
   });
 
   // ---------- Mode sombre ----------
-  // Sans choix, l'appli suit l'appareil. L'interrupteur impose clair ou sombre, retenu sur cet appareil.
+  // Sombre par défaut, quel que soit le réglage de l'appareil. L'interrupteur passe en clair ; le choix est retenu
+  // sur cet appareil (le petit script de index.html l'applique avant le premier affichage).
   const THEME_KEY = 'flashjap.theme';
-  const systemDark = () => !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
   function isDark() {
-    const t = document.documentElement.dataset.theme;
-    return t ? t === 'dark' : systemDark();
+    return document.documentElement.dataset.theme !== 'light';
   }
   function syncThemeSwitch() {
     const sw = $('#themeSwitch');
@@ -2063,11 +2067,6 @@
       try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* facultatif : valable jusqu'à la fermeture */ }
       syncThemeSwitch();
     });
-    // tant que rien n'est imposé, un changement de réglage de l'appareil se répercute sur l'interrupteur
-    if (window.matchMedia) {
-      const mq = matchMedia('(prefers-color-scheme: dark)');
-      if (mq.addEventListener) mq.addEventListener('change', syncThemeSwitch);
-    }
     syncThemeSwitch();
   }
 
