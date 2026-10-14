@@ -48,6 +48,18 @@
 
   FJ.audio = {
     enabled: true,
+    // Un "ding" de cloche par point de combo au décompte final : la gamme pentatonique monte d'un point à l'autre
+    ding(i = 0) {
+      if (!FJ.audio.enabled) return;
+      try {
+        const c = context();
+        if (!c) return;
+        const semis = [0, 2, 4, 7, 9][i % 5] + 12 * Math.min(Math.floor(i / 5), 1);
+        const f = 784 * Math.pow(2, semis / 12);
+        tone(c, f, 0, 0.34, 'sine', 0.08);
+        tone(c, f * 2, 0, 0.18, 'sine', 0.025); // petit harmonique : un timbre de clochette
+      } catch (e) { /* le son est optionnel */ }
+    },
     play(name) {
       if (!FJ.audio.enabled || !SOUNDS[name]) return;
       try {

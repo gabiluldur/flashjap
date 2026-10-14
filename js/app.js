@@ -941,7 +941,9 @@
       if (sess.dots.length) { gainXp(sess.dots.length); persist(); }
     }
     const bonus = sess.dots.length;
-    const bonusMs = Math.min(1800, 400 + 130 * bonus); // durée totale de la petite animation
+    // Le décompte des points commence une fois la fanfare passée ; chaque point apparaît avec son "ding" et fait monter le compteur
+    const TALLY_START = 1100;
+    const tallyStep = bonus ? Math.min(220, 1500 / bonus) : 0;
     const done = sess.done.size;
     const rate = sess.ok + sess.ko ? Math.round((sess.ok / (sess.ok + sess.ko)) * 100) : 0;
     const more = buildQueue(sess.track).items.length > 0;
@@ -973,7 +975,7 @@
           <div class="tile"><b>×${sess.bestCombo}</b><small>meilleur combo</small></div>
         </div>
         ${bonus ? `<div class="bonus">
-          <div class="bonus-dots">${sess.dots.map((d, i) => `<i class="dot pop" data-heat="${d.h}" title="Série de ${d.n}" style="animation-delay:${Math.round((bonusMs - 300) / bonus * i)}ms"></i>`).join('')}</div>
+          <div class="bonus-dots">${sess.dots.map((d, i) => `<i class="dot pop" data-heat="${d.h}" title="Série de ${d.n}" style="animation-delay:${Math.round(TALLY_START + tallyStep * i)}ms"></i>`).join('')}</div>
           <p class="muted small">Séries de combo : <b id="bonusXp">+0</b> XP bonus <span class="muted">(inclus ci-dessus)</span></p>
         </div>` : ''}
         <div class="actions" style="justify-content:center">
@@ -988,7 +990,15 @@
     audio.play('victory');
     FJ.fx.confetti({ count: [0, 70, 120, 180][stars] });
     FJ.fx.countUp($('#sumXp'), sess.xp, 1000, '+');
-    if (bonus) FJ.fx.countUp($('#bonusXp'), bonus, bonusMs, '+');
+    const s0 = sess;
+    for (let i = 0; i < bonus; i++) {
+      setTimeout(() => {
+        if (view !== 'summary' || sess !== s0) return; // on a déjà quitté ce bilan
+        audio.ding(i);
+        const b = $('#bonusXp');
+        if (b) b.textContent = '+' + (i + 1);
+      }, Math.round(TALLY_START + tallyStep * i));
+    }
     setTimeout(() => { const f = $('#sumFill'); if (f) f.style.width = to.pct + '%'; }, 80);
   }
 
@@ -2032,6 +2042,35 @@
     if (view === 'home') renderHome(); // rafraîchit le nombre de cartes "à réviser"
   });
 
+  // ---------- Mode sombre ----------
+  // Sans choix, l'appli suit l'appareil. L'interrupteur impose clair ou sombre, retenu sur cet appareil.
+  const THEME_KEY = 'flashjap.theme';
+  const systemDark = () => !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  function isDark() {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === 'dark' : systemDark();
+  }
+  function syncThemeSwitch() {
+    const sw = $('#themeSwitch');
+    if (sw) sw.setAttribute('aria-checked', String(isDark()));
+  }
+  function setupTheme() {
+    const sw = $('#themeSwitch');
+    if (!sw) return;
+    sw.addEventListener('click', () => {
+      const next = isDark() ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* facultatif : valable jusqu'à la fermeture */ }
+      syncThemeSwitch();
+    });
+    // tant que rien n'est imposé, un changement de réglage de l'appareil se répercute sur l'interrupteur
+    if (window.matchMedia) {
+      const mq = matchMedia('(prefers-color-scheme: dark)');
+      if (mq.addEventListener) mq.addEventListener('change', syncThemeSwitch);
+    }
+    syncThemeSwitch();
+  }
+
   // ---------- Annonce de mise à jour (une seule fois par appareil) ----------
   // Contenu et déclenchement : js/release.js. La version déjà annoncée est retenue sur l'appareil.
   const NEWS_KEY = 'flashjap.newsSeen';
@@ -2108,6 +2147,7 @@
   updateSyncBadge();
   renderHome();
   if (FJ.release) { const c = document.querySelector('.credits'); if (c) c.textContent += ' · v' + FJ.release.version; }
+  setupTheme();
   showPumpkin();
   setTimeout(maybeAnnounce, 700);
 })();

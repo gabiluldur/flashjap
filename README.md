@@ -77,7 +77,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 ## Combos
 - Dès 10 réussites d'affilée, une grosse lueur de braise dont l'intensité varie lentement brûle derrière la carte, avec de rares braises qui montent et un arc de lumière fait lentement le tour de son contour (9 s par tour) ; au-delà de 10 le compteur tremble. Rien de tout cela si l'appareil demande de réduire les animations.
 - Une série de 3 réussites ou plus qui s'achève (sur un échec, ou à la fin de la session) laisse un **point** sous le compteur, de la couleur de la chaleur atteinte (3, 5, 10, 20). Les repasses de fin de boucle n'interrompent pas la série.
-- À la fin de la session, chaque point rapporte **1 XP bonus**, compté dans une petite animation du bilan (le total « XP gagnés » l'inclut).
+- À la fin de la session, chaque point rapporte **1 XP bonus** : une fois la fanfare passée, les points apparaissent un à un, chacun avec un « ding » de cloche de plus en plus aigu (gamme pentatonique) et le compteur monte d'un cran (le total « XP gagnés » l'inclut).
 
 ## Annonce de mise à jour (« Quoi de neuf ? »)
 - `js/release.js` porte le numéro de version (affiché en tout petit en bas de l'accueil) et le contenu de l'annonce. Fenêtre unique : affichée une seule fois par appareil et par version, jamais à un tout nouvel utilisateur, jamais pendant une session.
@@ -102,3 +102,6 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 ## Confettis
 - Environ un confetti sur quatre est un petit sprite (`assets/confetti/` : chauve-souris noire qui monte en ondulant et s'envole par le haut de l'écran en battant des ailes, deux bonbons qui tournent et retombent lentement), dessiné sur le même canvas que les confettis classiques (`js/fx.js`). Tant qu'un sprite n'est pas chargé, ses places sont tenues par des confettis ordinaires.
 - Les confettis suivent le temps réel (`requestAnimationFrame` + `dt`) : même vitesse sur un écran 60 Hz et 144 Hz.
+
+## Mode sombre
+- Par défaut l'appli suit le réglage de l'appareil. L'interrupteur ☀️/🌙 (tout en bas) impose clair ou sombre ; le choix est retenu sur l'appareil (`localStorage`, clé `flashjap.theme`) et appliqué avant le premier affichage (petit script dans `index.html`), donc sans flash. Les couleurs sont des variables CSS : thème sombre sous `:root[data-theme="dark"]`, et sous `prefers-color-scheme` tant que rien n'est imposé.

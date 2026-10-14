@@ -17,8 +17,11 @@
   --radius: 16px;
 }
 
+:root { color-scheme: light dark; }
+
+/* Mode sombre : automatique selon l'appareil, ou imposé par l'interrupteur (data-theme sur <html>, voir app.js) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #14171f;
     --surface: #1d222d;
     --surface-2: #262c39;
@@ -33,6 +36,22 @@
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
   }
 }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #14171f;
+  --surface: #1d222d;
+  --surface-2: #262c39;
+  --ink: #eceef3;
+  --muted: #98a0b3;
+  --line: #2d3443;
+  --accent: #7a9be0;
+  --accent-ink: #10131a;
+  --xp: #e3b04f;
+  --ok: #4cb37d;
+  --ko: #e2734f;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
+}
+:root[data-theme="light"] { color-scheme: light; }
 
 * { box-sizing: border-box; }
 
@@ -602,3 +621,12 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
   .pumpkin .shine { animation: none; opacity: 0; }
   .dot.new, .bonus .dot.pop { animation: none; opacity: 1; }
 }
+
+/* ---------- Interrupteur mode sombre ---------- */
+.theme-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 26px 0 0; font-size: 1rem; user-select: none; }
+.switch { position: relative; width: 46px; height: 26px; border-radius: 13px; border: 1px solid var(--line); background: var(--surface-2); cursor: pointer; padding: 0; transition: background .2s, border-color .2s; }
+.switch i { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--ink); opacity: .8; transition: transform .2s; }
+.switch[aria-checked="true"] { background: var(--accent); border-color: transparent; }
+.switch[aria-checked="true"] i { transform: translateX(20px); background: var(--accent-ink); opacity: 1; }
+.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .switch, .switch i { transition: none; } }
