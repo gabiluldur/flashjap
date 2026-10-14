@@ -8,3 +8,6 @@ data/
 Thumbs.db
 .DS_Store
 *.log
+
+# Documents de référence (manuels, PDF) : sous droit d'auteur, jamais publiés
+Ressources/
