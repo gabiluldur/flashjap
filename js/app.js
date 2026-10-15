@@ -367,7 +367,38 @@
     else refreshNotes();
   }
 
-  FJ.ui = { refresh, syncChanged, notesChanged, packsChanged: (...a) => packsChanged(...a), toast };
+  // Bulle publique : total des cartes révisées par tous les comptes (publié par js/sync.js, lu en une agrégation serveur)
+  const communityTotal = () => (FJ.communityUi && FJ.communityUi.total != null ? FJ.communityUi.total : null);
+  let communityAnimated = false; // le chiffre monte de 0 une seule fois par chargement
+
+  function communityHtml() {
+    const total = FJ.syncUi.phase === 'signedin' ? communityTotal() : null;
+    if (total === null) return '';
+    return `<section class="panel community" id="communityBox">
+      <div class="community-num" id="communityNum">${communityAnimated ? fmtN(total) : '0'}</div>
+      <p class="community-label">Nombre de cartes cumulées depuis le début</p>
+    </section>`;
+  }
+
+  function animateCommunity() {
+    const el = $('#communityNum');
+    const total = communityTotal();
+    if (!el || total === null) return;
+    if (communityAnimated) { el.textContent = fmtN(total); return; }
+    communityAnimated = true;
+    FJ.fx.countUp(el, total, 1600);
+  }
+
+  function communityChanged() {
+    if (view !== 'home') return;
+    const should = FJ.syncUi.phase === 'signedin' && communityTotal() !== null;
+    if (!!$('#communityBox') !== should) renderHome(); // la bulle apparaît dès que le total arrive
+    else animateCommunity();
+    const m = $('#memberCount'); // compteur de comptes (administrateur), mis à jour sans refaire le formulaire
+    if (m && FJ.communityUi && FJ.communityUi.members != null) m.textContent = fmtN(FJ.communityUi.members);
+  }
+
+  FJ.ui = { refresh, syncChanged, notesChanged, communityChanged, packsChanged: (...a) => packsChanged(...a), toast };
 
   // ---------- Accueil ----------
   function startBlock(track, counts, label) {
@@ -569,9 +600,13 @@
         </details>
       </section>
 
+      ${communityHtml()}
+
       ${FJ.syncUi.phase === 'signedin' ? `<section class="panel notes" id="notesBox">${notesInner()}</section>` : ''}
 
       <section class="panel sync-panel" id="syncBox">${syncInner()}</section>`;
+    animateCommunity();
+    if (FJ.syncUi.phase === 'signedin' && FJ.sync && FJ.sync.refreshCommunity) FJ.sync.refreshCommunity(); // relu au plus toutes les 2 min
   }
 
   // ---------- Session ----------
@@ -819,6 +854,7 @@
         const r = srs.review(store.ensureProgress(card, sess.track), ok, now);
         const xp = srs.xpFor(r, ok, sess.combo);
         s.stats.reviews++;
+        if (FJ.sync && FJ.sync.tallyChanged) FJ.sync.tallyChanged(); // cumul de la communauté : envoi regroupé
         store.today().reviews++;
         gainXp(xp);
         ok ? sess.ok++ : sess.ko++;
@@ -938,6 +974,7 @@
 
   function renderSummary() {
     setView('summary');
+    if (FJ.sync && FJ.sync.flushTally) FJ.sync.flushTally(); // fin de session : le cumul part tout de suite
     // Bonus des séries de combo : la série en cours s'achève avec la session ; chaque point rapporte 1 XP
     if (!sess.bonusDone) {
       sess.bonusDone = true;
@@ -1662,7 +1699,11 @@
     const all = items.length
       ? `<details id="packsAll"${packUi.allOpen ? ' open' : ''}><summary>Toutes les mises à jour (${items.length})</summary>${items.map((p) => packRow(p, false)).join('')}</details>`
       : '<p class="muted small" style="margin:0">Aucun paquet publié pour le moment.</p>';
-    return head + all + (FJ.packsUi.admin ? packAdminHtml() : '');
+    const members = FJ.communityUi && FJ.communityUi.members != null ? fmtN(FJ.communityUi.members) : '…';
+    const adminInfo = FJ.packsUi.admin
+      ? `<p class="muted small" style="margin:10px 0 0">👥 <b id="memberCount">${members}</b> comptes enregistrés <span title="Comptes ayant ouvert l'appli depuis l'ajout de ce compteur. Le total exact est dans Firebase, onglet Authentication.">(ⓘ)</span></p>`
+      : '';
+    return head + all + adminInfo + (FJ.packsUi.admin ? packAdminHtml() : '');
   }
 
   function refreshPacks() {
@@ -2038,6 +2079,7 @@
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       if (sess && view === 'session') sess.hiddenAt = Date.now();
+      if (FJ.sync && FJ.sync.flushTally) FJ.sync.flushTally(); // l'appli passe en arrière-plan : on envoie ce qui reste
       return;
     }
     if (sess && sess.hiddenAt) {

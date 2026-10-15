@@ -5,6 +5,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signO
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
   collection, doc, onSnapshot, writeBatch, setDoc, deleteDoc, getDoc, serverTimestamp, query, orderBy, limit,
+  getAggregateFromServer, getCountFromServer, sum,
 } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
 
@@ -83,6 +84,7 @@ function startSync(user) {
   core.start();
   startNotes(user.uid);
   startPacks();
+  startCommunity(user.uid);
   publish();
 }
 
@@ -93,6 +95,7 @@ function stopSync() {
   FJ.sync.replaceAll = () => Promise.resolve();
   stopNotes();
   stopPacks();
+  stopCommunity();
 }
 
 // ---------- Petits mots publics ("notes") ----------
@@ -160,6 +163,7 @@ function startPacks() {
     if (gen !== packsGen) return;
     packs.admin = true;
     if (ui().packsChanged) ui().packsChanged();
+    fetchMembers(); // le nombre de comptes enregistrés n'est lisible que par le propriétaire
   }).catch(() => { /* refusé par les règles : pas le propriétaire */ });
 }
 
@@ -170,8 +174,97 @@ function stopPacks() {
   unsubPacks = null;
 }
 
+// ---------- Compteurs de la communauté ----------
+// 1) Total public des cartes révisées. Chaque compte publie son propre cumul dans tally/{uid} : un seul nombre qui ne
+//    fait que monter, tiré de stats.reviews (déjà fusionné entre appareils, donc jamais compté deux fois). Le total est
+//    une agrégation `sum` calculée côté serveur : le navigateur ne télécharge aucun document, et Firestore ne facture
+//    qu'une lecture pour 1000 comptes. Un envoi par session, pas un par carte.
+// 2) Nombre de comptes (administrateur uniquement) : un marqueur members/{uid} (une date, rien d'autre) créé une fois
+//    par compte ; seul le propriétaire peut lister cette collection (règles Firestore).
+const community = (FJ.communityUi = FJ.communityUi || {});
+Object.assign(community, { total: null, members: null });
+const TALLY_DELAY = 45000; // regroupe les envois : au plus un toutes les 45 s pendant une session
+const TOTAL_TTL = 120000; // le total n'est relu qu'au plus une fois toutes les 2 minutes
+let tallyTimer = null;
+let tallyBusy = false;
+let totalAt = 0;
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* facultatif */ } };
+const communityChanged = () => { if (ui().communityChanged) ui().communityChanged(); };
+
+async function fetchTotal(force) {
+  if (!auth.currentUser) return;
+  if (!force && Date.now() - totalAt < TOTAL_TTL) return;
+  totalAt = Date.now();
+  try {
+    const snap = await getAggregateFromServer(collection(db, 'tally'), { total: sum('reviews') });
+    community.total = Number(snap.data().total) || 0;
+    communityChanged();
+  } catch (e) { /* hors-ligne, ou règles pas encore publiées : la bulle reste masquée */ }
+}
+
+async function fetchMembers() {
+  try {
+    const snap = await getCountFromServer(collection(db, 'members'));
+    community.members = snap.data().count;
+    communityChanged();
+  } catch (e) { /* règles pas encore publiées */ }
+}
+
+async function ensureMember(uid) {
+  if (lsGet('flashjap.member') === uid) return;
+  try {
+    const ref = doc(db, 'members', uid);
+    if (!(await getDoc(ref)).exists()) await setDoc(ref, { createdAt: serverTimestamp() });
+    lsSet('flashjap.member', uid);
+  } catch (e) { /* retenté au prochain lancement */ }
+}
+
+// Appelé après chaque révision : programme l'envoi (regroupé)
+function tallyChanged() {
+  if (!auth.currentUser) return;
+  clearTimeout(tallyTimer);
+  tallyTimer = setTimeout(flushTally, TALLY_DELAY);
+}
+
+// Publie le cumul de ce compte s'il a augmenté. Appelé en fin de session et quand l'onglet est masqué.
+async function flushTally() {
+  clearTimeout(tallyTimer);
+  tallyTimer = null;
+  const user = auth.currentUser;
+  if (!user || tallyBusy) return;
+  const n = Math.floor((store.state.stats && store.state.stats.reviews) || 0);
+  const key = 'flashjap.tally.' + user.uid;
+  if (n <= (Number(lsGet(key)) || 0)) return;
+  tallyBusy = true;
+  try {
+    await setDoc(doc(db, 'tally', user.uid), { reviews: n });
+    lsSet(key, String(n));
+    fetchTotal(true);
+  } catch (e) { /* retenté à la prochaine occasion (les règles refusent aussi un cumul qui baisserait) */ } finally {
+    tallyBusy = false;
+  }
+}
+
+function startCommunity(uid) {
+  ensureMember(uid);
+  fetchTotal(true);
+  // un peu après la connexion, le temps que la synchro ait ramené les compteurs des autres appareils
+  tallyTimer = setTimeout(flushTally, 8000);
+}
+
+function stopCommunity() {
+  clearTimeout(tallyTimer);
+  tallyTimer = null;
+  totalAt = 0;
+  Object.assign(community, { total: null, members: null });
+}
+
 FJ.sync = {
   replaceAll: () => Promise.resolve(),
+  tallyChanged,
+  flushTally,
+  refreshCommunity: () => fetchTotal(false),
   async publishPack({ title, desc, csv, count }) {
     if (!auth.currentUser) return false;
     try {
