@@ -377,6 +377,7 @@
     return `<section class="panel community" id="communityBox">
       <div class="community-num" id="communityNum">${communityAnimated ? fmtN(total) : '0'}</div>
       <p class="community-label">Nombre de cartes cumulées depuis le début</p>
+      <p class="community-sub">(Tous les apprenants confondus)</p>
     </section>`;
   }
 
@@ -854,7 +855,6 @@
         const r = srs.review(store.ensureProgress(card, sess.track), ok, now);
         const xp = srs.xpFor(r, ok, sess.combo);
         s.stats.reviews++;
-        if (FJ.sync && FJ.sync.tallyChanged) FJ.sync.tallyChanged(); // cumul de la communauté : envoi regroupé
         store.today().reviews++;
         gainXp(xp);
         ok ? sess.ok++ : sess.ko++;

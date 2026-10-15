@@ -618,3 +618,4 @@ body:not([data-view="home"]) .theme-row { display: none; }
 .community { text-align: center; padding: 30px 16px 26px; }
 .community-num { font-size: clamp(2.6rem, 15vw, 4.2rem); font-weight: 800; line-height: 1.05; color: var(--xp); font-variant-numeric: tabular-nums; text-shadow: 0 0 22px color-mix(in srgb, var(--xp) 40%, transparent); }
 .community-label { margin: 8px 0 0; color: var(--muted); font-size: .95rem; }
+.community-sub { margin: 2px 0 0; color: var(--muted); font-size: .82rem; opacity: .8; }
