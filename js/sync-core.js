@@ -109,9 +109,9 @@
       if (re > le) { // le serveur vient d'une réinitialisation / restauration plus récente : il fait foi
         s.stats = Object.assign({}, rs);
         s.daily = JSON.parse(JSON.stringify(data.daily || {}));
-        return;
+        return 'remote';
       }
-      if (re < le) return; // notre réinitialisation est plus récente : on la garde
+      if (re < le) return 'local'; // notre réinitialisation est plus récente : on la garde
       s.stats = s.stats || {};
       maxInto(s.stats, rs);
       s.daily = s.daily || {};
@@ -119,6 +119,19 @@
         s.daily[day] = s.daily[day] || {};
         maxInto(s.daily[day], data.daily[day]);
       }
+      return 'merge';
+    }
+
+    // Succès (réglages `ach` : id -> date de déblocage) et petits compteurs (`cnt`) : eux aussi ne font que croître.
+    // On garde l'union des deux côtés (deux appareils qui débloquent chacun un succès ne s'écrasent pas), sauf après
+    // une réinitialisation / restauration volontaire, qui suit la même règle d'époque que les compteurs ci-dessus.
+    function mergeAchievements(s, remote, localAch, localCnt, mode) {
+      if (mode === 'local') { s.settings.ach = localAch || {}; s.settings.cnt = localCnt || {}; return; }
+      if (mode === 'remote') { s.settings.ach = Object.assign({}, remote.ach); s.settings.cnt = Object.assign({}, remote.cnt); return; }
+      s.settings.ach = Object.assign({}, remote.ach, localAch);
+      const cnt = Object.assign({}, remote.cnt);
+      for (const k of Object.keys(localCnt || {})) cnt[k] = Math.max(cnt[k] || 0, localCnt[k]);
+      s.settings.cnt = cnt;
     }
 
     function applyRemoteMeta(data) {
@@ -128,11 +141,14 @@
       const lu = s.metaU || 0;
       const ru = data._u || 0;
       lastU = Math.max(lastU, ru);
-      mergeCounters(s, data);
+      const mode = mergeCounters(s, data);
+      const localAch = s.settings.ach;
+      const localCnt = s.settings.cnt;
       if (ru > lu) { // réglages : le plus récent gagne
         s.settings = Object.assign({}, s.settings, data.settings);
         s.metaU = ru;
       }
+      mergeAchievements(s, data.settings || {}, localAch, localCnt, mode);
       // Le serveur a `data` ; si notre fusion contient davantage, le prochain envoi le corrigera.
       shadowMeta = canon({ stats: data.stats, daily: data.daily, settings: data.settings });
       return metaBody() !== before;

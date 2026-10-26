@@ -328,6 +328,7 @@
       Object.assign(noteDraft, { open: false, text: '', mood: null, anon: $('#noteAnon').checked });
       if (FJ.notesUi) FJ.notesUi.sentToday = true;
       toast('Mot publié, merci !', true);
+      FJ.ach.unlockId('note');
     } else if (res === 'already') {
       if (FJ.notesUi) FJ.notesUi.sentToday = true;
       toast("Vous avez déjà publié un mot aujourd'hui.");
@@ -348,6 +349,7 @@
 
   function syncChanged() {
     updateSyncBadge();
+    if (FJ.syncUi.phase === 'signedin' && !(FJ.store.state.settings.ach || {}).cloud) scheduleAchCheck(); // succès "Nuagiste"
     const box = $('#syncBox');
     if (box) box.innerHTML = syncInner();
     if (view === 'home' && (!!$('#notesBox') || !!$('#packsBox')) && FJ.syncUi.phase !== 'signedin') renderHome(); // déconnexion : les zones disparaissent
@@ -356,6 +358,7 @@
   // Appelé quand des données arrivent d'un autre appareil : rafraîchit l'affichage sans toucher à une session en cours.
   function refresh() {
     updateHeader();
+    scheduleAchCheck(); // des données d'un autre appareil peuvent débloquer des succès
     if (view === 'home') renderHome();
     else if (view === 'words') renderWordsList();
   }
@@ -399,7 +402,7 @@
     if (m && FJ.communityUi && FJ.communityUi.members != null) m.textContent = fmtN(FJ.communityUi.members);
   }
 
-  FJ.ui = { refresh, syncChanged, notesChanged, communityChanged, packsChanged: (...a) => packsChanged(...a), toast };
+  FJ.ui = { refresh, syncChanged, notesChanged, communityChanged, packsChanged: (...a) => packsChanged(...a), achChanged: () => achChanged(), openAch: () => renderAchievements(), toast };
 
   // ---------- Accueil ----------
   function startBlock(track, counts, label) {
@@ -605,7 +608,10 @@
 
       ${FJ.syncUi.phase === 'signedin' ? `<section class="panel notes" id="notesBox">${notesInner()}</section>` : ''}
 
-      <section class="panel sync-panel" id="syncBox">${syncInner()}</section>`;
+      <div class="acct-row">
+        <section class="panel sync-panel" id="syncBox">${syncInner()}</section>
+        <button type="button" class="ach-bubble" id="achBubble" data-action="ach-open" aria-label="Mes succès" title="Mes succès"${FJ.ach.count() ? '' : ' hidden'}>🏆<i class="ach-dot" id="achDot"${FJ.ach.count() > achSeen() ? '' : ' hidden'}></i></button>
+      </div>`;
     animateCommunity();
     if (FJ.syncUi.phase === 'signedin' && FJ.sync && FJ.sync.refreshCommunity) FJ.sync.refreshCommunity(); // relu au plus toutes les 2 min
   }
@@ -851,6 +857,8 @@
         sess.combo = ok ? sess.combo + 1 : 0;
         sess.bestCombo = Math.max(sess.bestCombo, sess.combo);
         sess.bump = ok;
+        if (sess.combo >= 10) FJ.ach.check(['cb10', 'cb20', 'cb30'], { combo: sess.combo });
+        FJ.ach.tick(); // succès liés à l'heure de la révision
 
         const r = srs.review(store.ensureProgress(card, sess.track), ok, now);
         const xp = srs.xpFor(r, ok, sess.combo);
@@ -861,7 +869,7 @@
         sess.done.add(item.id);
         if (!ok) sess.queue.push({ id: item.id, practice: true });
         if (sess.track === 'kanji') delete card.kprio; // la priorité Kanji ne dure que jusqu'à cette révision
-        if (kind === 'ok-kanji') flagKanjiPriority(card, now);
+        if (kind === 'ok-kanji') { flagKanjiPriority(card, now); FJ.ach.unlockId('miss'); }
 
         if (kind === 'ok-kanji') pop(`+${xp} XP`, `Revient ${srs.fmtDue(r.due, now)} · kanji en priorité`);
         else if (ok) pop(`+${xp} XP`, r.validated ? 'Carte validée !' : `Revient ${srs.fmtDue(r.due, now)}`);
@@ -1042,6 +1050,10 @@
       }, Math.round(TALLY_START + tallyStep * i));
     }
     setTimeout(() => { const f = $('#sumFill'); if (f) f.style.width = to.pct + '%'; }, 80);
+    // Succès de fin de session, une fois le décompte et la fanfare passés (sans rien superposer)
+    const doneN = sess.done.size;
+    const koN = sess.ko;
+    setTimeout(() => FJ.ach.check(null, { done: doneN, sessKo: koN }), Math.round(TALLY_START + tallyStep * bonus + 900));
   }
 
   // ---------- Ajouter une carte à la main ----------
@@ -1167,6 +1179,7 @@
     addedThisSession.unshift({ recto, verso, emoji });
     renderAddRecent();
     toast('Carte ajoutée ✓');
+    FJ.ach.unlockId('author');
     $('#addRecto').value = '';
     $('#addVerso').value = '';
     $('#addEmoji').value = '';
@@ -1534,6 +1547,7 @@
 
     persist();
     toast('Carte modifiée ✓');
+    FJ.ach.unlockId('author');
     expandedId = card.id;
     edit = null;
     renderWords();
@@ -1796,6 +1810,7 @@
     const parts = await runImport(res.cards);
     setPackStatus(id, 'done');
     audio.play('pack');
+    FJ.ach.unlockId('pack');
     toast(`${p.title} : ${parts.join(' · ')}`);
     renderHome();
   }
@@ -1866,6 +1881,7 @@
     a.download = `flash-jap-sauvegarde-${store.dayKey()}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    FJ.ach.unlockId('export');
   }
 
   async function importJson(file) {
@@ -1966,6 +1982,7 @@
     },
     'note-dismiss': (el) => dismissNote(el.dataset.id),
     'news-close': closeNews,
+    'ach-open': () => renderAchievements(),
     'pack-view': (el) => renderPackView(el.dataset.id),
     'pack-integrate': (el) => integratePack(el.dataset.id),
     'pack-later'(el) { setPackStatus(el.dataset.id, 'later'); refreshPacks(); },
@@ -2106,10 +2123,54 @@
     sw.addEventListener('click', () => {
       const next = isDark() ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
+      FJ.ach.bump('theme', ['theme']);
       try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* facultatif : valable jusqu'à la fermeture */ }
       syncThemeSwitch();
     });
     syncThemeSwitch();
+  }
+
+  // ---------- Succès ----------
+  // Moteur et liste : js/achievements.js. Ici : la bulle 🏆 de l'accueil, la liste des succès débloqués (les autres
+  // restent cachés) et le moment des vérifications.
+  const ACH_SEEN_KEY = 'flashjap.achSeen'; // nombre de succès déjà vus dans la liste, pour le point "nouveau"
+  function achSeen() {
+    try { return Number(localStorage.getItem(ACH_SEEN_KEY)) || 0; } catch (e) { return 0; }
+  }
+
+  function renderAchievements() {
+    setView('ach');
+    const list = FJ.ach.unlocked();
+    try { localStorage.setItem(ACH_SEEN_KEY, String(list.length)); } catch (e) { /* facultatif */ }
+    const fmt = (t) => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    $('#app').innerHTML = `
+      <section class="panel">
+        <div class="words-head">
+          <button class="btn ghost" data-action="home">← Accueil</button>
+          <h2 style="margin:0">🏆 Succès</h2>
+        </div>
+        ${list.map((a) => `<div class="ach-row"><span class="ach-ico" aria-hidden="true">${a.icon}</span><span class="ach-txt"><b>${esc(a.name)}</b><small>${esc(a.text)}</small></span><span class="ach-date">${fmt(a.at)}</span></div>`).join('')}
+        <p class="ach-more">${list.length < FJ.ach.total() ? 'Il reste des mystères…' : 'Tout est dévoilé. Bravo !'}</p>
+      </section>`;
+    window.scrollTo(0, 0);
+  }
+
+  // Un succès vient d'être débloqué : la bulle apparaît (au premier) et reçoit son point "nouveau"
+  function achChanged() {
+    if (view === 'ach') return renderAchievements();
+    const b = $('#achBubble');
+    if (!b) return;
+    b.hidden = !FJ.ach.count();
+    const dot = $('#achDot');
+    if (dot) dot.hidden = FJ.ach.count() <= achSeen();
+  }
+
+  // Vérification complète (rattrapage compris) : au chargement, quand des données arrivent d'un autre appareil, à la
+  // fin d'une session. Regroupée pour ne pas la répéter quand plusieurs événements arrivent d'un coup.
+  let achTimer = null;
+  function scheduleAchCheck(delay = 2000) {
+    clearTimeout(achTimer);
+    achTimer = setTimeout(() => FJ.ach.check(), delay);
   }
 
   // ---------- Annonce de mise à jour (une seule fois par appareil) ----------
@@ -2173,6 +2234,7 @@
     box.hidden = false;
     // Un toucher la fait rebondir (rejouable à volonté : on relance l'animation à chaque fois)
     box.addEventListener('click', () => {
+      FJ.ach.bump('pumpkin', ['cit5', 'cit50']);
       box.classList.remove('bounce');
       void box.offsetWidth;
       box.classList.add('bounce');
@@ -2189,6 +2251,7 @@
   renderHome();
   if (FJ.release) { const c = document.querySelector('.credits'); if (c) c.textContent += ' · v' + FJ.release.version; }
   setupTheme();
+  scheduleAchCheck(1500); // rattrapage : les succès déjà mérités se débloquent à ce premier chargement
   showPumpkin();
   setTimeout(maybeAnnounce, 700);
 })();

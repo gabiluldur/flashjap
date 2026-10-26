@@ -619,3 +619,35 @@ body:not([data-view="home"]) .theme-row { display: none; }
 .community-num { font-size: clamp(2.6rem, 15vw, 4.2rem); font-weight: 800; line-height: 1.05; color: var(--xp); font-variant-numeric: tabular-nums; text-shadow: 0 0 22px color-mix(in srgb, var(--xp) 40%, transparent); }
 .community-label { margin: 8px 0 0; color: var(--muted); font-size: .95rem; }
 .community-sub { margin: 2px 0 0; color: var(--muted); font-size: .82rem; opacity: .8; }
+
+/* ---------- Succès ---------- */
+#achToasts { position: fixed; right: 12px; bottom: calc(72px + env(safe-area-inset-bottom)); z-index: 12; display: grid; gap: 8px; justify-items: end; pointer-events: none; max-width: calc(100vw - 24px); }
+.ach-toast {
+  pointer-events: auto; cursor: pointer; text-align: left; font: inherit; color: var(--ink);
+  display: flex; align-items: center; gap: 12px; width: min(340px, calc(100vw - 24px));
+  background: var(--surface); border: 1px solid color-mix(in srgb, var(--xp) 55%, var(--line)); border-radius: 16px;
+  padding: 10px 14px 10px 12px; box-shadow: var(--shadow), 0 0 22px color-mix(in srgb, var(--xp) 25%, transparent);
+  animation: ach-in .45s cubic-bezier(.2, 1.2, .4, 1);
+}
+.ach-toast.out { animation: ach-out .35s ease-in forwards; }
+.ach-ico { font-size: 2rem; line-height: 1; flex: none; }
+.ach-txt { display: grid; gap: 1px; min-width: 0; }
+.ach-txt b { font-size: .98rem; }
+.ach-txt small { color: var(--muted); font-size: .82rem; line-height: 1.3; }
+@keyframes ach-in { from { opacity: 0; transform: translateX(40px) scale(.95); } to { opacity: 1; transform: none; } }
+@keyframes ach-out { to { opacity: 0; transform: translateX(40px); } }
+
+/* bulle 🏆 à côté de la bulle du compte (visible dès le premier succès) */
+.acct-row { display: flex; gap: 12px; align-items: stretch; }
+.acct-row .sync-panel { flex: 1; min-width: 0; }
+.ach-bubble { position: relative; flex: none; width: 64px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow); font-size: 1.7rem; cursor: pointer; display: grid; place-items: center; padding: 0; }
+.ach-bubble[hidden] { display: none; }
+.ach-dot { position: absolute; top: 9px; right: 9px; width: 10px; height: 10px; border-radius: 50%; background: var(--ko); box-shadow: 0 0 0 2px var(--surface); }
+.ach-dot[hidden] { display: none; }
+.ach-row { display: flex; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.ach-row:last-of-type { border-bottom: 0; }
+.ach-row .ach-ico { font-size: 2.1rem; width: 44px; text-align: center; }
+.ach-row .ach-txt { flex: 1; }
+.ach-row .ach-date { color: var(--muted); font-size: .76rem; white-space: nowrap; align-self: flex-start; }
+.ach-more { text-align: center; color: var(--muted); font-style: italic; margin: 14px 0 0; }
+@media (prefers-reduced-motion: reduce) { .ach-toast, .ach-toast.out { animation: none; } }
