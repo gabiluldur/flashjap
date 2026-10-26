@@ -76,7 +76,28 @@
     ['k145', '💯', 'Les 145 sont à toi', '145 kanji connus, autant que dans le pack de base.', (c) => c.kanji >= 145],
     ['miss', '🤝', 'Presque !', 'Tu connaissais le mot, pas le kanji. Honnêteté récompensée.'],
   ];
-  const BY_ID = new Map(A.map((a) => [a[0], { id: a[0], icon: a[1], name: a[2], text: a[3], test: a[4] }]));
+  // Comment on l'a obtenu : quelques mots, affichés sous la phrase (notification et liste)
+  const HOW = {
+    c100: '100 cartes révisées', c500: '500 cartes révisées', c1000: '1 000 cartes révisées',
+    c2000: '2 000 cartes révisées', c5000: '5 000 cartes révisées', c10000: '10 000 cartes révisées',
+    s5: '5 jours de suite', s10: '10 jours de suite', s20: '20 jours de suite', s30: '30 jours de suite',
+    back: 'Retour après une semaine de pause',
+    cit5: 'Citrouille touchée 5 fois', cit50: 'Citrouille touchée 50 fois', theme: 'Mode sombre basculé 5 fois',
+    night: 'Révision entre minuit et 4 h', early: 'Révision entre 4 h et 7 h',
+    note: 'Premier petit mot publié', pack: 'Premier paquet intégré', cloud: 'Première connexion au compte',
+    export: 'Première sauvegarde exportée', author: 'Carte ajoutée ou modifiée',
+    ses10: '10 sessions de révision', ses50: '50 sessions de révision', ses100: '100 sessions de révision',
+    cb10: '10 réussites d\'affilée', cb20: '20 réussites d\'affilée', cb30: '30 réussites d\'affilée',
+    perfect: 'Session de 20 cartes sans erreur', marathon: 'Session de 100 cartes',
+    stubborn: 'Une même carte ratée 5 fois',
+    w50: '50 mots connus', w100: '100 mots connus', w250: '250 mots connus', w500: '500 mots connus', w1000: '1 000 mots connus',
+    valid: 'Première carte validée', master: 'Premier mot masterisé',
+    t1: '1 h de révision', t5: '5 h de révision', t10: '10 h de révision', t24: '24 h de révision', t50: '50 h de révision',
+    l5: 'Niveau 5 atteint', l10: 'Niveau 10 atteint', l25: 'Niveau 25 atteint', l50: 'Niveau 50 atteint',
+    k25: '25 kanji connus', k100: '100 kanji connus', k145: '145 kanji connus',
+    miss: '« Je savais, mais pas le kanji »',
+  };
+  const BY_ID = new Map(A.map((a) => [a[0], { id: a[0], icon: a[1], name: a[2], text: a[3], how: HOW[a[0]] || '', test: a[4] }]));
   const dayNum = (key) => { const [y, m, d] = key.split('-').map(Number); return Math.floor(Date.UTC(y, m - 1, d) / 86400000); };
 
   // Contexte paresseux : chaque donnée n'est calculée qu'à la première lecture, une seule fois par vérification
@@ -128,9 +149,11 @@
     const el = document.createElement('button');
     el.type = 'button';
     el.className = 'ach-toast';
-    el.innerHTML = `<span class="ach-ico" aria-hidden="true">${item.icon}</span><span class="ach-txt"><b></b><small></small></span>`;
+    el.innerHTML = `<span class="ach-ico" aria-hidden="true">${item.icon}</span><span class="ach-txt"><b></b><small></small><small class="ach-how"></small></span>`;
     el.querySelector('b').textContent = item.name;
     el.querySelector('small').textContent = item.text;
+    const how = el.querySelector('.ach-how');
+    if (item.how) how.textContent = item.how; else how.remove();
     el.addEventListener('click', () => { if (FJ.ui && FJ.ui.openAch) FJ.ui.openAch(); end(); });
     box.appendChild(el);
     let ended = false;

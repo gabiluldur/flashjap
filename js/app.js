@@ -2149,7 +2149,7 @@
           <button class="btn ghost" data-action="home">← Accueil</button>
           <h2 style="margin:0">🏆 Succès</h2>
         </div>
-        ${list.map((a) => `<div class="ach-row"><span class="ach-ico" aria-hidden="true">${a.icon}</span><span class="ach-txt"><b>${esc(a.name)}</b><small>${esc(a.text)}</small></span><span class="ach-date">${fmt(a.at)}</span></div>`).join('')}
+        ${list.map((a) => `<div class="ach-row"><span class="ach-ico" aria-hidden="true">${a.icon}</span><span class="ach-txt"><b>${esc(a.name)}</b><small>${esc(a.text)}</small>${a.how ? `<small class="ach-how">${esc(a.how)}</small>` : ''}</span><span class="ach-date">${fmt(a.at)}</span></div>`).join('')}
         <p class="ach-more">${list.length < FJ.ach.total() ? 'Il reste des mystères…' : 'Tout est dévoilé. Bravo !'}</p>
       </section>`;
     window.scrollTo(0, 0);

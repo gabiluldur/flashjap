@@ -651,3 +651,4 @@ body:not([data-view="home"]) .theme-row { display: none; }
 .ach-row .ach-date { color: var(--muted); font-size: .76rem; white-space: nowrap; align-self: flex-start; }
 .ach-more { text-align: center; color: var(--muted); font-style: italic; margin: 14px 0 0; }
 @media (prefers-reduced-motion: reduce) { .ach-toast, .ach-toast.out { animation: none; } }
+.ach-txt .ach-how { color: var(--xp); font-size: .74rem; letter-spacing: .02em; margin-top: 2px; }
