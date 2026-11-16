@@ -580,7 +580,7 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
   100% { transform: scale(1, 1); }
 }
 /* le tas de neige laissé au sol après l'éclatement */
-.snowman .pile { position: absolute; left: 50%; bottom: -8px; width: min(300px, 84vw); margin-left: calc(min(300px, 84vw) / -2); aspect-ratio: 260 / 84; transform-origin: 50% 100%; transform: scale(.1, 0); opacity: 0; pointer-events: none; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .25)); }
+.snowman .pile { position: absolute; left: 50%; bottom: -4px; width: min(130px, 40vw); margin-left: calc(min(130px, 40vw) / -2); aspect-ratio: 260 / 84; transform-origin: 50% 100%; transform: scale(.1, 0); opacity: 0; pointer-events: none; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .25)); }
 .snowman .pile svg { display: block; width: 100%; height: 100%; }
 .snowman.burst { cursor: default; }
 .snowman.burst img { animation: snowman-out .18s ease-in forwards; }
