@@ -26,6 +26,8 @@
     ['back', '🌱', 'Le retour du héros', 'Pas de souci, les kanji t\'attendaient.', (c) => c.comeback],
 
     // Découvertes
+    ['snowkill', '☃️', 'Tueur de Noël', 'Il ne reste que de la poudre. Le Père Noël est au courant.'],
+    // (héritage d'Halloween : plus déblocables depuis que la citrouille est partie, mais conservés pour ceux qui les ont)
     ['cit5', '🎃', 'Tripoteur de citrouille', 'Elle a rebondi 5 fois. Elle n\'est pas rancunière.', (c) => c.cnt.pumpkin >= 5],
     ['cit50', '🎃', 'Dresseur de citrouille', 'Cinquante rebonds. Elle te fait confiance.', (c) => c.cnt.pumpkin >= 50],
     ['theme', '🌗', 'Hésitant du soir', 'Clair, sombre, clair… C\'est normal, c\'est l\'automne.', (c) => c.cnt.theme >= 5],
@@ -82,6 +84,7 @@
     c2000: '2 000 cartes révisées', c5000: '5 000 cartes révisées', c10000: '10 000 cartes révisées',
     s5: '5 jours de suite', s10: '10 jours de suite', s20: '20 jours de suite', s30: '30 jours de suite',
     back: 'Retour après une semaine de pause',
+    snowkill: 'Bonhomme de neige éclaté',
     cit5: 'Citrouille touchée 5 fois', cit50: 'Citrouille touchée 50 fois', theme: 'Mode sombre basculé 5 fois',
     night: 'Révision entre minuit et 4 h', early: 'Révision entre 4 h et 7 h',
     note: 'Premier petit mot publié', pack: 'Premier paquet intégré', cloud: 'Première connexion au compte',
@@ -97,6 +100,7 @@
     k25: '25 kanji connus', k100: '100 kanji connus', k145: '145 kanji connus',
     miss: '« Je savais, mais pas le kanji »',
   };
+  const LEGACY = ['cit5', 'cit50']; // Halloween : conservés, mais ne se débloquent plus
   const BY_ID = new Map(A.map((a) => [a[0], { id: a[0], icon: a[1], name: a[2], text: a[3], how: HOW[a[0]] || '', test: a[4] }]));
   const dayNum = (key) => { const [y, m, d] = key.split('-').map(Number); return Math.floor(Date.UTC(y, m - 1, d) / 86400000); };
 
@@ -189,12 +193,12 @@
 
   FJ.ach = {
     count: () => Object.keys(got()).filter((id) => BY_ID.has(id)).length,
-    total: () => BY_ID.size,
+    total: () => BY_ID.size - LEGACY.filter((id) => !got()[id]).length,
     // succès débloqués, du plus récent au plus ancien
     unlocked: () => Object.keys(got()).filter((id) => BY_ID.has(id)).map((id) => ({ ...BY_ID.get(id), at: got()[id] })).sort((a, b) => b.at - a.at),
     // Évalue les succès non débloqués (tous, ou seulement `ids`), avec des valeurs fournies par l'appli (`extra`)
     check(ids, extra) {
-      const todo = (ids || [...BY_ID.keys()]).map((id) => BY_ID.get(id)).filter((a) => a && a.test && !got()[a.id]);
+      const todo = (ids || [...BY_ID.keys()]).filter((id) => !LEGACY.includes(id)).map((id) => BY_ID.get(id)).filter((a) => a && a.test && !got()[a.id]);
       if (!todo.length) return [];
       const ctx = makeCtx(extra);
       return unlockMany(todo.filter((a) => a.test(ctx)));

@@ -523,7 +523,7 @@
 
     // Bulle principale : la révision. L'engrenage ouvre le tiroir des réglages (sélection de leçons + options de session).
     const review = c.total
-      ? `<section class="panel review">
+      ? `<section class="panel review"><img class="xmas-hat" src="assets/xmas/hat.svg" alt="" aria-hidden="true">
           <div class="review-head">
             <h2>Réviser</h2>
             <button class="gear${s.settings.catPool ? ' on' : ''}" data-action="toggle-settings" aria-expanded="${settingsOpen}" aria-label="Réglages de révision" title="Réglages de révision">${GEAR_SVG}</button>
@@ -620,6 +620,7 @@
   const heatOf = (n) => (n >= 20 ? 4 : n >= 10 ? 3 : n >= 5 ? 2 : n >= 3 ? 1 : 0);
 
   function startSession(track) {
+    audio.playXmas(); // morceau de Noël, une seule fois par chargement, au premier lancement d'une session
     const q = buildQueue(track);
     if (!q.items.length) return;
     settingsOpen = false; // au retour de la session, le tiroir des réglages est refermé
@@ -2215,31 +2216,37 @@
     if (!brandNew) showNews();
   }
 
-  // ---------- Citrouille du bas de page ----------
-  // Un des 7 sprites (assets/pumpkins/p0..p6.svg), tiré au hasard à chaque chargement, jamais le même deux fois de suite.
-  const PUMPKINS = 7;
-  function showPumpkin() {
-    const box = $('#pumpkin');
+  // ---------- Bonhomme de neige du bas de page ----------
+  // Un toucher l'écrase (squish) avec un « puff puff » et des éclaboussures de neige. Après 5 à 10 touchers (tirage au
+  // hasard à chaque chargement), il éclate en poudre dans un grand « pouf » et laisse un tas de neige au sol.
+  function showSnowman() {
+    const box = $('#snowman');
     if (!box) return;
-    let last = -1;
-    try { last = Number(localStorage.getItem('flashjap.pumpkin')); } catch (e) { /* facultatif */ }
-    let n;
-    do { n = Math.floor(Math.random() * PUMPKINS); } while (n === last && PUMPKINS > 1);
-    try { localStorage.setItem('flashjap.pumpkin', String(n)); } catch (e) { /* facultatif */ }
-    const src = `assets/pumpkins/p${n}.svg`;
-    box.querySelector('img').src = src;
-    // Le reflet est un dégradé masqué par la silhouette de la citrouille : il ne brille que sur elle
-    const shine = box.querySelector('.shine');
-    shine.style.webkitMaskImage = shine.style.maskImage = `url(${src})`;
+    const limit = 5 + Math.floor(Math.random() * 6);
+    let hits = 0;
+    let gone = false;
+    box.querySelector('img').src = 'assets/xmas/snowman.svg';
     box.hidden = false;
-    // Un toucher la fait rebondir (rejouable à volonté : on relance l'animation à chaque fois)
+    const center = () => { const r = box.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * 0.9, top: r.top + r.height * 0.4 }; };
     box.addEventListener('click', () => {
-      FJ.ach.bump('pumpkin', ['cit5', 'cit50']);
-      box.classList.remove('bounce');
+      if (gone) return;
+      hits++;
+      const p = center();
+      if (hits >= limit) {
+        gone = true;
+        audio.pouf();
+        FJ.fx.poof(p.x, p.y);
+        box.classList.add('burst');
+        FJ.ach.unlockId('snowkill');
+        return;
+      }
+      audio.puff();
+      FJ.fx.splash(p.x, p.top);
+      box.classList.remove('squish'); // rejouable à volonté : on relance l'animation à chaque toucher
       void box.offsetWidth;
-      box.classList.add('bounce');
+      box.classList.add('squish');
     });
-    box.addEventListener('animationend', (e) => { if (e.target === box) box.classList.remove('bounce'); });
+    box.addEventListener('animationend', (e) => { if (e.target === box) box.classList.remove('squish'); });
   }
 
   // ---------- Démarrage ----------
@@ -2252,6 +2259,7 @@
   if (FJ.release) { const c = document.querySelector('.credits'); if (c) c.textContent += ' · v' + FJ.release.version; }
   setupTheme();
   scheduleAchCheck(1500); // rattrapage : les succès déjà mérités se débloquent à ce premier chargement
-  showPumpkin();
+  showSnowman();
+  if (FJ.fx) FJ.fx.snowfall(); // pluie de neige au lancement (une fois par chargement)
   setTimeout(maybeAnnounce, 700);
 })();

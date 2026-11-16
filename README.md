@@ -96,11 +96,16 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - `js/csv.js` import CSV · `js/srs.js` Leitner + XP · `js/levels.js` niveaux · `js/store.js` stockage · `js/audio.js` sons · `js/release.js` version + annonce · `js/app.js` interface.
 - `js/store.js` est le seul point d'accès aux données : c'est là que se branchera la synchro plus tard.
 
-## Citrouille
-- En bas de l'appli, un sprite tiré au hasard parmi 7 (`assets/pumpkins/p0..p6.svg`), jamais le même deux chargements de suite (dernier tirage retenu sur l'appareil). Un toucher la fait rebondir, et un reflet brillant la balaie de temps en temps : un dégradé masqué par la silhouette du sprite (donc pas de reflet si l'appli est ouverte directement depuis le fichier, le navigateur refuse alors le masque).
+## Noël (édition de saison)
+- **Bonnet de Noël** en biais sur le coin haut droit de la bulle « Réviser » (`assets/xmas/hat.svg`).
+- **Neige au lancement** : une pluie de neige (flocons ronds et quelques flocons dessinés) tombe du haut de l'écran pendant quelques secondes, une seule fois par chargement (`FJ.fx.snowfall`).
+- **Morceau de Noël** (`assets/xmas/noel.mp3`, 3 s) : joué doucement avec un écho (retard + retours, Web Audio) au **premier lancement d'une session** de chaque chargement (un navigateur refuse de jouer un son avant un geste de l'utilisateur). Respecte l'option « Sons ».
+- **Bonhomme de neige** en bas de l'appli (à la place de la citrouille) : un toucher l'écrase (« squish »), avec un « puff puff » synthétisé et des éclaboussures de neige. Après 5 à 10 touchers (tirage au hasard à chaque chargement), il éclate en poudre dans un grand « pouf » qui s'étale sur le sol, laisse un tas de neige jusqu'au rechargement, et débloque le succès **Tueur de Noël**.
+- Les succès « Tripoteur » et « Dresseur de citrouille » (Halloween) sont conservés pour ceux qui les ont, mais ne se débloquent plus (liste `LEGACY` de `js/achievements.js`) et ne comptent pas dans « Il reste des mystères ».
+- Retour en arrière après les fêtes : retirer le bonnet (`js/app.js`, `renderHome`), `showSnowman` et `snowfall` (démarrage), et `assets/xmas/`.
 
 ## Confettis
-- Environ un confetti sur quatre est un petit sprite (`assets/confetti/` : chauve-souris noire qui monte en ondulant et s'envole par le haut de l'écran en battant des ailes, deux bonbons qui tournent et retombent lentement), dessiné sur le même canvas que les confettis classiques (`js/fx.js`). Tant qu'un sprite n'est pas chargé, ses places sont tenues par des confettis ordinaires.
+- Environ un confetti sur trois est un sprite de Noël (`assets/xmas/` : sucre d'orge, boule, gui, flocon), plus lent et plus léger. Quelques étincelles clignotent environ une seconde au centre (`js/fx.js`).
 - Les confettis suivent le temps réel (`requestAnimationFrame` + `dt`) : même vitesse sur un écran 60 Hz et 144 Hz.
 
 ## Mode sombre
@@ -117,5 +122,5 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - **Notification** en bas à droite (icône, nom, phrase, ~5 s, une à la fois, clic = ouvrir la liste), avec un son de dix notes (`ach` dans `js/audio.js`). Plusieurs succès d'un coup (rattrapage) = une seule notification groupée.
 - **Bulle 🏆** à droite de la bulle du compte, visible dès le premier succès, avec un point « nouveau » ; elle ouvre la liste.
 - **Rattrapage** : au chargement de la nouvelle version (puis quand des données arrivent d'un autre appareil, ou en fin de session), tout ce qui est déjà mérité se débloque.
-- **Stockage et synchro** : `settings.ach` (id → date) et `settings.cnt` (touchers de citrouille, bascules de thème) dans le document de réglages ; fusion par **union** entre appareils (`js/sync-core.js`), sauf après une réinitialisation / restauration volontaire (même règle d'époque que les compteurs).
+- **Stockage et synchro** : `settings.ach` (id → date) et `settings.cnt` (touchers de citrouille hérités d'Halloween, bascules de thème) dans le document de réglages ; fusion par **union** entre appareils (`js/sync-core.js`), sauf après une réinitialisation / restauration volontaire (même règle d'époque que les compteurs).
 - Ajouter un succès = une ligne dans la liste `A` de `js/achievements.js` (avec un test, ou sans test et un appel `FJ.ach.unlockId('id')` à l'endroit de l'événement).

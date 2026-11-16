@@ -10,15 +10,14 @@
   // Tant que `announce` vaut false, personne ne voit la fenêtre (le numéro de version reste affiché en bas de l'accueil).
   // Aperçu sans rien déclencher chez les autres : ajouter ?news=1 à l'adresse de l'appli.
   FJ.release = {
-    version: '1.1.0',
-    announce: true,
-    title: 'Spooky Édition',
+    version: '1.2.0',
+    announce: false,
+    title: 'Édition de Noël',
     items: [
-      '💬 Petits mots publics : un mot par jour, visible de tous.',
-      '📦 Mises à jour : de nouveaux paquets de cartes à intégrer quand vous voulez, avec aperçu du contenu.',
-      '✨ Combos : améliorations visuelles et système.',
-      '🎃 Halloween : ahouuuuuuu ! 怖い ですね',
-      '🛠 Correctif : l\'XP ne recule plus d\'un appareil à l\'autre.',
+      '🎄 Noël : de la neige, un bonnet sur l\'appli et un bonhomme de neige à ne pas trop chatouiller.',
+      '🏆 Succès cachés : une petite surprise à chaque étape. À vous de les trouver !',
+      '🌙 Mode sombre par défaut, avec un interrupteur ☀️ en bas de l\'accueil.',
+      '🌍 Un compteur de toutes les cartes révisées par la communauté.',
     ],
   };
 })();

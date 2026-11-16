@@ -566,28 +566,29 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 @keyframes wave-run { to { --a: 360deg; } }
 @keyframes glint { 0% { background-position: 100% 0; } 45%, 100% { background-position: 0 0; } }
 
-/* ---------- Citrouille du bas de page (sprite tiré au hasard à chaque chargement ; un toucher la fait rebondir) ---------- */
-.pumpkin { position: relative; width: 68px; height: 68px; margin: 22px auto 0; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transform-origin: 50% 100%; }
-.pumpkin[hidden] { display: none; }
-.pumpkin img, .pumpkin .shine { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.pumpkin img { object-fit: contain; filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .22)); }
-.pumpkin .shine {
-  -webkit-mask-size: contain; mask-size: contain;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: center; mask-position: center;
-  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .85) 50%, transparent 62%) 100% 0 / 260% 100% no-repeat;
-  animation: glint 4.6s ease-in-out 1.2s infinite;
+/* ---------- Bonhomme de neige du bas de page (un toucher l'écrase ; après 5 à 10 touchers il éclate en poudre) ---------- */
+.snowman { position: relative; width: 84px; height: 84px; margin: 22px auto 0; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transform-origin: 50% 100%; }
+.snowman[hidden] { display: none; }
+.snowman img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .25)); }
+.snowman.squish { animation: squish .42s cubic-bezier(.3, .6, .4, 1); }
+@keyframes squish {
+  0% { transform: scale(1, 1); }
+  28% { transform: scale(1.3, .68); }
+  55% { transform: scale(.93, 1.08); }
+  78% { transform: scale(1.04, .97); }
+  100% { transform: scale(1, 1); }
 }
-.pumpkin.bounce { animation: pumpkin-bounce .95s cubic-bezier(.3, .6, .4, 1); }
-@keyframes pumpkin-bounce {
-  0% { transform: translateY(0) scale(1, 1); }
-  14% { transform: translateY(0) scale(1.22, .78); }
-  38% { transform: translateY(-28px) scale(.9, 1.14); }
-  58% { transform: translateY(0) scale(1.15, .86); }
-  74% { transform: translateY(-8px) scale(.97, 1.04); }
-  88% { transform: translateY(0) scale(1.04, .96); }
-  100% { transform: translateY(0) scale(1, 1); }
-}
+/* le tas de neige laissé au sol après l'éclatement */
+.snowman .pile { position: absolute; left: 50%; bottom: 0; width: min(280px, 80vw); height: 26px; margin-left: calc(min(280px, 80vw) / -2); border-radius: 50%; background: radial-gradient(ellipse at 50% 60%, #ffffff 0 45%, rgba(255, 255, 255, .55) 70%, rgba(255, 255, 255, 0) 100%); transform: scale(0, .2); opacity: 0; pointer-events: none; }
+.snowman.burst { cursor: default; }
+.snowman.burst img { animation: snowman-out .18s ease-in forwards; }
+.snowman.burst .pile { animation: pile-spread 1.1s cubic-bezier(.15, .8, .3, 1) .12s forwards; }
+@keyframes snowman-out { to { transform: scale(1.5, .2); opacity: 0; } }
+@keyframes pile-spread { 0% { transform: scale(0, .2); opacity: 0; } 25% { opacity: 1; } 100% { transform: scale(1, 1); opacity: 1; } }
+
+/* ---------- Bonnet de Noël sur la bulle Réviser ---------- */
+.review { position: relative; }
+.xmas-hat { position: absolute; top: -20px; right: -13px; width: 54px; height: 54px; transform: rotate(16deg); transform-origin: 30% 80%; pointer-events: none; z-index: 2; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .3)); }
 
 /* ---------- Annonce de mise à jour ---------- */
 .news-box { padding-top: 18px; }
@@ -599,8 +600,9 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 @media (prefers-reduced-motion: reduce) {
   .sheen, .burn .em { display: none; }
   .burn i { animation: none !important; }
-  .pumpkin.bounce { animation: none; }
-  .pumpkin .shine { animation: none; opacity: 0; }
+  .snowman.squish, .snowman.burst img { animation: none; }
+  .snowman.burst img { opacity: 0; }
+  .snowman.burst .pile { animation: none; transform: none; opacity: 1; }
   .dot.new, .bonus .dot.pop { animation: none; opacity: 1; }
 }
 
