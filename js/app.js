@@ -561,6 +561,8 @@
     $('#app').innerHTML = `
       ${review}
 
+      ${conjHomeHtml()}
+
       ${packsVisible() ? `<section class="panel packs" id="packsBox">${packsInner()}</section>` : ''}
 
       <section class="panel">
@@ -822,7 +824,7 @@
     const capped = Math.min(ms, CARD_TIME_CAP);
     store.state.stats.ms += capped;
     store.today().ms += capped;
-    sess.ms += capped;
+    if (sess) sess.ms += capped; // (pas de session de flashcards pendant une série de conjugaison)
   }
 
   function advance() {
@@ -1992,6 +1994,12 @@
     'note-dismiss': (el) => dismissNote(el.dataset.id),
     'news-close': closeNews,
     'ach-open': () => renderAchievements(),
+    'conj-start': startConj,
+    'conj-fiche': renderFiche,
+    'conj-pick': (el) => conjPick(Number(el.dataset.i)),
+    'conj-next': conjNext,
+    'conj-hint': conjHint,
+    'conj-quit': conjQuit,
     'pack-view': (el) => renderPackView(el.dataset.id),
     'pack-integrate': (el) => integratePack(el.dataset.id),
     'pack-later'(el) { setPackStatus(el.dataset.id, 'later'); refreshPacks(); },
@@ -2088,6 +2096,12 @@
       e.preventDefault();
       return actions['w-toggle'](e.target);
     }
+    if (view === 'conj' && cj) { // QCM de conjugaison : 1 à 5 pour répondre, Entrée / Espace pour la suite
+      if (e.key >= '1' && e.key <= '5' && !cj.locked) conjPick(Number(e.key) - 1);
+      else if ((e.key === 'Enter' || e.key === ' ') && cj.locked) { e.preventDefault(); conjNext(); }
+      else if (e.key === 'Escape') conjQuit();
+      return;
+    }
     if (view !== 'session' || !sess) return;
     if (e.target.tagName === 'BUTTON' && (e.key === ' ' || e.key === 'Enter')) return; // laisse le bouton focalisé réagir
     const k = e.key;
@@ -2137,6 +2151,190 @@
       syncThemeSwitch();
     });
     syncThemeSwitch();
+  }
+
+  // ---------- Conjugaison (QCM à 5 réponses) ----------
+  // Moteur et données : js/conj.js. Ici : le bloc de l'accueil, la fiche, la question, le bilan.
+  // Une série = 8 questions (~2 minutes). Une réponse = un tap. Bonne réponse : on enchaîne. Mauvaise réponse : une seule
+  // ligne de règle, puis « Suivant ». Les réussites / erreurs par compétence (terminaison × type de forme) sont gardées
+  // dans les compteurs synchronisés (settings.cnt, clés « cj:… ») : elles servent à proposer plus souvent ce qui coince.
+  const CONJ_N = 8;
+  const CONJ_XP = 8; // XP par bonne réponse (+1 par réponse juste d'affilée, jusqu'à +4) ; rien en cas d'erreur
+  let cj = null;
+
+  const INFO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg>';
+
+  function conjHomeHtml() {
+    return `<section class="panel conj-panel">
+      <div class="review-head">
+        <h2>Conjugaison</h2>
+        <button class="gear" data-action="conj-fiche" aria-label="Fiche de conjugaison" title="Fiche de conjugaison">${INFO_SVG}</button>
+      </div>
+      <div class="start"><button class="btn primary big" data-action="conj-start">Conjuguer</button>
+        <p class="start-sub">${CONJ_N} questions · environ 2 minutes</p></div>
+    </section>`;
+  }
+
+  const cjCnt = () => (store.state.settings.cnt = store.state.settings.cnt || {});
+  const cjStat = (fam, cls) => { const c = cjCnt(); return { o: c[`cj:${fam}:${cls}:o`] || 0, k: c[`cj:${fam}:${cls}:k`] || 0 }; };
+  function cjRecord(fam, cls, ok) {
+    const c = cjCnt();
+    const key = `cj:${fam}:${cls}:${ok ? 'o' : 'k'}`;
+    c[key] = (c[key] || 0) + 1;
+  }
+
+  function startConj() {
+    if (!FJ.conj) return;
+    sess = null;
+    cj = { qs: FJ.conj.session(CONJ_N, cjStat), i: 0, ok: 0, combo: 0, best: 0, xp: 0, wrong: {}, locked: false, t0: 0 };
+    renderConjQuestion();
+  }
+
+  function renderConjQuestion() {
+    setView('conj');
+    const q = cj.qs[cj.i];
+    cj.locked = false;
+    cj.t0 = Date.now();
+    const pct = Math.round((cj.i / cj.qs.length) * 100);
+    $('#app').innerHTML = `
+      <section class="panel conj">
+        <div class="s-top">
+          <button class="btn ghost" data-action="conj-quit">✕ Terminer</button>
+          <span class="s-count">${cj.i + 1} / ${cj.qs.length}</span>
+          <span class="combo" style="text-align:right">${cj.combo >= 2 ? '×' + cj.combo : ''}</span>
+        </div>
+        <div class="bar thin"><div class="fill" style="width:${pct}%"></div></div>
+        <div class="conj-card">
+          <div class="conj-verb" lang="ja">${esc(q.v.k)}<button type="button" class="info-btn" data-action="conj-hint" aria-label="Voir la traduction" title="Voir la traduction">i</button></div>
+          <div class="conj-tr" id="conjTr"${q.v.hint ? '' : ' hidden'}>${esc(q.v.fr)}</div>
+          <div class="conj-ask">Forme demandée : <b>${esc(q.form.label)}</b> <span lang="ja">(${esc(q.form.end)})</span></div>
+        </div>
+        <div class="conj-choices">
+          ${q.choices.map((c, n) => `<button type="button" class="conj-choice" data-action="conj-pick" data-i="${n}" lang="ja"><span class="conj-num">${n + 1}</span>${esc(c.t)}</button>`).join('')}
+        </div>
+        <div class="conj-fb" id="conjFb" aria-live="polite"></div>
+      </section>`;
+  }
+
+  function conjHint() {
+    const t = $('#conjTr');
+    if (t) t.hidden = !t.hidden;
+  }
+
+  function conjPick(n) {
+    if (!cj || cj.locked) return;
+    const q = cj.qs[cj.i];
+    const ch = q.choices[n];
+    if (!ch) return;
+    cj.locked = true;
+    addTime(Date.now() - cj.t0);
+    document.querySelectorAll('.conj-choice').forEach((b, i) => {
+      b.disabled = true;
+      if (q.choices[i].right) b.classList.add('ok'); else if (i === n) b.classList.add('ko'); else b.classList.add('dim');
+    });
+    cjRecord(q.fam, q.cls, ch.right);
+    const fb = $('#conjFb');
+    if (ch.right) {
+      cj.ok++;
+      cj.combo++;
+      cj.best = Math.max(cj.best, cj.combo);
+      const xp = CONJ_XP + Math.min(cj.combo - 1, 4);
+      cj.xp += xp;
+      gainXp(xp);
+      audio.play('ok');
+      fb.innerHTML = `<span class="conj-good">✓ +${xp} XP</span>`;
+      persist();
+      setTimeout(() => { if (cj && view === 'conj' && cj.locked && cj.qs[cj.i] === q) conjNext(); }, 650);
+    } else {
+      cj.combo = 0;
+      const key = `${q.fam}|${q.cls}`;
+      cj.wrong[key] = (cj.wrong[key] || 0) + 1;
+      audio.play('ko');
+      fb.innerHTML = `<div class="conj-bad">❌ ${esc(q.rule)}</div><button type="button" class="btn primary" data-action="conj-next">Suivant</button>`;
+      persist();
+      const nx = fb.querySelector('button');
+      if (nx) nx.focus();
+    }
+  }
+
+  function conjNext() {
+    if (!cj) return;
+    cj.i++;
+    if (cj.i >= cj.qs.length) return renderConjSummary();
+    renderConjQuestion();
+  }
+
+  // « Terminer » : on garde les questions déjà répondues
+  function conjQuit() {
+    if (cj && (cj.i > 0 || cj.locked)) { cj.qs.length = cj.i + (cj.locked ? 1 : 0); return renderConjSummary(); }
+    cj = null;
+    renderHome();
+  }
+
+  function renderConjSummary() {
+    setView('conjsum');
+    const n = cj.qs.length;
+    const rate = n ? Math.round((cj.ok / n) * 100) : 0;
+    const headline = rate >= 90 ? 'Parfait !' : rate >= 60 ? 'Bien joué !' : 'Belle séance !';
+    // les compétences les plus ratées pendant cette série (au plus deux)
+    const weak = Object.entries(cj.wrong).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => {
+      const [fam, cls] = k.split('|');
+      return `${FJ.conj.famLabel(fam)}, ${FJ.conj.CLS_LABEL[cls]}`;
+    });
+    $('#app').innerHTML = `
+      <section class="panel summary">
+        <h1>${headline}</h1>
+        <p class="muted">${plural(cj.ok, 'bonne réponse', 'bonnes réponses')} sur ${n}</p>
+        <div class="tiles">
+          <div class="tile gold"><b id="cjXp">+0</b><small>XP gagnés</small></div>
+          <div class="tile"><b>${rate} %</b><small>réussite</small></div>
+        </div>
+        <p class="conj-weak">${weak.length ? 'À retravailler : ' + weak.map(esc).join(' · ') : 'Rien à signaler, bravo !'}</p>
+        <div class="actions" style="justify-content:center">
+          <button class="btn primary" data-action="home">Retour à l'accueil</button>
+          <button class="btn" data-action="conj-start">Nouvelle série</button>
+        </div>
+      </section>`;
+    audio.play('victory');
+    FJ.fx.confetti({ count: rate >= 90 ? 110 : rate >= 60 ? 60 : 0 });
+    FJ.fx.countUp($('#cjXp'), cj.xp, 900, '+');
+    persist();
+    cj = null;
+  }
+
+  // La fiche : les transformations, sur un seul écran
+  function renderFiche() {
+    setView('fiche');
+    const g1 = [['う', 'わ', 'い', 'って', 'った'], ['つ', 'た', 'ち', 'って', 'った'], ['る', 'ら', 'り', 'って', 'った'], ['む', 'ま', 'み', 'んで', 'んだ'], ['ぶ', 'ば', 'び', 'んで', 'んだ'], ['ぬ', 'な', 'に', 'んで', 'んだ'], ['く', 'か', 'き', 'いて', 'いた'], ['ぐ', 'が', 'ぎ', 'いで', 'いだ'], ['す', 'さ', 'し', 'して', 'した']];
+    $('#app').innerHTML = `
+      <section class="panel fiche">
+        <div class="words-head">
+          <button class="btn ghost" data-action="home">← Accueil</button>
+          <h2 style="margin:0">Fiche de conjugaison</h2>
+        </div>
+        <h3 class="sub">1er groupe : verbes en う (on change la dernière syllabe)</h3>
+        <table>
+          <tr><th>Fin</th><th>ない</th><th>ます</th><th>て</th><th>た</th></tr>
+          ${g1.map(([e, a, i, te, ta]) => `<tr><td>${e}</td><td>${a}ない</td><td>${i}ます</td><td>${te}</td><td>${ta}</td></tr>`).join('')}
+        </table>
+        <p class="muted small" lang="ja">Exception : いく → いって / いった. Le négatif de ある est ない.</p>
+        <h3 class="sub">2e groupe : verbes en る (on enlève る)</h3>
+        <table>
+          <tr><th></th><th>ない</th><th>ます</th><th>て</th><th>た</th></tr>
+          <tr><td>たべる</td><td>たべない</td><td>たべます</td><td>たべて</td><td>たべた</td></tr>
+        </table>
+        <h3 class="sub">3e groupe : deux verbes irréguliers</h3>
+        <table>
+          <tr><th></th><th>ない</th><th>ます</th><th>て</th><th>た</th></tr>
+          <tr><td>する</td><td>しない</td><td>します</td><td>して</td><td>した</td></tr>
+          <tr><td>くる</td><td>こない</td><td>きます</td><td>きて</td><td>きた</td></tr>
+        </table>
+        <p class="muted small">Les verbes en 〜する (べんきょうする…) se conjuguent comme する.</p>
+        <h3 class="sub">Pour tous les groupes</h3>
+        <p class="fiche-all" lang="ja">ない → なかった<br>ます → ません · ました · ませんでした</p>
+        <p class="muted small">Attention aux « faux る » du 1er groupe : かえる, はいる, しる, はしる, わかる, のる, つくる, なる…</p>
+      </section>`;
+    window.scrollTo(0, 0);
   }
 
   // ---------- Succès ----------

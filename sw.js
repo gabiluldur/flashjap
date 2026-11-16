@@ -1,11 +1,11 @@
 // Service worker : l'appli fonctionne hors-ligne, et les mises à jour arrivent dès qu'on est en ligne.
 // Stratégie "réseau d'abord" (toujours revalidée) avec repli sur le cache. Ne touche pas aux requêtes vers d'autres
 // domaines (Firebase, Google) : celles-ci gèrent leur propre cache hors-ligne.
-const CACHE = 'flashjap-v31';
+const CACHE = 'flashjap-v32';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/levels.js', 'js/srs.js', 'js/csv.js', 'js/kanji.js',
-  'js/store.js', 'js/sync-core.js', 'js/audio.js', 'js/fx.js', 'js/release.js', 'js/achievements.js', 'js/app.js',
+  'js/store.js', 'js/sync-core.js', 'js/audio.js', 'js/fx.js', 'js/release.js', 'js/achievements.js', 'js/conj.js', 'js/app.js',
   'js/sync.js', 'js/firebase-config.js',
   'icons/icon-192.png', 'icons/icon-512.png',
   'assets/xmas/candy.svg', 'assets/xmas/bauble.svg', 'assets/xmas/mistletoe.svg', 'assets/xmas/snowflake.svg',

@@ -93,7 +93,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Rangs : un tous les 5 niveaux (Pousse, Bambou, Bronze, Argent, Or, Jade, Saphir, Rubis, Améthyste, Dragon).
 
 ## Fichiers
-- `js/csv.js` import CSV · `js/srs.js` Leitner + XP · `js/levels.js` niveaux · `js/store.js` stockage · `js/audio.js` sons · `js/release.js` version + annonce · `js/app.js` interface.
+- `js/csv.js` import CSV · `js/srs.js` Leitner + XP · `js/levels.js` niveaux · `js/store.js` stockage · `js/audio.js` sons · `js/conj.js` conjugaison · `js/release.js` version + annonce · `js/app.js` interface.
 - `js/store.js` est le seul point d'accès aux données : c'est là que se branchera la synchro plus tard.
 
 ## Noël (édition de saison)
@@ -107,6 +107,17 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 ## Confettis
 - Environ un confetti sur trois est un sprite de Noël (`assets/xmas/` : sucre d'orge, boule, gui, flocon), plus lent et plus léger. Quelques étincelles clignotent environ une seconde au centre (`js/fx.js`).
 - Les confettis suivent le temps réel (`requestAnimationFrame` + `dt`) : même vitesse sur un écran 60 Hz et 144 Hz.
+
+## Conjugaison (QCM à 5 réponses)
+- Bloc **Conjugaison** sur l'accueil (sous « Réviser »), avec une icône ⓘ qui ouvre la **fiche** (tableau des transformations par groupe, une page et demie sur téléphone). Une série = 8 questions, environ 2 minutes, un tap par réponse.
+- **Moteur** : `js/conj.js`. On ne stocke que 70 verbes (lecture en kana, traduction, groupe) ; **toutes les formes sont calculées par des règles**, jamais tapées à la main. Les verbes sont classés comme dans le manuel : 1er groupe = verbes en う (godan, y compris les « faux る » : かえる, はいる, しる, はしる, わかる…), 2e groupe = verbes en る (ichidan), 3e groupe = する et くる. Classement vérifié sur cours-de-japonais.com et japaniste.fr.
+- **8 formes demandées** : négatif neutre (ない), passé neutre (た), passé négatif neutre (なかった), forme en て, et les quatre formes polies (ます, ません, ました, ませんでした). Elles se ramènent à 3 transformations (base en あ, base en い, forme en て / た). Les exceptions sont gérées : いく → いって, ある → ない.
+- **Pas de kanji** (on apprend les terminaisons) ; la traduction est cachée derrière l'icône **i** de la question. Elle s'affiche d'office pour `かえる` et `いる`, ambigus sans kanji (帰る/変える, 居る/要る).
+- **Mauvaises réponses réalistes** : l'erreur de groupe, la mauvaise base (ex. のみて), la forme voisine du même verbe (のんだ pour て), la règle d'une terminaison voisine. Après une erreur : une seule ligne de règle (« のむ → のんで. Les verbes en む, ぶ, ぬ font んで. »).
+- **Suivi léger** : réussites / erreurs par compétence (terminaison × type de forme) dans les compteurs synchronisés (`settings.cnt`, clés `cj:famille:type:o|k`). Les compétences où l'on se trompe reviennent plus souvent ; le bilan dit « À retravailler : … ».
+- **XP** : 8 par bonne réponse, +1 par réponse juste d'affilée (jusqu'à +4), rien en cas d'erreur. Ne compte ni dans « cartes révisées » ni dans le compteur communautaire. Le temps passé compte dans le temps de révision.
+- Touches : 1 à 5 pour répondre, Entrée / Espace pour la suite, Échap pour terminer.
+- À venir (une étape à la fois) : phrases à compléter, adjectifs, 3 bulles CARTES / KANJI / CONJUGAISONS, succès dédiés.
 
 ## Mode sombre
 - **Sombre par défaut**, quel que soit le réglage de l'appareil. L'interrupteur ☀️/🌙 (tout en bas de l'**accueil** uniquement) passe en clair ; seul ce choix « clair » est retenu sur l'appareil (`localStorage`, clé `flashjap.theme`). Un petit script de `index.html` pose `data-theme` sur `<html>` avant le premier affichage, donc sans flash.

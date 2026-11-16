@@ -665,3 +665,30 @@ body:not([data-view="home"]) .theme-row { display: none; }
 .ach-txt .ach-how { color: var(--xp); font-size: .74rem; letter-spacing: .02em; margin-top: 2px; }
 /* sur téléphone, le bonnet recule un peu pour que le pompon ne soit pas coupé par le bord de l'écran */
 @media (max-width: 480px) { .xmas-hat { right: -12px; } }
+
+/* ---------- Conjugaison (QCM) ---------- */
+.conj-card { text-align: center; padding: 26px 8px 10px; }
+.conj-verb { font-size: clamp(2.2rem, 11vw, 3.2rem); font-weight: 700; line-height: 1.15; display: inline-flex; align-items: center; gap: 10px; }
+.info-btn { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--muted); background: transparent; color: var(--muted); font: italic 700 .95rem/1 Georgia, serif; cursor: pointer; display: inline-grid; place-items: center; padding: 0; flex: none; }
+.info-btn:hover, .info-btn:focus-visible { color: var(--ink); border-color: var(--ink); }
+.conj-tr { margin-top: 6px; color: var(--xp); font-weight: 600; }
+.conj-tr[hidden] { display: none; }
+.conj-ask { margin-top: 14px; color: var(--muted); font-size: .98rem; }
+.conj-ask b { color: var(--ink); }
+.conj-choices { display: grid; gap: 10px; margin: 18px 0 10px; }
+.conj-choice { display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 10px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font: inherit; font-size: 1.25rem; cursor: pointer; text-align: left; transition: background .12s, border-color .12s, opacity .2s; }
+.conj-choice:hover:not(:disabled) { border-color: var(--accent); }
+.conj-choice .conj-num { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); color: var(--muted); font-size: .8rem; display: grid; place-items: center; }
+.conj-choice.ok { background: color-mix(in srgb, var(--ok) 28%, var(--surface-2)); border-color: var(--ok); }
+.conj-choice.ko { background: color-mix(in srgb, var(--ko) 26%, var(--surface-2)); border-color: var(--ko); }
+.conj-choice.dim { opacity: .45; }
+.conj-fb { min-height: 52px; display: grid; gap: 10px; justify-items: center; text-align: center; }
+.conj-good { color: var(--ok); font-weight: 700; }
+.conj-bad { text-align: left; background: var(--surface-2); border-left: 4px solid var(--ko); border-radius: 10px; padding: 10px 12px; line-height: 1.5; width: 100%; }
+.conj-weak { color: var(--muted); margin: 0 0 14px; }
+.fiche table { width: 100%; border-collapse: collapse; margin: 0 0 6px; font-size: 1rem; }
+.fiche th { color: var(--muted); font-weight: 600; font-size: .78rem; text-align: left; padding: 4px 6px; }
+.fiche td { padding: 5px 6px; border-top: 1px solid var(--line); }
+.fiche td:first-child { font-weight: 700; color: var(--xp); }
+.fiche h3.sub { margin-top: 18px; }
+.fiche-all { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; margin: 0 0 8px; line-height: 1.7; }
