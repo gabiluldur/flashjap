@@ -2227,6 +2227,30 @@
   // ---------- Bonhomme de neige du bas de page ----------
   // Un toucher l'écrase (squish) avec un « puff puff » et des éclaboussures de neige. Après 5 à 10 touchers (tirage au
   // hasard à chaque chargement), il éclate en poudre dans un grand « pouf » et laisse un tas de neige au sol.
+  // Tas de neige touffu : une rangée de boules qui forment un dôme (une couche bleutée à l'arrière, une couche claire
+  // dégradée devant), des petits grains sur le dessus, tirées au hasard à chaque éclatement pour qu'aucun tas ne se ressemble.
+  function pileSvg() {
+    const G = 78; // ligne du sol
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    let back = '';
+    let front = '';
+    let grains = '';
+    for (let x = 12; x <= 248; x += rnd(14, 21)) {
+      const k = Math.max(0, 1 - Math.pow((x - 130) / 126, 2)); // 0 sur les bords, 1 au centre
+      const h = 8 + 54 * k + rnd(-4, 5);
+      const r = 10 + 14 * k + rnd(0, 5);
+      back += `<circle cx="${(x + rnd(-3, 3)).toFixed(1)}" cy="${(G - h + r * 0.55).toFixed(1)}" r="${r.toFixed(1)}"/>`;
+      const fr = r * rnd(0.7, 0.88);
+      front += `<circle cx="${(x - 3 + rnd(-3, 3)).toFixed(1)}" cy="${(G - h + r * 0.3).toFixed(1)}" r="${fr.toFixed(1)}"/>`;
+      if (k > 0.25) grains += `<circle cx="${(x + rnd(-8, 8)).toFixed(1)}" cy="${(G - h - r * 0.2 + rnd(-3, 4)).toFixed(1)}" r="${rnd(1.2, 2.6).toFixed(1)}"/>`;
+    }
+    return `<svg viewBox="0 0 260 84" aria-hidden="true"><defs>
+      <radialGradient id="snowG" cx="38%" cy="22%" r="80%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dce7f5"/></radialGradient>
+      <clipPath id="snowClip"><rect x="0" y="0" width="260" height="${G}"/></clipPath></defs>
+      <ellipse cx="130" cy="${G - 1}" rx="122" ry="7" fill="rgba(80,110,160,.3)"/>
+      <g clip-path="url(#snowClip)"><g fill="#c3d3e8">${back}</g><g fill="url(#snowG)">${front}</g><g fill="#ffffff">${grains}</g></g></svg>`;
+  }
+
   function showSnowman() {
     const box = $('#snowman');
     if (!box) return;
@@ -2242,6 +2266,7 @@
       const p = center();
       if (hits >= limit) {
         gone = true;
+        box.querySelector('.pile').innerHTML = pileSvg();
         audio.pouf();
         FJ.fx.poof(p.x, p.y);
         box.classList.add('burst');

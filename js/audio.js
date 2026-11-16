@@ -49,6 +49,29 @@
     src.start(t0);
   }
 
+  // Petit choc grave : sinus dont la fréquence chute vite (un « poum » étouffé)
+  function thump(c, start, dur, vol, f0, f1) {
+    const t0 = c.currentTime + start;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(f0, t0);
+    osc.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain).connect(c.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.03);
+  }
+
+  // Coup mat de coussin sous un plaid : bruit très filtré + choc grave + un grain de neige à peine audible
+  function muffled(c, start, vol) {
+    puffNoise(c, start, 0.09, vol, 650, 180);
+    thump(c, start, 0.1, vol * 0.7, 150, 75);
+    puffNoise(c, start + 0.005, 0.03, vol * 0.3, 2400, 1300);
+  }
+
   const SOUNDS = {
     flip: [[520, 0, 0.06, 'triangle', 0.04]],
     ok: [[660, 0, 0.12, 'sine', 0.09], [880, 0.09, 0.18, 'sine', 0.09]],
@@ -84,29 +107,32 @@
         if (!c) return;
         const semis = [0, 2, 4, 7, 9][i % 5] + 12 * Math.min(Math.floor(i / 5), 1);
         const f = 784 * Math.pow(2, semis / 12);
-        tone(c, f, 0, 0.34, 'sine', 0.08);
-        tone(c, f * 2, 0, 0.18, 'sine', 0.025); // petit harmonique : un timbre de clochette
+        tone(c, f, 0, 0.34, 'sine', 0.06);
+        tone(c, f * 2, 0, 0.18, 'sine', 0.019); // petit harmonique : un timbre de clochette
       } catch (e) { /* le son est optionnel */ }
     },
-    // « Puff puff » du bonhomme de neige qu'on touche : deux souffles courts, le second un peu plus bas
+    // « Puff puff » du bonhomme de neige qu'on touche : deux coups mats et très courts, comme un coussin tapé à travers un
+    // plaid (bruit étouffé + petit choc grave), avec un grain de neige qui crisse à peine
     puff() {
       if (!FJ.audio.enabled) return;
       try {
         const c = context();
         if (!c) return;
-        puffNoise(c, 0, 0.13, 0.16, 1400, 380);
-        puffNoise(c, 0.11, 0.15, 0.13, 1100, 300);
+        muffled(c, 0, 0.17);
+        muffled(c, 0.085, 0.12);
       } catch (e) { /* le son est optionnel */ }
     },
-    // « Pouf » : le bonhomme éclate (grand souffle + un petit choc grave)
+    // « Pouf » : le bonhomme éclate (un seul coup sourd, un peu plus long, qui s'effondre en poudre)
     pouf() {
       if (!FJ.audio.enabled) return;
       try {
         const c = context();
         if (!c) return;
-        puffNoise(c, 0, 0.7, 0.3, 1800, 160);
-        tone(c, 110, 0, 0.32, 'sine', 0.16);
-        tone(c, 60, 0.02, 0.4, 'sine', 0.12);
+        puffNoise(c, 0, 0.22, 0.3, 900, 110);
+        thump(c, 0, 0.24, 0.2, 120, 42);
+        puffNoise(c, 0.03, 0.05, 0.05, 2600, 1300); // quelques grains qui retombent
+        puffNoise(c, 0.1, 0.05, 0.035, 2400, 1200);
+        puffNoise(c, 0.17, 0.05, 0.025, 2200, 1100);
       } catch (e) { /* le son est optionnel */ }
     },
     // Morceau de Noël : une seule fois par chargement de page, doucement, avec un écho (retard + retours) généré par le

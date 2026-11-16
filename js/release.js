@@ -14,10 +14,9 @@
     announce: false,
     title: 'Édition de Noël',
     items: [
-      '🎄 Noël : de la neige, un bonnet sur l\'appli et un bonhomme de neige à ne pas trop chatouiller.',
-      '🏆 Succès cachés : une petite surprise à chaque étape. À vous de les trouver !',
-      '🌙 Mode sombre par défaut, avec un interrupteur ☀️ en bas de l\'accueil.',
-      '🌍 Un compteur de toutes les cartes révisées par la communauté.',
+      '🎄 Mode Noël ! Attention au bonhomme chatouilleux.',
+      '🏆 Succès à débloquer',
+      '🌍 Compteur communautaire : Objectif révision ensemble avant 2027 !',
     ],
   };
 })();
