@@ -692,3 +692,7 @@ body:not([data-view="home"]) .theme-row { display: none; }
 .fiche td:first-child { font-weight: 700; color: var(--xp); }
 .fiche h3.sub { margin-top: 18px; }
 .fiche-all { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; margin: 0 0 8px; line-height: 1.7; }
+.conj-card.sent { padding-top: 18px; }
+.conj-sentence { font-size: clamp(1.35rem, 6.2vw, 1.8rem); line-height: 1.6; margin: 10px 0 4px; overflow-wrap: anywhere; }
+.conj-blank { display: inline-block; min-width: 3.2em; color: var(--xp); letter-spacing: .05em; }
+.conj-verbline { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--muted); font-size: 1.1rem; }

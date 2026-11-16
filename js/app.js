@@ -2155,10 +2155,9 @@
 
   // ---------- Conjugaison (QCM à 5 réponses) ----------
   // Moteur et données : js/conj.js. Ici : le bloc de l'accueil, la fiche, la question, le bilan.
-  // Une série = 8 questions (~2 minutes). Une réponse = un tap. Bonne réponse : on enchaîne. Mauvaise réponse : une seule
+  // Une série = 15 questions (8 QCM et 7 phrases à compléter en alternance, ~3 minutes). Une réponse = un tap. Bonne réponse : on enchaîne. Mauvaise réponse : une seule
   // ligne de règle, puis « Suivant ». Les réussites / erreurs par compétence (terminaison × type de forme) sont gardées
   // dans les compteurs synchronisés (settings.cnt, clés « cj:… ») : elles servent à proposer plus souvent ce qui coince.
-  const CONJ_N = 8;
   const CONJ_XP = 8; // XP par bonne réponse (+1 par réponse juste d'affilée, jusqu'à +4) ; rien en cas d'erreur
   let cj = null;
 
@@ -2171,7 +2170,7 @@
         <button class="gear" data-action="conj-fiche" aria-label="Fiche de conjugaison" title="Fiche de conjugaison">${INFO_SVG}</button>
       </div>
       <div class="start"><button class="btn primary big" data-action="conj-start">Conjuguer</button>
-        <p class="start-sub">${CONJ_N} questions · environ 2 minutes</p></div>
+        <p class="start-sub">15 questions · environ 3 minutes</p></div>
     </section>`;
   }
 
@@ -2186,7 +2185,7 @@
   function startConj() {
     if (!FJ.conj) return;
     sess = null;
-    cj = { qs: FJ.conj.session(CONJ_N, cjStat), i: 0, ok: 0, combo: 0, best: 0, xp: 0, wrong: {}, locked: false, t0: 0 };
+    cj = { qs: FJ.conj.mixedSession(cjStat), i: 0, ok: 0, combo: 0, best: 0, xp: 0, wrong: {}, locked: false, t0: 0 };
     renderConjQuestion();
   }
 
@@ -2204,11 +2203,16 @@
           <span class="combo" style="text-align:right">${cj.combo >= 2 ? '×' + cj.combo : ''}</span>
         </div>
         <div class="bar thin"><div class="fill" style="width:${pct}%"></div></div>
-        <div class="conj-card">
+        ${q.kind === 'sent' ? `<div class="conj-card sent">
+          <div class="conj-ask">Complète la phrase</div>
+          <div class="conj-sentence" lang="ja">${esc(q.before)} <span class="conj-blank">＿＿＿</span>${esc(q.after)}</div>
+          <div class="conj-verbline" lang="ja">（${esc(q.v.k)}）<button type="button" class="info-btn" data-action="conj-hint" aria-label="Voir le sens" title="Voir le sens">i</button></div>
+          <div class="conj-tr" id="conjTr" hidden>${esc(q.gloss)}</div>
+        </div>` : `<div class="conj-card">
           <div class="conj-verb" lang="ja">${esc(q.v.k)}<button type="button" class="info-btn" data-action="conj-hint" aria-label="Voir la traduction" title="Voir la traduction">i</button></div>
           <div class="conj-tr" id="conjTr"${q.v.hint ? '' : ' hidden'}>${esc(q.v.fr)}</div>
-          <div class="conj-ask">Forme demandée : <b>${esc(q.form.label)}</b> <span lang="ja">(${esc(q.form.end)})</span></div>
-        </div>
+          <div class="conj-ask">Forme demandée : <b>${esc(q.form.label)}</b></div>
+        </div>`}
         <div class="conj-choices">
           ${q.choices.map((c, n) => `<button type="button" class="conj-choice" data-action="conj-pick" data-i="${n}" lang="ja"><span class="conj-num">${n + 1}</span>${esc(c.t)}</button>`).join('')}
         </div>
@@ -2302,10 +2306,11 @@
     cj = null;
   }
 
-  // La fiche : les transformations, sur un seul écran
+  // La fiche : les transformations, sur un seul écran. (La forme en た n'est pas encore au programme : elle n'y figure pas.)
   function renderFiche() {
     setView('fiche');
-    const g1 = [['う', 'わ', 'い', 'って', 'った'], ['つ', 'た', 'ち', 'って', 'った'], ['る', 'ら', 'り', 'って', 'った'], ['む', 'ま', 'み', 'んで', 'んだ'], ['ぶ', 'ば', 'び', 'んで', 'んだ'], ['ぬ', 'な', 'に', 'んで', 'んだ'], ['く', 'か', 'き', 'いて', 'いた'], ['ぐ', 'が', 'ぎ', 'いで', 'いだ'], ['す', 'さ', 'し', 'して', 'した']];
+    // [fin, base de ます, base de ない, forme en て]
+    const g1 = [['う', 'い', 'わ', 'って'], ['つ', 'ち', 'た', 'って'], ['る', 'り', 'ら', 'って'], ['む', 'み', 'ま', 'んで'], ['ぶ', 'び', 'ば', 'んで'], ['ぬ', 'に', 'な', 'んで'], ['く', 'き', 'か', 'いて'], ['ぐ', 'ぎ', 'が', 'いで'], ['す', 'し', 'さ', 'して']];
     $('#app').innerHTML = `
       <section class="panel fiche">
         <div class="words-head">
@@ -2314,23 +2319,31 @@
         </div>
         <h3 class="sub">1er groupe : verbes en う (on change la dernière syllabe)</h3>
         <table>
-          <tr><th>Fin</th><th>ない</th><th>ます</th><th>て</th><th>た</th></tr>
-          ${g1.map(([e, a, i, te, ta]) => `<tr><td>${e}</td><td>${a}ない</td><td>${i}ます</td><td>${te}</td><td>${ta}</td></tr>`).join('')}
+          <tr><th>Fin</th><th>ます</th><th>ない</th><th>て</th></tr>
+          ${g1.map(([e, i, a, te]) => `<tr><td>${e}</td><td>${i}ます</td><td>${a}ない</td><td>${te}</td></tr>`).join('')}
         </table>
-        <p class="muted small" lang="ja">Exception : いく → いって / いった. Le négatif de ある est ない.</p>
+        <p class="muted small" lang="ja">Exception : いく → いって. Le négatif de ある est ない.</p>
         <h3 class="sub">2e groupe : verbes en る (on enlève る)</h3>
         <table>
-          <tr><th></th><th>ない</th><th>ます</th><th>て</th><th>た</th></tr>
-          <tr><td>たべる</td><td>たべない</td><td>たべます</td><td>たべて</td><td>たべた</td></tr>
+          <tr><th></th><th>ます</th><th>ない</th><th>て</th></tr>
+          <tr><td>たべる</td><td>たべます</td><td>たべない</td><td>たべて</td></tr>
         </table>
         <h3 class="sub">3e groupe : deux verbes irréguliers</h3>
         <table>
-          <tr><th></th><th>ない</th><th>ます</th><th>て</th><th>た</th></tr>
-          <tr><td>する</td><td>しない</td><td>します</td><td>して</td><td>した</td></tr>
-          <tr><td>くる</td><td>こない</td><td>きます</td><td>きて</td><td>きた</td></tr>
+          <tr><th></th><th>ます</th><th>ない</th><th>て</th></tr>
+          <tr><td>する</td><td>します</td><td>しない</td><td>して</td></tr>
+          <tr><td>くる</td><td>きます</td><td>こない</td><td>きて</td></tr>
         </table>
         <p class="muted small">Les verbes en 〜する (べんきょうする…) se conjuguent comme する.</p>
-        <h3 class="sub">Pour tous les groupes</h3>
+        <h3 class="sub">Adjectifs</h3>
+        <table>
+          <tr><th></th><th>poli</th><th>ない</th><th>て</th></tr>
+          <tr><td>たかい</td><td>たかいです</td><td>たかくない</td><td>たかくて</td></tr>
+          <tr><td>いい</td><td>いいです</td><td>よくない</td><td>よくて</td></tr>
+          <tr><td>しずか</td><td>しずかです</td><td>しずかじゃない</td><td>しずかで</td></tr>
+        </table>
+        <p class="muted small" lang="ja">い-adjectifs : い → くない. Exception : いい → よくない. Les な-adjectifs et les noms : じゃない. Poli : くないです / じゃないです.</p>
+        <h3 class="sub">Pour tous</h3>
         <p class="fiche-all" lang="ja">ない → なかった<br>ます → ません · ました · ませんでした</p>
         <p class="muted small">Attention aux « faux る » du 1er groupe : かえる, はいる, しる, はしる, わかる, のる, つくる, なる…</p>
       </section>`;

@@ -45,14 +45,16 @@
   const FORMS = {
     neg: { label: 'Négatif neutre', end: '〜ない', cls: 'neg' },
     negpast: { label: 'Passé négatif neutre', end: '〜なかった', cls: 'neg' },
-    past: { label: 'Passé neutre', end: '〜た', cls: 'te' },
+    // La forme en た n'est pas encore au programme : jamais demandée, jamais proposée comme réponse (voir NEIGH et CLS_FORMS)
+    past: { label: 'Passé neutre', end: '〜た', cls: 'te', hidden: true },
     te: { label: 'Forme en て', end: '〜て', cls: 'te' },
     pm: { label: 'Présent poli', end: '〜ます', cls: 'pol' },
     pn: { label: 'Négatif poli', end: '〜ません', cls: 'pol' },
     pp: { label: 'Passé poli', end: '〜ました', cls: 'pol' },
     pnp: { label: 'Passé négatif poli', end: '〜ませんでした', cls: 'pol' },
   };
-  const CLS_FORMS = { neg: ['neg', 'negpast'], te: ['te', 'past'], pol: ['pm', 'pn', 'pp', 'pnp'] };
+  const CLS_FORMS = { neg: ['neg', 'negpast'], te: ['te'], pol: ['pm', 'pn', 'pp', 'pnp'] };
+  const VISIBLE = Object.keys(FORMS).filter((k) => !FORMS[k].hidden);
   const POL = { pm: 'ます', pn: 'ません', pp: 'ました', pnp: 'ませんでした' };
 
   // Tables des terminaisons de la forme du dictionnaire (1er groupe)
@@ -107,12 +109,12 @@
     る1: 'les verbes en る du 1er groupe (かえる, はいる…)',
   };
   const famLabel = (f) => FAM_LABEL[f] || `les verbes en ${f}`;
-  const CLS_LABEL = { neg: 'le négatif', te: 'la forme en て / た', pol: 'la forme polie' };
+  const CLS_LABEL = { neg: 'le négatif', te: 'la forme en て', pol: 'la forme polie' };
 
   // ---- Règle rappelée après une erreur : une seule ligne ----
-  function rule(v, f) {
-    const ans = conj(v, f);
-    const head = `${v.k} → ${ans}.`;
+  function rule(v, f) { return `${v.k} → ${conj(v, f)}. ${ruleBody(v, f)}`; }
+
+  function ruleBody(v, f) {
     const cls = FORMS[f].cls;
     const e = v.k.slice(-1);
     const endTxt = cls === 'neg' ? (f === 'negpast' ? 'なかった' : 'ない') : '';
@@ -140,13 +142,13 @@
     } else {
       txt = e === 'る' ? `Verbe du 1er groupe : る → り, puis ${POL[f]}.` : `Les verbes en ${e} : ${e} → ${I[e]}, puis ${POL[f]}.`;
     }
-    return `${head} ${txt}`;
+    return txt;
   }
 
   // ---- Mauvaises réponses : de vraies erreurs d'élève, jamais des mots qui n'existent pas au hasard ----
   const NEIGH = {
-    neg: ['negpast', 'pn', 'past', 'pm'], negpast: ['neg', 'pnp', 'past', 'pn'], te: ['past', 'pm', 'neg', 'pp'], past: ['te', 'pp', 'negpast', 'pm'],
-    pm: ['pn', 'pp', 'neg', 'te'], pn: ['pm', 'pnp', 'neg', 'pp'], pp: ['pm', 'pnp', 'past', 'pn'], pnp: ['pn', 'pp', 'negpast', 'pm'],
+    neg: ['negpast', 'pn', 'pm'], negpast: ['neg', 'pnp', 'pn'], te: ['pm', 'neg', 'pp'],
+    pm: ['pn', 'pp', 'neg', 'te'], pn: ['pm', 'pnp', 'neg', 'pp'], pp: ['pm', 'pnp', 'pn'], pnp: ['pn', 'pp', 'negpast', 'pm'],
   };
   // terminaisons qu'on confond entre elles (même famille de sons)
   const CONFUSE = { む: ['ぶ', 'ぬ'], ぶ: ['む', 'ぬ'], ぬ: ['む', 'ぶ'], く: ['ぐ', 'す'], ぐ: ['く', 'す'], す: ['つ', 'く'], つ: ['う', 'る'], う: ['つ', 'る'], る: ['う', 'つ'] };
@@ -215,51 +217,136 @@
     const add = (t) => { if (t && t !== right && !bad.includes(t)) bad.push(t); };
     add(wrongBase(v, f));
     add(otherGroup(v, f));
-    const nb = NEIGH[f].map((g) => conj(v, g));
-    add(nb[0]); // la forme voisine la plus proche (passé pour て, négatif poli pour négatif neutre…)
+    add(conj(v, NEIGH[f][0])); // la forme voisine la plus proche (négatif poli pour négatif neutre…)
     for (const t of shuffle(neighbourRules(v, f))) { if (bad.length >= 4) break; add(t); }
-    for (const t of shuffle(nb.slice(1))) { if (bad.length >= 4) break; add(t); }
+    // L'énoncé ne donne plus la terminaison : n'importe quelle autre forme visible du même verbe devient une réponse
+    // possible, y compris la forme du dictionnaire
+    const others = shuffle([...VISIBLE.filter((g) => g !== f).map((g) => conj(v, g)), v.k]);
+    for (const t of others) { if (bad.length >= 4) break; add(t); }
     return shuffle([{ t: right, right: true }, ...bad.slice(0, 4).map((t) => ({ t, right: false }))]);
   }
 
   function question(v, f) {
     const cls = FORMS[f].cls;
-    return { v, f, cls, fam: fam(v, f), ans: conj(v, f), choices: choices(v, f), rule: rule(v, f), form: FORMS[f] };
+    return { kind: 'qcm', v, f, cls, fam: fam(v, f), ans: conj(v, f), choices: choices(v, f), rule: rule(v, f), form: FORMS[f] };
   }
 
-  // ---- Une série de questions : on privilégie les compétences où l'on se trompe le plus ----
-  // stat(fam, cls) -> { o, k } (réussites / erreurs cumulées)
-  function session(n = 8, stat = () => ({ o: 0, k: 0 })) {
+  // Tirage pondéré : plus on s'est trompé, plus la compétence revient ; une compétence jamais vue a un petit bonus
+  const weight = (stat, fm, cls) => { const { o, k } = stat(fm, cls); return 1 + 3 * (k / (o + k + 2)) + (o + k === 0 ? 0.5 : 0); };
+  function weighted(list, w) {
+    let r = Math.random() * w.reduce((a, b) => a + b, 0);
+    for (let i = 0; i < list.length; i++) { r -= w[i]; if (r <= 0) return list[i]; }
+    return list[list.length - 1];
+  }
+
+  // ---- Série de questions à choix ----
+  // Les formes polies en ます sont simples et connues : elles ne font que 10 % du tirage. Le reste se partage entre le
+  // négatif et la forme en て. stat(fam, cls) -> { o, k } (réussites / erreurs cumulées)
+  const POL_SHARE = 0.1;
+  function session(n = 8, stat = () => ({ o: 0, k: 0 }), skipVerbs = []) {
     const skills = new Map(); // "fam|cls" -> verbes concernés
     for (const v of VERBS) {
       for (const cls of Object.keys(CLS_FORMS)) {
-        const key = fam(v, CLS_FORMS[cls][0]) + '|' + cls;
-        if (!skills.has(key)) skills.set(key, { fam: fam(v, CLS_FORMS[cls][0]), cls, verbs: [] });
+        const fm = fam(v, CLS_FORMS[cls][0]);
+        const key = fm + '|' + cls;
+        if (!skills.has(key)) skills.set(key, { fam: fm, cls, verbs: [] });
         skills.get(key).verbs.push(v);
       }
     }
-    const used = new Set();
+    const used = new Set(skipVerbs);
     const qs = [];
     let guard = 0;
-    while (qs.length < n && guard++ < 200) {
-      // tirage pondéré : plus on s'est trompé, plus la compétence revient ; une compétence jamais vue a un petit bonus
-      const list = [...skills.values()];
-      const w = list.map((s) => { const { o, k } = stat(s.fam, s.cls); return 1 + 3 * (k / (o + k + 2)) + (o + k === 0 ? 0.5 : 0); });
-      let r = Math.random() * w.reduce((a, b) => a + b, 0);
-      let sk = list[list.length - 1];
-      for (let i = 0; i < list.length; i++) { r -= w[i]; if (r <= 0) { sk = list[i]; break; } }
-      const f = pick(CLS_FORMS[sk.cls]);
+    while (qs.length < n && guard++ < 300) {
+      const r0 = Math.random();
+      const cls = r0 < POL_SHARE ? 'pol' : r0 < POL_SHARE + (1 - POL_SHARE) / 2 ? 'neg' : 'te';
+      const list = [...skills.values()].filter((s) => s.cls === cls);
+      const sk = weighted(list, list.map((s) => weight(stat, s.fam, s.cls)));
+      const f = pick(CLS_FORMS[cls]);
       const v = pick(sk.verbs);
-      const id = v.k + '|' + f;
-      if (used.has(id) || used.has(v.k + '#')) continue; // pas deux fois le même verbe dans une série
-      used.add(id);
-      used.add(v.k + '#');
-      const q = question(v, f);
-      q.fam = fam(v, f); // la compétence réelle de cette question (ex. いく en て)
-      qs.push(q);
+      if (used.has(v.k)) continue; // pas deux fois le même verbe dans une série
+      used.add(v.k);
+      qs.push(question(v, f));
     }
     return qs;
   }
 
-  FJ.conj = { VERBS, FORMS, CLS_FORMS, conj, rule, question, choices, session, famLabel, CLS_LABEL, fam };
+  // ---- Phrases courtes à compléter ----
+  // Chaque phrase porte un indice qui impose la forme : ぜんぜん / あまり → négatif ; きのう + ぜんぜん → passé négatif ;
+  // ください → forme en て. Pas de formes polies ici : sans repère de politesse, une forme polie serait aussi juste, et
+  // la réponse ne serait plus unique. Les mauvaises réponses sont des formes qui sont fausses dans cette phrase.
+  // [verbe, ce qui précède le trou, français (traduction du groupe verbal), 's' = pas de forme en て (verbe d'état, ou demande absurde)]
+  const FRAMES = [
+    ['たべる', 'にくを', 'manger de la viande'], ['のむ', 'おさけを', "boire de l'alcool"], ['みる', 'テレビを', 'regarder la télévision'],
+    ['よむ', 'ざっしを', 'lire un magazine'], ['かく', 'てがみを', 'écrire une lettre'], ['かう', 'くつを', 'acheter des chaussures'],
+    ['きく', 'おんがくを', 'écouter de la musique'], ['はなす', 'えいごを', 'parler anglais'], ['まつ', 'ともだちを', 'attendre un ami'],
+    ['いく', 'がっこうへ', "aller à l'école"], ['かえる', 'いえへ', 'rentrer à la maison'], ['のる', 'バスに', 'monter dans le bus'],
+    ['はいる', 'へやに', 'entrer dans la pièce'], ['する', 'スポーツを', 'faire du sport'], ['くる', 'ここへ', 'venir ici'],
+    ['あそぶ', 'ともだちと', 'jouer avec un ami'], ['およぐ', 'うみで', 'nager dans la mer'], ['はたらく', 'ぎんこうで', 'travailler à la banque'],
+    ['あう', 'ともだちに', 'rencontrer un ami'], ['おきる', 'はやく', 'se lever tôt'], ['ねる', 'はやく', 'se coucher tôt'],
+    ['おしえる', 'えいごを', "enseigner l'anglais"], ['わすれる', 'しゅくだいを', 'oublier ses devoirs', 's'], ['とる', 'しゃしんを', 'prendre une photo'],
+    ['つくる', 'りょうりを', 'préparer un repas'], ['うたう', 'うたを', 'chanter une chanson'], ['べんきょうする', '', 'étudier'],
+    ['かりる', 'ほんを', 'emprunter un livre'], ['つかう', 'でんわを', 'utiliser le téléphone'], ['よぶ', 'ともだちを', 'appeler un ami'],
+    ['やすむ', 'がっこうを', "s'absenter de l'école", 's'], ['しめる', 'まどを', 'fermer la fenêtre'], ['あける', 'まどを', 'ouvrir la fenêtre'],
+    ['もつ', 'かばんを', 'porter un sac'], ['だす', 'てがみを', 'poster une lettre'], ['かえす', 'ほんを', 'rendre un livre'],
+    ['けす', 'テレビを', 'éteindre la télévision'], ['ある', 'おかねが', "avoir de l'argent", 's'], ['わかる', 'えいごが', "comprendre l'anglais", 's'],
+  ].map(([k, pre, fr, flag]) => ({ v: VERBS.find((x) => x.k === k), pre, fr, forms: flag === 's' ? ['neg', 'negpast'] : ['neg', 'negpast', 'te'] }));
+
+  const CUES = {
+    neg: [
+      { head: 'わたしは あまり', gloss: 'あまり = pas beaucoup (avec un négatif)', why: 'あまり demande un négatif.' },
+      { head: 'わたしは ぜんぜん', gloss: 'ぜんぜん = pas du tout (avec un négatif)', why: 'ぜんぜん demande un négatif.' },
+    ],
+    negpast: [{ head: 'きのうは ぜんぜん', gloss: 'きのう = hier · ぜんぜん = pas du tout (avec un négatif)', why: 'きのう = passé, ぜんぜん = négatif : on veut le passé négatif.' }],
+    te: [{ head: 'ちょっと', tail: ' ください', gloss: "ちょっと = un peu · ください = s'il vous plaît (une demande)", why: 'ください demande la forme en て.' }],
+  };
+
+  function sentenceChoices(v, f) {
+    const right = conj(v, f);
+    const forms = (g) => (g === 'dict' ? v.k : conj(v, g));
+    let picks;
+    if (f === 'negpast') picks = ['neg', ...shuffle(['dict', 'te', 'pm', 'pp']).slice(0, 3)]; // « ない » : mauvais temps pour きのう
+    else if (f === 'neg') picks = shuffle(['dict', 'te', 'pm', 'pp']);
+    else picks = shuffle(['neg', 'negpast', 'dict', 'pm', 'pp']);
+    const bad = [];
+    for (const g of picks) { const t = forms(g); if (t !== right && !bad.includes(t)) bad.push(t); if (bad.length >= 4) break; }
+    return shuffle([{ t: right, right: true }, ...bad.map((t) => ({ t, right: false }))]);
+  }
+
+  function sentence(fr, f) {
+    const v = fr.v;
+    const cue = pick(CUES[f]);
+    const before = [cue.head, fr.pre].filter(Boolean).join(' ');
+    return {
+      kind: 'sent', v, f, cls: FORMS[f].cls, fam: fam(v, f), ans: conj(v, f), choices: sentenceChoices(v, f),
+      before, after: (cue.tail || '') + '。', gloss: `${cue.gloss} · ${fr.fr}`,
+      rule: `${cue.why} ${v.k} → ${conj(v, f)}. ${ruleBody(v, f)}`,
+    };
+  }
+
+  function sentences(n, stat = () => ({ o: 0, k: 0 }), skipVerbs = []) {
+    const used = new Set(skipVerbs);
+    const cands = [];
+    for (const fr of FRAMES) for (const f of fr.forms) cands.push({ fr, f });
+    const out = [];
+    let guard = 0;
+    while (out.length < n && guard++ < 300) {
+      const pool = cands.filter((c) => !used.has(c.fr.v.k));
+      if (!pool.length) break;
+      const c = weighted(pool, pool.map((x) => weight(stat, fam(x.fr.v, x.f), FORMS[x.f].cls)));
+      used.add(c.fr.v.k);
+      out.push(sentence(c.fr, c.f));
+    }
+    return out;
+  }
+
+  // Série complète : 8 questions à choix et 7 phrases à compléter, en alternance (15 questions), sans verbe répété
+  function mixedSession(stat) {
+    const qcm = session(8, stat);
+    const sent = sentences(7, stat, qcm.map((q) => q.v.k));
+    const out = [];
+    qcm.forEach((q, i) => { out.push(q); if (sent[i]) out.push(sent[i]); });
+    return out;
+  }
+
+  FJ.conj = { VERBS, FORMS, CLS_FORMS, VISIBLE, FRAMES, conj, rule, ruleBody, question, sentence, choices, session, sentences, mixedSession, famLabel, CLS_LABEL, fam };
 })();
