@@ -263,78 +263,74 @@
     return `il y a ${Math.round(h / 24)} j`;
   }
 
-  // ---------- Petits mots publics : un mur de messages courts, sans réponse, un envoi par jour ----------
+  // ---------- Retour au créateur : un message anonyme (500 caractères), lisible seulement par l'administrateur ----------
+  // Remplace l'ancien mur de « petits mots » publics, qui n'était pas utilisé. Le message ne contient aucun identifiant.
+  // Un garde-fou côté appareil limite à 3 envois par jour (les règles Firestore bornent la taille, pas le nombre).
   const MOODS = ['😍', '🙂', '😐', '🐛', '💡'];
-  const SEEN_KEY = 'flashjap.notesSeen';
-  const noteDraft = { open: false, text: '', mood: null, anon: false };
+  const FB_MAX = 500;
+  const FB_PER_DAY = 3;
+  const FB_SENT_KEY = 'flashjap.fbSent';
+  const fbDraft = { open: false, text: '', mood: null, inbox: false };
 
-  function seenNotes() {
-    try { return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); } catch (e) { return new Set(); }
+  function fbSentToday() {
+    try { return JSON.parse(localStorage.getItem(FB_SENT_KEY) || '[]').filter((d) => d === store.dayKey()).length; } catch (e) { return 0; }
+  }
+  function fbMarkSent() {
+    try {
+      const a = JSON.parse(localStorage.getItem(FB_SENT_KEY) || '[]').slice(-20);
+      a.push(store.dayKey());
+      localStorage.setItem(FB_SENT_KEY, JSON.stringify(a));
+    } catch (e) { /* stockage indisponible */ }
   }
 
-  function dismissNote(id) {
-    const seen = seenNotes();
-    seen.add(id);
-    // on ne garde que les 200 derniers identifiants lus (les vieux mots ne s'affichent plus de toute façon)
-    try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seen].slice(-200))); } catch (e) { /* stockage indisponible */ }
-    refreshNotes();
+  function feedbackInner() {
+    const admin = !!(FJ.packsUi && FJ.packsUi.admin);
+    const items = (FJ.feedbackUi && FJ.feedbackUi.items) || [];
+    const form = `<details id="fbDetails"${fbDraft.open ? ' open' : ''}>
+        <summary>✏️ Écrire un retour</summary>
+        <form id="fbForm" class="add-form">
+          <p class="fb-privacy">Un bug, une idée, un merci ? Ton message est <b>anonyme</b> : seul le créateur de l'appli peut le lire.</p>
+          <textarea id="fbText" rows="5" maxlength="${FB_MAX}" placeholder="Ton retour sur l'appli…">${esc(fbDraft.text)}</textarea>
+          <div class="fb-count" id="fbCount">${fbDraft.text.length} / ${FB_MAX}</div>
+          <div class="mood-row">
+            ${MOODS.map((m) => `<button type="button" class="mood" data-action="fb-mood" data-val="${m}" aria-pressed="${fbDraft.mood === m}">${m}</button>`).join('')}
+          </div>
+          <button class="btn primary" type="submit" style="margin-top:10px">Envoyer</button>
+        </form>
+      </details>`;
+    // Boîte de réception : seulement sur le profil administrateur
+    const inbox = admin ? `<details id="fbInbox" class="fb-inbox"${fbDraft.inbox ? ' open' : ''}>
+        <summary>📥 Retours reçus (${items.length})</summary>
+        ${items.length ? items.map((it) => `<div class="fb-item">
+          <div class="fb-head">${it.mood ? `<span class="fb-mood">${esc(it.mood)}</span>` : ''}<span class="muted small">${agoText(it.createdAt)}</span>
+            <button class="fb-x" data-action="fb-delete" data-id="${esc(it.id)}" aria-label="Supprimer ce retour" title="Supprimer">✕</button></div>
+          <p class="fb-text">${esc(it.text)}</p></div>`).join('') : '<p class="muted small" style="margin:8px 0 0">Aucun retour pour le moment.</p>'}
+      </details>` : '';
+    return `<h2>💬 Faire un retour au créateur</h2>${form}${inbox}`;
   }
 
-  function notesInner() {
-    const nu = FJ.notesUi || { items: [], sentToday: false };
-    const seen = seenNotes();
-    const items = nu.items.filter((n) => !seen.has(n.id));
-    const bubbles = items.map((n) => `
-      <div class="note">
-        <div class="note-head">
-          ${n.mood ? `<span class="note-mood">${esc(n.mood)}</span>` : ''}
-          <b>${esc(n.name || 'Anonyme')}</b>
-          <span class="muted small">${agoText(n.createdAt)}</span>
-          <button class="note-x" data-action="note-dismiss" data-id="${esc(n.id)}" aria-label="Fermer ce mot" title="Fermer">✕</button>
-        </div>
-        ${n.text ? `<p class="note-text">${esc(n.text)}</p>` : ''}
-      </div>`).join('');
-    const form = nu.sentToday
-      ? '<p class="muted small" style="margin:10px 0 0">Votre mot du jour est parti. À demain pour un nouveau !</p>'
-      : `<details id="noteDetails"${noteDraft.open ? ' open' : ''}>
-          <summary>✏️ Laisser un petit mot</summary>
-          <form id="noteForm" class="add-form">
-            <p class="note-public">🌍 Votre mot sera <b>visible par tous les utilisateurs</b> de l'appli. Un seul par jour, sans réponse possible.</p>
-            <textarea id="noteText" rows="2" maxlength="100" placeholder="Un merci, une astuce, un encouragement… (100 caractères)">${esc(noteDraft.text)}</textarea>
-            <div class="mood-row">
-              ${MOODS.map((m) => `<button type="button" class="mood" data-action="note-mood" data-val="${m}" aria-pressed="${noteDraft.mood === m}">${m}</button>`).join('')}
-            </div>
-            <label class="checkbox-row"><input type="checkbox" id="noteAnon"${noteDraft.anon ? ' checked' : ''}> Rester anonyme (votre prénom ne sera pas affiché)</label>
-            <button class="btn primary" type="submit" style="margin-top:10px">Publier</button>
-          </form>
-        </details>`;
-    return `<h2>💬 Petits mots</h2>${bubbles || '<p class="muted small" style="margin:0">Aucun nouveau mot pour le moment.</p>'}${form}`;
+  // Ne touche qu'à cette zone (jamais tout l'accueil) pour ne pas perdre un message en cours de rédaction
+  function refreshFeedback() {
+    const box = $('#feedbackBox');
+    if (box) box.innerHTML = feedbackInner();
   }
 
-  // Ne touche qu'à cette zone (jamais tout l'accueil) pour ne pas perdre un mot en cours de rédaction
-  function refreshNotes() {
-    const box = $('#notesBox');
-    if (box) box.innerHTML = notesInner();
-  }
-
-  async function submitNote(e) {
+  async function submitFeedback(e) {
     e.preventDefault();
-    const text = $('#noteText').value.trim();
-    if (!text && !noteDraft.mood) return toast('Ajoutez un message ou choisissez un smiley.');
+    const text = $('#fbText').value.trim();
+    if (!text) return toast('Écris quelques mots avant d\'envoyer.');
+    if (fbSentToday() >= FB_PER_DAY) return toast(`Déjà ${FB_PER_DAY} retours aujourd'hui, merci ! À demain.`);
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
-    const res = await (FJ.sync ? FJ.sync.sendNote({ text, mood: noteDraft.mood, anonymous: $('#noteAnon').checked }) : 'error');
+    const res = await (FJ.sync ? FJ.sync.sendFeedback({ text, mood: fbDraft.mood }) : 'error');
     if (res === 'ok') {
-      Object.assign(noteDraft, { open: false, text: '', mood: null, anon: $('#noteAnon').checked });
-      if (FJ.notesUi) FJ.notesUi.sentToday = true;
-      toast('Mot publié, merci !', true);
+      Object.assign(fbDraft, { open: false, text: '', mood: null });
+      fbMarkSent();
+      toast('Merci pour ton retour !', true);
       FJ.ach.unlockId('note');
-    } else if (res === 'already') {
-      if (FJ.notesUi) FJ.notesUi.sentToday = true;
-      toast("Vous avez déjà publié un mot aujourd'hui.");
     } else if (res === 'denied') toast("Envoi refusé par le serveur (règles Firestore à mettre à jour). Prévenez l'administrateur.");
     else toast('Envoi impossible : vérifiez votre connexion.');
-    refreshNotes();
+    refreshFeedback();
   }
 
   function updateSyncBadge() {
@@ -352,7 +348,7 @@
     if (FJ.syncUi.phase === 'signedin' && !(FJ.store.state.settings.ach || {}).cloud) scheduleAchCheck(); // succès "Nuagiste"
     const box = $('#syncBox');
     if (box) box.innerHTML = syncInner();
-    if (view === 'home' && (!!$('#notesBox') || !!$('#packsBox')) && FJ.syncUi.phase !== 'signedin') renderHome(); // déconnexion : les zones disparaissent
+    if (view === 'home' && (!!$('#feedbackBox') || !!$('#packsBox')) && FJ.syncUi.phase !== 'signedin') renderHome(); // déconnexion : les zones disparaissent
   }
 
   // Appelé quand des données arrivent d'un autre appareil : rafraîchit l'affichage sans toucher à une session en cours.
@@ -363,11 +359,11 @@
     else if (view === 'words') renderWordsList();
   }
 
-  function notesChanged() {
+  function feedbackChanged() {
     if (view !== 'home') return;
-    const shown = !!$('#notesBox');
+    const shown = !!$('#feedbackBox');
     if (shown !== (FJ.syncUi.phase === 'signedin')) renderHome(); // la zone apparaît / disparaît avec la connexion
-    else refreshNotes();
+    else refreshFeedback();
   }
 
   // Bulle publique : total des cartes révisées par tous les comptes (publié par js/sync.js, lu en une agrégation serveur)
@@ -410,7 +406,7 @@
     if (m && FJ.communityUi && FJ.communityUi.members != null) m.textContent = fmtN(FJ.communityUi.members);
   }
 
-  FJ.ui = { refresh, syncChanged, notesChanged, communityChanged, packsChanged: (...a) => packsChanged(...a), achChanged: () => achChanged(), openAch: () => renderAchievements(), toast };
+  FJ.ui = { refresh, syncChanged, feedbackChanged, communityChanged, packsChanged: (...a) => packsChanged(...a), achChanged: () => achChanged(), openAch: () => renderAchievements(), toast };
 
   // ---------- Accueil ----------
   function startBlock(track, counts, label) {
@@ -642,7 +638,7 @@
 
       ${communityHtml()}
 
-      ${FJ.syncUi.phase === 'signedin' ? `<section class="panel notes" id="notesBox">${notesInner()}</section>` : ''}
+      ${FJ.syncUi.phase === 'signedin' ? `<section class="panel feedback" id="feedbackBox">${feedbackInner()}</section>` : ''}
 
       <div class="acct-row">
         <section class="panel sync-panel" id="syncBox">${syncInner()}</section>
@@ -1765,7 +1761,7 @@
   function packsChanged() {
     if (view !== 'home') return;
     if (!!$('#packsBox') !== packsVisible()) renderHome();
-    else refreshPacks();
+    else { refreshPacks(); refreshFeedback(); } // le profil administrateur reconnu : la boîte de réception des retours apparaît
   }
 
   function ownedKeys() {
@@ -2013,11 +2009,11 @@
     'import-json': () => $('#jsonFile').click(),
     'export-json': exportJson,
     'sync-signin': () => FJ.sync && FJ.sync.signIn(),
-    'note-mood'(el) {
-      noteDraft.mood = noteDraft.mood === el.dataset.val ? null : el.dataset.val;
-      document.querySelectorAll('[data-action="note-mood"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.val === noteDraft.mood)));
+    'fb-mood'(el) {
+      fbDraft.mood = fbDraft.mood === el.dataset.val ? null : el.dataset.val;
+      document.querySelectorAll('[data-action="fb-mood"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.val === fbDraft.mood)));
     },
-    'note-dismiss': (el) => dismissNote(el.dataset.id),
+    'fb-delete': (el) => FJ.sync && FJ.sync.deleteFeedback(el.dataset.id),
     'news-close': closeNews,
     'ach-open': () => renderAchievements(),
     'conj-start': startConj,
@@ -2084,22 +2080,25 @@
 
   // L'événement "toggle" ne remonte pas : on l'écoute en phase de capture pour mémoriser l'état de "Petits mots"
   document.addEventListener('toggle', (e) => {
-    if (e.target.id === 'noteDetails') noteDraft.open = e.target.open;
+    if (e.target.id === 'fbDetails') fbDraft.open = e.target.open;
+    else if (e.target.id === 'fbInbox') fbDraft.inbox = e.target.open;
     else if (e.target.id === 'packsAll') packUi.allOpen = e.target.open;
     else if (e.target.id === 'packAdmin') packDraft.open = e.target.open;
   }, true);
 
   document.addEventListener('submit', (e) => {
     if (e.target.id === 'addForm') submitAddCard(e);
-    else if (e.target.id === 'noteForm') submitNote(e);
+    else if (e.target.id === 'fbForm') submitFeedback(e);
     else if (e.target.id === 'editForm') submitEditCard(e);
   });
 
   document.addEventListener('input', (e) => {
     if (e.target.id === 'addRecto' || e.target.id === 'addVerso') {
       updateAddPreview();
-    } else if (e.target.id === 'noteText') {
-      noteDraft.text = e.target.value;
+    } else if (e.target.id === 'fbText') {
+      fbDraft.text = e.target.value;
+      const c = $('#fbCount');
+      if (c) c.textContent = `${e.target.value.length} / ${FB_MAX}`;
     } else if (e.target.id === 'packTitle') {
       packDraft.title = e.target.value;
     } else if (e.target.id === 'packDesc') {
@@ -2497,8 +2496,7 @@
     try { seen = localStorage.getItem(NEWS_KEY); } catch (e) { return; } // sans stockage, on ne risquerait que de répéter l'annonce
     if (seen === r.version) return;
     try { localStorage.setItem(NEWS_KEY, r.version); } catch (e) { return; } // retenue dès l'affichage : elle ne revient pas
-    const brandNew = !store.state.cards.length && !store.state.stats.reviews; // un tout nouvel utilisateur n'a rien à "rattraper"
-    if (!brandNew) showNews();
+    showNews(); // les nouveaux utilisateurs la voient aussi : c'est leur première présentation de l'appli
   }
 
   // ---------- Bonhomme de neige du bas de page ----------

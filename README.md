@@ -63,11 +63,11 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Colonne `kanji_only` (valeurs `off`/`on`, lue par `js/csv.js`) : le pack kanji la met à `off` sur toutes ses cartes, pour ne pas dupliquer son propre travail dans le mode Kanji Only (chaque carte y est déjà construite comme kanji → sens).
 - Pour mettre à jour ces fichiers plus tard : même format CSV que d'habitude (`recto_texte,verso_texte,emoji[,kanji_only]`).
 
-## Petits mots publics
-- Zone discrète en bas de l'accueil (au-dessus de la connexion), visible une fois connecté : les mots des 7 derniers jours, sans pop-up. Chaque bulle a une petite ✕ pour la fermer une fois lue (mémorisé sur l'appareil).
-- « ✏️ Laisser un petit mot » : 100 caractères max + un smiley (😍 🙂 😐 🐛 💡) + case « rester anonyme » (sinon le prénom Google est affiché). Le formulaire précise que le mot est **visible par tous les utilisateurs**. Pas de réponses, pas de chat.
-- Un seul mot par personne et par jour : appliqué côté serveur (identifiant du document `{uid}_{jour}`, un second envoi le même jour est refusé par les règles) et rappelé dans l'interface.
-- Collection Firestore `notes` : lecture pour tout compte connecté admis, création seule (jamais modifiable), suppression réservée au propriétaire (modération depuis la console Firebase). Règles : `data/firestore.rules`.
+## Retour au créateur (anonyme)
+- Remplace l'ancien mur de « petits mots » publics (collection `notes`, plus lue ni écrite par l'appli). Section « 💬 Faire un retour au créateur » en bas de l'accueil, visible une fois connecté : un message de **500 caractères au plus**, un smiley facultatif, un bouton « Envoyer ». Pas de pop-up : le formulaire est replié.
+- **Anonyme** : le document envoyé ne contient que `text`, `mood` et `createdAt` (ni identifiant, ni nom, ni adresse). Un garde-fou côté appareil limite à 3 envois par jour (les règles Firestore bornent la taille, pas le nombre, puisqu'il n'y a pas d'identifiant).
+- **Visible seulement sur le profil administrateur** : l'appli ne s'abonne à la collection `feedback` que si le compte est reconnu comme propriétaire (lecture de `config/admin`) ; les règles Firestore (`data/firestore.rules`) réservent de toute façon la lecture et la suppression au propriétaire. Une boîte « 📥 Retours reçus (N) » apparaît alors sous le formulaire, avec suppression individuelle.
+- Les anciens documents de la collection `notes` restent dans Firebase : les supprimer depuis la console s'ils ne servent plus.
 
 ## Paquets de mises à jour
 - Le propriétaire (compte reconnu par les règles Firestore, jamais par un e-mail dans le code) voit « 🛠 Publier un paquet » : il choisit un CSV (mêmes colonnes que les packs de base), un titre, une description, consulte l'aperçu (cartes nouvelles / déjà présentes) puis « Envoyer à tous ». Un paquet peut être retiré ensuite.
@@ -139,4 +139,4 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Ajouter un succès = une ligne dans la liste `A` de `js/achievements.js` (avec un test, ou sans test et un appel `FJ.ach.unlockId('id')` à l'endroit de l'événement).
 
 ## Version 1.2.0 « Édition de Noël »
-- Annonce armée (`js/release.js`, `announce: true`) : mode Noël, succès, compteur communautaire, nouveau mode Conjugaison. Une seule fois par appareil.
+- Annonce armée (`js/release.js`, `announce: true`) : mode Noël, succès, compteur communautaire, nouveau mode Conjugaison. Une seule fois par appareil, y compris pour un nouvel utilisateur.

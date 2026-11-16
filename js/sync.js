@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.9.0/firebas
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js';
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-  collection, doc, onSnapshot, writeBatch, setDoc, deleteDoc, getDoc, serverTimestamp, query, orderBy, limit,
+  collection, doc, onSnapshot, writeBatch, setDoc, addDoc, deleteDoc, getDoc, serverTimestamp, query, orderBy, limit,
   getAggregateFromServer, getCountFromServer, sum,
 } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
@@ -82,7 +82,6 @@ function startSync(user) {
   store.onChange = () => core.notifyChange();
   FJ.sync.replaceAll = () => core.replaceAll();
   core.start();
-  startNotes(user.uid);
   startPacks();
   startCommunity(user.uid);
   publish();
@@ -93,45 +92,39 @@ function stopSync() {
   core = null;
   store.onChange = null;
   FJ.sync.replaceAll = () => Promise.resolve();
-  stopNotes();
+  stopFeedbackInbox();
   stopPacks();
   stopCommunity();
 }
 
-// ---------- Petits mots publics ("notes") ----------
-// Un mur de messages courts, visibles par tous les comptes connectés (pas de réponses, pas de chat).
-// Limite d'un mot par personne et par jour, appliquée côté serveur par les règles Firestore grâce à l'identifiant
-// du document, "{uid}_{numéro du jour local}" : un second envoi le même jour vise un document déjà existant et est refusé.
-const notes = (FJ.notesUi = FJ.notesUi || {});
-Object.assign(notes, { items: [], sentToday: false });
-let unsubNotes = null;
-// Numéro du jour à l'heure locale de l'appareil : la limite se renouvelle à minuit chez soi (pas 24 h après l'envoi).
-const dayNumber = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
-const NOTE_DAYS = 7; // on n'affiche que les mots récents
+// ---------- Retour au créateur (anonyme) ----------
+// Chaque compte connecté peut envoyer un message de 500 caractères au plus. Le message est ANONYME : on n'y met ni
+// identifiant, ni nom, ni adresse (seulement le texte, un smiley facultatif et la date). Seul le propriétaire peut les
+// lire ou les supprimer : les règles Firestore l'imposent, et l'appli ne s'abonne à la collection que si le compte est
+// reconnu comme propriétaire (lecture de config/admin).
+const feedback = (FJ.feedbackUi = FJ.feedbackUi || {});
+Object.assign(feedback, { items: [] });
+let unsubFeedback = null;
 
-function startNotes(uid) {
-  const q = query(collection(db, 'notes'), orderBy('createdAt', 'desc'), limit(40));
-  unsubNotes = onSnapshot(q, (snap) => {
-    const since = Date.now() - NOTE_DAYS * 86400000;
-    notes.items = snap.docs
-      .map((d) => {
-        const data = d.data({ serverTimestamps: 'estimate' });
-        return { id: d.id, ...data, createdAt: data.createdAt && data.createdAt.toMillis ? data.createdAt.toMillis() : Date.now() };
-      })
-      .filter((n) => n.createdAt >= since);
-    notes.sentToday = notes.items.some((n) => n.id === uid + '_' + dayNumber());
-    if (ui().notesChanged) ui().notesChanged();
+function startFeedbackInbox() {
+  if (unsubFeedback) return;
+  const q = query(collection(db, 'feedback'), orderBy('createdAt', 'desc'), limit(100));
+  unsubFeedback = onSnapshot(q, (snap) => {
+    feedback.items = snap.docs.map((d) => {
+      const x = d.data({ serverTimestamps: 'estimate' });
+      return { id: d.id, text: x.text || '', mood: x.mood || null, createdAt: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : Date.now() };
+    });
+    if (ui().feedbackChanged) ui().feedbackChanged();
   }, () => {
-    notes.items = []; // accès refusé (ex. appli fermée aux nouveaux comptes) : la zone reste vide
-    if (ui().notesChanged) ui().notesChanged();
+    feedback.items = [];
+    if (ui().feedbackChanged) ui().feedbackChanged();
   });
 }
 
-function stopNotes() {
-  notes.items = [];
-  notes.sentToday = false;
-  if (unsubNotes) unsubNotes();
-  unsubNotes = null;
+function stopFeedbackInbox() {
+  feedback.items = [];
+  if (unsubFeedback) unsubFeedback();
+  unsubFeedback = null;
 }
 
 // ---------- Paquets de mises à jour ----------
@@ -164,6 +157,7 @@ function startPacks() {
     packs.admin = true;
     if (ui().packsChanged) ui().packsChanged();
     fetchMembers(); // le nombre de comptes enregistrés n'est lisible que par le propriétaire
+    startFeedbackInbox(); // les retours anonymes aussi
   }).catch(() => { /* refusé par les règles : pas le propriétaire */ });
 }
 
@@ -181,6 +175,8 @@ function stopPacks() {
 //    qu'une lecture pour 1000 comptes. Au plus un envoi par jour et par compte.
 // 2) Nombre de comptes (administrateur uniquement) : un marqueur members/{uid} (une date, rien d'autre) créé une fois
 //    par compte ; seul le propriétaire peut lister cette collection (règles Firestore).
+// Numéro du jour à l'heure locale de l'appareil : l'envoi du compteur se renouvelle à minuit chez soi.
+const dayNumber = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
 const community = (FJ.communityUi = FJ.communityUi || {});
 Object.assign(community, { total: null, members: null });
 const TOTAL_TTL = 120000; // le total n'est relu qu'au plus une fois toutes les 2 minutes
@@ -282,30 +278,21 @@ FJ.sync = {
   async signOut() {
     await signOut(auth);
   },
-  // Dépose un petit mot public (1 par jour). Retourne 'ok', 'already' (déjà envoyé aujourd'hui) ou 'error'.
-  async sendNote({ text, mood, anonymous }) {
-    const user = auth.currentUser;
-    if (!user) return 'error';
-    const clean = (text || '').trim().slice(0, 100);
-    if (!clean && !mood) return 'error';
-    if (notes.sentToday) return 'already';
-    const day = dayNumber();
-    const ref = doc(db, 'notes', user.uid + '_' + day);
+  // Envoie un retour anonyme au créateur. Retourne 'ok', 'denied' (règles Firestore pas à jour) ou 'error'.
+  // Rien d'identifiant n'est écrit : seulement le texte (500 caractères au plus), un smiley facultatif et la date.
+  async sendFeedback({ text, mood }) {
+    if (!auth.currentUser) return 'error';
+    const clean = (text || '').trim().slice(0, 500);
+    if (!clean) return 'error';
     try {
-      await setDoc(ref, {
-        uid: user.uid,
-        day,
-        text: clean,
-        mood: mood || null,
-        name: anonymous ? null : ((user.displayName || '').split(' ')[0] || null), // prénom seulement
-        createdAt: serverTimestamp(),
-      });
+      await addDoc(collection(db, 'feedback'), { text: clean, mood: mood || null, createdAt: serverTimestamp() });
       return 'ok';
     } catch (e) {
-      if (!((e && e.code) || '').includes('permission-denied')) return 'error';
-      // Refusé : soit le mot du jour existe vraiment déjà, soit les règles Firestore ne conviennent pas. On vérifie.
-      try { return (await getDoc(ref)).exists() ? 'already' : 'denied'; } catch (e2) { return 'denied'; }
+      return ((e && e.code) || '').includes('permission-denied') ? 'denied' : 'error';
     }
+  },
+  async deleteFeedback(id) {
+    try { await deleteDoc(doc(db, 'feedback', id)); return true; } catch (e) { return false; }
   },
 };
 
