@@ -557,39 +557,36 @@
     const kp = store.counts(now, 'kanji', true);
     const todayReviews = (s.daily[store.dayKey()] || {}).reviews || 0;
 
-    // Bulle principale : la révision. L'engrenage ouvre le tiroir des réglages (sélection de leçons + options de session).
-    const review = c.total
-      ? `<section class="panel review"><img class="xmas-hat" src="assets/xmas/hat.svg" alt="" aria-hidden="true">
+    // Bulle principale : la révision, en trois colonnes (Cartes, Kanji, Conjugaison), pour tout le monde. La conjugaison est
+    // intégrée à l'appli : elle est là dès le départ, sans rien importer. Sans carte, la colonne Cartes propose le pack de
+    // base. L'engrenage ouvre le tiroir des réglages (sélection de leçons + options de session).
+    const empty = !c.total;
+    const cardsCol = empty
+      ? '<div class="col"><h3 class="col-title">Cartes</h3><button class="btn primary col-btn" data-action="starter-vocab">Importer le pack de base</button><p class="col-sub">1000 mots<br>de base</p></div>'
+      : revCol('main', 'Cartes', cp);
+    const review = `<section class="panel review"><img class="xmas-hat" src="assets/xmas/hat.svg" alt="" aria-hidden="true">
           <div class="review-head">
             <h2>Réviser</h2>
-            <button class="gear${s.settings.catPool ? ' on' : ''}" data-action="toggle-settings" aria-expanded="${settingsOpen}" aria-label="Réglages de révision" title="Réglages de révision">${GEAR_SVG}</button>
+            ${empty ? '' : `<button class="gear${s.settings.catPool ? ' on' : ''}" data-action="toggle-settings" aria-expanded="${settingsOpen}" aria-label="Réglages de révision" title="Réglages de révision">${GEAR_SVG}</button>`}
           </div>
-          ${settingsOpen ? settingsPanel() : ''}
+          ${!empty && settingsOpen ? settingsPanel() : ''}
           <div class="cols">
-            ${revCol('main', 'Cartes', cp)}
-            ${revCol('kanji', 'Kanji', kp)}
+            ${cardsCol}
+            ${revCol('kanji', 'Kanji', empty ? { total: 0 } : kp)}
             ${conjCol()}
           </div>
-          ${filterNote()}
-        </section>`
-      : `<section class="panel"><div class="empty"><p>Aucune carte pour le moment.</p>
-         <button class="btn primary big" data-action="starter-vocab">📦 Commencer avec le pack de base (1000 mots)</button>
-         <p class="muted small" style="margin:10px 0 6px">ou</p>
-         <div class="actions" style="justify-content:center">
-           <button class="btn" data-action="import-csv">Importer votre CSV</button>
-           <button class="btn" data-action="add-card">＋ Ajouter une carte</button>
-         </div></div></section>`;
+          ${empty
+            ? '<p class="start-sub">ou <button class="linkish" data-action="import-csv">importer votre CSV</button> · <button class="linkish" data-action="add-card">ajouter une carte</button></p>'
+            : filterNote()}
+        </section>`;
 
     const extras = [];
     if (c.priority) extras.push(`★ ${plural(c.priority, 'carte prioritaire', 'cartes prioritaires')}`);
     if (c.mastered) extras.push(`✓ ${plural(c.mastered, 'mot masterisé', 'mots masterisés')}`);
     if (c.aside) extras.push(`⏸ ${c.aside} de côté`);
 
-    // Sans carte, la bulle à trois colonnes n'a pas de sens : on garde l'invitation à importer, et la conjugaison à part
     $('#app').innerHTML = `
       ${review}
-
-      ${c.total ? '' : conjHomeHtml()}
 
       ${packsVisible() ? `<section class="panel packs" id="packsBox">${packsInner()}</section>` : ''}
 
@@ -2025,6 +2022,8 @@
     'ach-open': () => renderAchievements(),
     'conj-start': startConj,
     'conj-fiche': renderFiche,
+    'conj-sheet': openSheet,
+    'sheet-close': closeSheet,
     'conj-pick': (el) => conjPick(Number(el.dataset.i)),
     'conj-next': conjNext,
     'conj-hint': conjHint,
@@ -2051,6 +2050,7 @@
 
   document.addEventListener('click', (e) => {
     if (e.target.id === 'news') return closeNews(); // clic sur le fond
+    if (e.target.id === 'sheet') return closeSheet();
     const el = e.target.closest('[data-action]');
     if (el && actions[el.dataset.action]) actions[el.dataset.action](el);
   });
@@ -2116,6 +2116,7 @@
 
   document.addEventListener('keydown', (e) => {
     if (newsOpen()) { if (e.key === 'Escape') closeNews(); return; }
+    if (sheetOpen()) { if (e.key === 'Escape') closeSheet(); return; } // la fiche ouverte par-dessus une série
     if (modalOpen()) { // pendant une confirmation, seules Échap (annuler) et le focus sur les boutons comptent
       if (e.key === 'Escape') closeModal(false);
       return;
@@ -2191,17 +2192,6 @@
   let cj = null;
 
   const INFO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg>';
-
-  function conjHomeHtml() {
-    return `<section class="panel conj-panel">
-      <div class="review-head">
-        <h2>Conjugaison <span class="beta">BETA</span></h2>
-        <button class="gear" data-action="conj-fiche" aria-label="Fiche de conjugaison" title="Fiche de conjugaison">${INFO_SVG}</button>
-      </div>
-      <div class="start"><button class="btn primary big" data-action="conj-start">Conjuguer</button>
-        <p class="start-sub">15 questions · environ 3 minutes</p></div>
-    </section>`;
-  }
 
   const cjCnt = () => (store.state.settings.cnt = store.state.settings.cnt || {});
   // Nombre de réponses de conjugaison données depuis le début (réussies + ratées), pour « Ma progression »
@@ -2289,18 +2279,19 @@
       cj.xp += xp;
       gainXp(xp);
       audio.play('ok');
-      fb.innerHTML = `<span class="conj-good">✓ +${xp} XP</span>${extra}${sent ? next : ''}`;
+      fb.innerHTML = `<span class="conj-good">✓ +${xp} XP</span>${extra}${next}`;
       persist();
-      // on laisse le temps de lire (la phrase : un peu plus) ; « Suivant » permet de passer plus vite
-      setTimeout(() => { if (cj && view === 'conj' && cj.locked && cj.qs[cj.i] === q) conjNext(); }, sent ? 3200 : 1300);
+      const nxt = fb.querySelector('button');
+      if (nxt) nxt.focus();
     } else {
       cj.combo = 0;
       const key = `${q.fam}|${q.cls}`;
       cj.wrong[key] = (cj.wrong[key] || 0) + 1;
       audio.play('ko');
-      fb.innerHTML = `<div class="conj-bad">❌ ${esc(q.rule)}</div>${extra}${next}`;
+      // après une erreur, ⓘ ouvre la fiche par-dessus la série (on y retrouve la règle sans perdre sa place)
+      fb.innerHTML = `<div class="conj-bad"><span>❌ ${esc(q.rule)}</span><button type="button" class="info-link sheet-btn" data-action="conj-sheet" aria-label="Voir la fiche de conjugaison" title="Voir la fiche de conjugaison">${INFO_SVG}</button></div>${extra}${next}`;
       persist();
-      const nx = fb.querySelector('button');
+      const nx = fb.querySelector('[data-action=conj-next]');
       if (nx) nx.focus();
     }
   }
@@ -2351,16 +2342,11 @@
   }
 
   // La fiche : les transformations, sur un seul écran. (La forme en た n'est pas encore au programme : elle n'y figure pas.)
-  function renderFiche() {
-    setView('fiche');
+  // Le contenu sert deux fois : en page (icône ⓘ de l'accueil) et en feuille par-dessus la série (icône ⓘ après une erreur).
+  function ficheInner() {
     // [fin, base de ます, base de ない, forme en て]
     const g1 = [['う', 'い', 'わ', 'って'], ['つ', 'ち', 'た', 'って'], ['る', 'り', 'ら', 'って'], ['む', 'み', 'ま', 'んで'], ['ぶ', 'び', 'ば', 'んで'], ['ぬ', 'に', 'な', 'んで'], ['く', 'き', 'か', 'いて'], ['ぐ', 'ぎ', 'が', 'いで'], ['す', 'し', 'さ', 'して']];
-    $('#app').innerHTML = `
-      <section class="panel fiche">
-        <div class="words-head">
-          <button class="btn ghost" data-action="home">← Accueil</button>
-          <h2 style="margin:0">Fiche de conjugaison</h2>
-        </div>
+    return `
         <h3 class="sub">1er groupe : verbes en う (on change la dernière syllabe)</h3>
         <table>
           <tr><th>Fin</th><th>ます</th><th>ない</th><th>て</th></tr>
@@ -2389,9 +2375,43 @@
         </table>
         <p class="muted small" lang="ja">い-adjectifs : い → くない. Exception : いい → よくない. Les な-adjectifs et les noms : じゃない. Poli : くないです / じゃないです.</p>
         <h3 class="sub">Pour tous</h3>
-        <p class="fiche-all" lang="ja">ない → なかった<br>ます → ません · ました · ませんでした</p>
+        <p class="fiche-all" lang="ja">ない → なかった<br>ます → ません · ました · ませんでした</p>`;
+  }
+
+  function renderFiche() {
+    setView('fiche');
+    $('#app').innerHTML = `
+      <section class="panel fiche">
+        <div class="words-head">
+          <button class="btn ghost" data-action="home">← Accueil</button>
+          <h2 style="margin:0">Fiche de conjugaison</h2>
+        </div>${ficheInner()}
       </section>`;
     window.scrollTo(0, 0);
+  }
+
+  const sheetOpen = () => !!$('#sheet');
+  function closeSheet() {
+    const el = $('#sheet');
+    if (!el) return;
+    el.remove();
+    const nx = document.querySelector('[data-action=conj-next]');
+    if (nx) nx.focus(); // on reprend la série là où on l'a laissée
+  }
+  function openSheet() {
+    if (sheetOpen()) return;
+    const el = document.createElement('div');
+    el.id = 'sheet';
+    el.className = 'modal sheet';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-label', 'Fiche de conjugaison');
+    el.innerHTML = `<div class="modal-box sheet-box fiche">
+      <div class="sheet-head"><h2>Fiche de conjugaison</h2><button type="button" class="btn" data-action="sheet-close">Fermer</button></div>${ficheInner()}
+    </div>`;
+    document.body.appendChild(el);
+    el.querySelector('.sheet-box').scrollTop = 0;
+    el.querySelector('button').focus();
   }
 
   // ---------- Succès ----------
