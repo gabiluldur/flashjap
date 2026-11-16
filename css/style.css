@@ -588,7 +588,7 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 
 /* ---------- Bonnet de Noël sur la bulle Réviser ---------- */
 .review { position: relative; }
-.xmas-hat { position: absolute; top: -20px; right: -13px; width: 54px; height: 54px; transform: rotate(16deg); transform-origin: 30% 80%; pointer-events: none; z-index: 2; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .3)); }
+.xmas-hat { position: absolute; top: -20px; right: -3px; width: 54px; height: 54px; transform: rotate(26deg); transform-origin: 30% 80%; pointer-events: none; z-index: 2; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .3)); }
 
 /* ---------- Annonce de mise à jour ---------- */
 .news-box { padding-top: 18px; }
@@ -617,11 +617,18 @@ h3.sub { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 0 0 8px;
 body:not([data-view="home"]) .theme-row { display: none; }
 
 /* ---------- Bulle publique : cartes cumulées par toute la communauté ---------- */
-.community { text-align: center; padding: 30px 16px 26px; }
+.community { position: relative; overflow: hidden; text-align: center; padding: 30px 16px 30px; }
+.community-line { display: flex; align-items: baseline; justify-content: center; gap: 6px; }
 .community-num { font-size: clamp(2.6rem, 15vw, 4.2rem); font-weight: 800; line-height: 1.05; color: var(--xp); font-variant-numeric: tabular-nums; text-shadow: 0 0 22px color-mix(in srgb, var(--xp) 40%, transparent); }
+.community-goal { font-size: clamp(.9rem, 4vw, 1.2rem); font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .community-label { margin: 8px 0 0; color: var(--muted); font-size: .95rem; }
 .community-sub { margin: 2px 0 0; color: var(--muted); font-size: .82rem; opacity: .8; }
-
+.community-obj { margin: 12px 0 0; font-size: .95rem; font-weight: 600; }
+.community-ja { margin: 1px 0 0; color: var(--muted); font-size: .7rem; letter-spacing: .04em; opacity: .85; }
+/* fine barre de progression (4 px) sur toute la largeur du bas de la bulle */
+.community-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: color-mix(in srgb, var(--xp) 18%, transparent); }
+.community-bar i { display: block; height: 100%; background: var(--xp); border-radius: 0 2px 2px 0; transition: width 1.6s cubic-bezier(.2, .7, .2, 1); }
+@media (prefers-reduced-motion: reduce) { .community-bar i { transition: none; } }
 /* ---------- Succès ---------- */
 #achToasts { position: fixed; right: 12px; bottom: calc(72px + env(safe-area-inset-bottom)); z-index: 12; display: grid; gap: 8px; justify-items: end; pointer-events: none; max-width: calc(100vw - 24px); }
 .ach-toast {

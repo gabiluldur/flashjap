@@ -26,7 +26,7 @@
     ['back', '🌱', 'Le retour du héros', 'Pas de souci, les kanji t\'attendaient.', (c) => c.comeback],
 
     // Découvertes
-    ['snowkill', '☃️', 'Tueur de Noël', 'Il ne reste que de la poudre. Le Père Noël est au courant.'],
+    ['snowkill', '☃️', 'Tueur de Noël', 'Le Père Noël est au courant.'],
     // (héritage d'Halloween : plus déblocables depuis que la citrouille est partie, mais conservés pour ceux qui les ont)
     ['cit5', '🎃', 'Tripoteur de citrouille', 'Elle a rebondi 5 fois. Elle n\'est pas rancunière.', (c) => c.cnt.pumpkin >= 5],
     ['cit50', '🎃', 'Dresseur de citrouille', 'Cinquante rebonds. Elle te fait confiance.', (c) => c.cnt.pumpkin >= 50],

@@ -373,14 +373,19 @@
   // Bulle publique : total des cartes révisées par tous les comptes (publié par js/sync.js, lu en une agrégation serveur)
   const communityTotal = () => (FJ.communityUi && FJ.communityUi.total != null ? FJ.communityUi.total : null);
   let communityAnimated = false; // le chiffre monte de 0 une seule fois par chargement
+  const COMMUNITY_GOAL = 5000; // objectif affiché sous le compteur (et barre de progression)
+  const communityPct = (n) => Math.min(100, Math.round((n / COMMUNITY_GOAL) * 1000) / 10);
 
   function communityHtml() {
     const total = FJ.syncUi.phase === 'signedin' ? communityTotal() : null;
     if (total === null) return '';
     return `<section class="panel community" id="communityBox">
-      <div class="community-num" id="communityNum">${communityAnimated ? fmtN(total) : '0'}</div>
+      <div class="community-line"><span class="community-num" id="communityNum">${communityAnimated ? fmtN(total) : '0'}</span><small class="community-goal">/${COMMUNITY_GOAL}</small></div>
       <p class="community-label">Nombre de cartes cumulées depuis le début</p>
       <p class="community-sub">(Tous les apprenants confondus)</p>
+      <p class="community-obj">Objectif ${COMMUNITY_GOAL} Cartes avant 2027 !</p>
+      <p class="community-ja" lang="ja">(がんばってください)</p>
+      <div class="community-bar" aria-hidden="true"><i id="communityBar" style="width:${communityAnimated ? communityPct(total) : 0}%"></i></div>
     </section>`;
   }
 
@@ -388,9 +393,12 @@
     const el = $('#communityNum');
     const total = communityTotal();
     if (!el || total === null) return;
-    if (communityAnimated) { el.textContent = fmtN(total); return; }
+    const bar = $('#communityBar');
+    const fillBar = () => { if (bar) bar.style.width = communityPct(total) + '%'; };
+    if (communityAnimated) { el.textContent = fmtN(total); fillBar(); return; }
     communityAnimated = true;
     FJ.fx.countUp(el, total, 1600);
+    requestAnimationFrame(() => requestAnimationFrame(fillBar)); // la barre se remplit en même temps que le chiffre monte
   }
 
   function communityChanged() {
