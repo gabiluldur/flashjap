@@ -696,3 +696,22 @@ body:not([data-view="home"]) .theme-row { display: none; }
 .conj-sentence { font-size: clamp(1.35rem, 6.2vw, 1.8rem); line-height: 1.6; margin: 10px 0 4px; overflow-wrap: anywhere; }
 .conj-blank { display: inline-block; min-width: 3.2em; color: var(--xp); letter-spacing: .05em; }
 .conj-verbline { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--muted); font-size: 1.1rem; }
+
+/* ---------- Grande bulle « Réviser » à trois colonnes ---------- */
+.cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 4px; }
+.col { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 4px 8px; border-radius: 14px; background: var(--surface-2); min-width: 0; }
+.col-title { margin: 0 0 8px; font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.col-btn { width: calc(100% - 8px); min-height: 52px; padding: 8px 4px; font-size: .92rem; line-height: 1.15; }
+.col-sub { margin: 8px 0 0; font-size: .78rem; line-height: 1.5; color: var(--muted); min-height: 2.9em; }
+.col-sub b { color: var(--ink); }
+.beta { display: inline-block; font-size: .6rem; font-weight: 800; letter-spacing: .08em; padding: 1px 6px; border-radius: 6px; background: var(--xp); color: #1f2430; vertical-align: middle; line-height: 1.5; }
+.info-link { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; vertical-align: middle; border-radius: 50%; }
+.info-link:hover { color: var(--ink); background: var(--surface); }
+.info-link svg { width: 16px; height: 16px; }
+
+/* ---------- Conjugaison : traduction, groupe, phrase complétée ---------- */
+.conj-fr { text-align: center; font-style: italic; line-height: 1.5; padding: 2px 6px; }
+.conj-group { color: var(--muted); font-size: .95rem; }
+.conj-group b { color: var(--xp); }
+.conj-blank.filled { color: var(--xp); font-weight: 700; letter-spacing: 0; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--xp) 50%, transparent); text-underline-offset: 6px; }
+.s-count .beta { margin-left: 6px; }

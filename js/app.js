@@ -429,6 +429,34 @@
       <p class="start-sub">${plural(q.dueN, 'carte à réviser', 'cartes à réviser')} · ${plural(q.newN, 'nouvelle', 'nouvelles')}</p></div>`;
   }
 
+  // Une colonne de la bulle « Réviser » : titre, un bouton, deux lignes de chiffres
+  function revCol(track, title, counts) {
+    const now = Date.now();
+    let btn;
+    let sub;
+    if (!counts.total) {
+      btn = '<button class="btn primary col-btn" disabled>Réviser</button>';
+      sub = track === 'kanji' ? 'Pack Kanji<br>non ajouté' : store.state.settings.catPool ? 'Aucune carte<br>dans la sélection' : '';
+    } else {
+      const q = buildQueue(track);
+      if (!q.items.length) {
+        btn = '<button class="btn primary col-btn" disabled>Rien à réviser</button>';
+        sub = counts.nextDue ? `Prochaine<br>${esc(srs.fmtDue(counts.nextDue, now))}` : 'Tout est validé,<br>bravo !';
+      } else {
+        btn = `<button class="btn primary col-btn" data-action="start" data-track="${track}">Réviser</button>`;
+        sub = `<b>${q.dueN}</b> à réviser<br>${plural(q.newN, 'nouvelle', 'nouvelles')}`;
+      }
+    }
+    return `<div class="col"><h3 class="col-title">${title}</h3>${btn}<p class="col-sub">${sub}</p></div>`;
+  }
+
+  // Colonne Conjugaison (en version BETA) : bouton, nombre de questions, et l'icône ⓘ qui ouvre la fiche
+  function conjCol() {
+    return `<div class="col"><h3 class="col-title">Conjugaison</h3>
+      <button class="btn primary col-btn" data-action="conj-start">Conjuguer</button>
+      <p class="col-sub">15 questions<br><span class="beta">BETA</span> <button class="info-link" data-action="conj-fiche" aria-label="Fiche de conjugaison" title="Fiche de conjugaison">${INFO_SVG}</button></p></div>`;
+  }
+
   // Enregistre la sélection ; vide ou complète = null ("Toutes").
   function setPool(pool) {
     const all = store.categoryList().map((e) => e.key);
@@ -537,13 +565,12 @@
             <button class="gear${s.settings.catPool ? ' on' : ''}" data-action="toggle-settings" aria-expanded="${settingsOpen}" aria-label="Réglages de révision" title="Réglages de révision">${GEAR_SVG}</button>
           </div>
           ${settingsOpen ? settingsPanel() : ''}
-          ${startBlock('main', cp, 'Commencer la révision')}
+          <div class="cols">
+            ${revCol('main', 'Cartes', cp)}
+            ${revCol('kanji', 'Kanji', kp)}
+            ${conjCol()}
+          </div>
           ${filterNote()}
-          ${k.total ? `<div class="kanji-block">
-            <h3 class="sub">Kanji Only</h3>
-            ${startBlock('kanji', kp, 'Réviser les kanjis')}
-            <div style="margin-top:12px">${stackBlock(k)}</div>
-          </div>` : ''}
         </section>`
       : `<section class="panel"><div class="empty"><p>Aucune carte pour le moment.</p>
          <button class="btn primary big" data-action="starter-vocab">📦 Commencer avec le pack de base (1000 mots)</button>
@@ -558,10 +585,11 @@
     if (c.mastered) extras.push(`✓ ${plural(c.mastered, 'mot masterisé', 'mots masterisés')}`);
     if (c.aside) extras.push(`⏸ ${c.aside} de côté`);
 
+    // Sans carte, la bulle à trois colonnes n'a pas de sens : on garde l'invitation à importer, et la conjugaison à part
     $('#app').innerHTML = `
       ${review}
 
-      ${conjHomeHtml()}
+      ${c.total ? '' : conjHomeHtml()}
 
       ${packsVisible() ? `<section class="panel packs" id="packsBox">${packsInner()}</section>` : ''}
 
@@ -571,6 +599,7 @@
           <h3 class="sub">Mémoire</h3>
           ${stackBlock(c)}
           <p class="recent">Aujourd'hui : ${plural(todayReviews, 'carte revue', 'cartes revues')} · 7 derniers jours : ${fmtN(store.periodTotals(7))}${extras.length ? '<br>' + extras.join(' · ') : ''}</p>
+          <p class="recent">${k.total ? `Kanji révisés : <b>${fmtN(k.known)}</b> / ${fmtN(k.total)}<br>` : ''}Conjugaisons révisées : <b>${fmtN(cjDone())}</b></p>
         </div>
         <div class="prog-sec">
           <h3 class="sub">Compteurs</h3>
@@ -2166,7 +2195,7 @@
   function conjHomeHtml() {
     return `<section class="panel conj-panel">
       <div class="review-head">
-        <h2>Conjugaison</h2>
+        <h2>Conjugaison <span class="beta">BETA</span></h2>
         <button class="gear" data-action="conj-fiche" aria-label="Fiche de conjugaison" title="Fiche de conjugaison">${INFO_SVG}</button>
       </div>
       <div class="start"><button class="btn primary big" data-action="conj-start">Conjuguer</button>
@@ -2175,6 +2204,10 @@
   }
 
   const cjCnt = () => (store.state.settings.cnt = store.state.settings.cnt || {});
+  // Nombre de réponses de conjugaison données depuis le début (réussies + ratées), pour « Ma progression »
+  function cjDone() {
+    return Object.entries(cjCnt()).reduce((n, [key, v]) => (key.startsWith('cj:') ? n + v : n), 0);
+  }
   const cjStat = (fam, cls) => { const c = cjCnt(); return { o: c[`cj:${fam}:${cls}:o`] || 0, k: c[`cj:${fam}:${cls}:k`] || 0 }; };
   function cjRecord(fam, cls, ok) {
     const c = cjCnt();
@@ -2199,15 +2232,15 @@
       <section class="panel conj">
         <div class="s-top">
           <button class="btn ghost" data-action="conj-quit">✕ Terminer</button>
-          <span class="s-count">${cj.i + 1} / ${cj.qs.length}</span>
+          <span class="s-count">${cj.i + 1} / ${cj.qs.length} <span class="beta">BETA</span></span>
           <span class="combo" style="text-align:right">${cj.combo >= 2 ? '×' + cj.combo : ''}</span>
         </div>
         <div class="bar thin"><div class="fill" style="width:${pct}%"></div></div>
         ${q.kind === 'sent' ? `<div class="conj-card sent">
           <div class="conj-ask">Complète la phrase</div>
-          <div class="conj-sentence" lang="ja">${esc(q.before)} <span class="conj-blank">＿＿＿</span>${esc(q.after)}</div>
-          <div class="conj-verbline" lang="ja">（${esc(q.v.k)}）<button type="button" class="info-btn" data-action="conj-hint" aria-label="Voir le sens" title="Voir le sens">i</button></div>
-          <div class="conj-tr" id="conjTr" hidden>${esc(q.gloss)}</div>
+          <div class="conj-sentence" lang="ja">${esc(q.before)}<span class="conj-blank" id="conjBlank">＿＿＿</span>${esc(q.after)}</div>
+          <div class="conj-verbline" lang="ja">（${esc(q.v.k)}）<button type="button" class="info-btn" data-action="conj-hint" aria-label="Voir le sens du verbe" title="Voir le sens du verbe">i</button></div>
+          <div class="conj-tr" id="conjTr" hidden>${esc(q.v.fr)}</div>
         </div>` : `<div class="conj-card">
           <div class="conj-verb" lang="ja">${esc(q.v.k)}<button type="button" class="info-btn" data-action="conj-hint" aria-label="Voir la traduction" title="Voir la traduction">i</button></div>
           <div class="conj-tr" id="conjTr"${q.v.hint ? '' : ' hidden'}>${esc(q.v.fr)}</div>
@@ -2237,7 +2270,17 @@
       if (q.choices[i].right) b.classList.add('ok'); else if (i === n) b.classList.add('ko'); else b.classList.add('dim');
     });
     cjRecord(q.fam, q.cls, ch.right);
+    const sent = q.kind === 'sent';
+    if (sent) { // la phrase se complète avec la bonne forme
+      const blank = $('#conjBlank');
+      if (blank) { blank.textContent = q.ans; blank.classList.add('filled'); }
+    }
     const fb = $('#conjFb');
+    // Phrase : la traduction française complète. Question sur un verbe seul : son groupe.
+    const extra = sent
+      ? `<div class="conj-fr">${esc(q.fr)}</div>`
+      : `<div class="conj-group" lang="ja">${esc(q.v.k)} : <b>${esc(FJ.conj.groupLabel(q.v))}</b></div>`;
+    const next = '<button type="button" class="btn primary" data-action="conj-next">Suivant</button>';
     if (ch.right) {
       cj.ok++;
       cj.combo++;
@@ -2246,15 +2289,16 @@
       cj.xp += xp;
       gainXp(xp);
       audio.play('ok');
-      fb.innerHTML = `<span class="conj-good">✓ +${xp} XP</span>`;
+      fb.innerHTML = `<span class="conj-good">✓ +${xp} XP</span>${extra}${sent ? next : ''}`;
       persist();
-      setTimeout(() => { if (cj && view === 'conj' && cj.locked && cj.qs[cj.i] === q) conjNext(); }, 650);
+      // on laisse le temps de lire (la phrase : un peu plus) ; « Suivant » permet de passer plus vite
+      setTimeout(() => { if (cj && view === 'conj' && cj.locked && cj.qs[cj.i] === q) conjNext(); }, sent ? 3200 : 1300);
     } else {
       cj.combo = 0;
       const key = `${q.fam}|${q.cls}`;
       cj.wrong[key] = (cj.wrong[key] || 0) + 1;
       audio.play('ko');
-      fb.innerHTML = `<div class="conj-bad">❌ ${esc(q.rule)}</div><button type="button" class="btn primary" data-action="conj-next">Suivant</button>`;
+      fb.innerHTML = `<div class="conj-bad">❌ ${esc(q.rule)}</div>${extra}${next}`;
       persist();
       const nx = fb.querySelector('button');
       if (nx) nx.focus();
@@ -2323,6 +2367,7 @@
           ${g1.map(([e, i, a, te]) => `<tr><td>${e}</td><td>${i}ます</td><td>${a}ない</td><td>${te}</td></tr>`).join('')}
         </table>
         <p class="muted small" lang="ja">Exception : いく → いって. Le négatif de ある est ない.</p>
+        <p class="muted small">Attention aux « faux る » du 1er groupe : かえる, はいる, しる, はしる, わかる, のる, つくる, なる…</p>
         <h3 class="sub">2e groupe : verbes en る (on enlève る)</h3>
         <table>
           <tr><th></th><th>ます</th><th>ない</th><th>て</th></tr>
@@ -2345,7 +2390,6 @@
         <p class="muted small" lang="ja">い-adjectifs : い → くない. Exception : いい → よくない. Les な-adjectifs et les noms : じゃない. Poli : くないです / じゃないです.</p>
         <h3 class="sub">Pour tous</h3>
         <p class="fiche-all" lang="ja">ない → なかった<br>ます → ません · ました · ませんでした</p>
-        <p class="muted small">Attention aux « faux る » du 1er groupe : かえる, はいる, しる, はしる, わかる, のる, つくる, なる…</p>
       </section>`;
     window.scrollTo(0, 0);
   }

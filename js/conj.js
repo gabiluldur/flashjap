@@ -29,7 +29,7 @@
     ['あそぶ', 'jouer', '1'], ['よぶ', 'appeler', '1'], ['しぬ', 'mourir', '1'],
     // く ぐ
     ['いく', 'aller', '1'], ['きく', 'écouter', '1'], ['かく', 'écrire', '1'], ['あるく', 'marcher', '1'],
-    ['はたらく', 'travailler', '1'], ['ひく', "jouer d'un instrument", '1'], ['およぐ', 'nager', '1'], ['いそぐ', 'se dépêcher', '1'],
+    ['はたらく', 'travailler', '1'], ['ひく', "jouer d'un instrument", '1'], ['およぐ', 'nager', '1'], ['いそぐ', 'se dépêcher', '1'], ['ぬぐ', 'enlever (un vêtement)', '1'],
     // す
     ['はなす', 'parler', '1'], ['かえす', 'rendre', '1'], ['けす', 'éteindre', '1'], ['だす', 'sortir (quelque chose)', '1'],
     ['おす', 'pousser', '1'],
@@ -112,7 +112,9 @@
   const CLS_LABEL = { neg: 'le négatif', te: 'la forme en て', pol: 'la forme polie' };
 
   // ---- Règle rappelée après une erreur : une seule ligne ----
-  function rule(v, f) { return `${v.k} → ${conj(v, f)}. ${ruleBody(v, f)}`; }
+  // « のむ → のんで. » en tête de règle, sauf quand la règle le dit déjà (する → して)
+  function withHead(v, f) { const body = ruleBody(v, f); const head = `${v.k} → ${conj(v, f)}.`; return body.includes(`${v.k} → ${conj(v, f)}`) ? body : `${head} ${body}`; }
+  function rule(v, f) { return withHead(v, f); }
 
   function ruleBody(v, f) {
     const cls = FORMS[f].cls;
@@ -271,34 +273,78 @@
   }
 
   // ---- Phrases courtes à compléter ----
-  // Chaque phrase porte un indice qui impose la forme : ぜんぜん / あまり → négatif ; きのう + ぜんぜん → passé négatif ;
-  // ください → forme en て. Pas de formes polies ici : sans repère de politesse, une forme polie serait aussi juste, et
-  // la réponse ne serait plus unique. Les mauvaises réponses sont des formes qui sont fausses dans cette phrase.
-  // [verbe, ce qui précède le trou, français (traduction du groupe verbal), 's' = pas de forme en て (verbe d'état, ou demande absurde)]
-  const FRAMES = [
-    ['たべる', 'にくを', 'manger de la viande'], ['のむ', 'おさけを', "boire de l'alcool"], ['みる', 'テレビを', 'regarder la télévision'],
-    ['よむ', 'ざっしを', 'lire un magazine'], ['かく', 'てがみを', 'écrire une lettre'], ['かう', 'くつを', 'acheter des chaussures'],
-    ['きく', 'おんがくを', 'écouter de la musique'], ['はなす', 'えいごを', 'parler anglais'], ['まつ', 'ともだちを', 'attendre un ami'],
-    ['いく', 'がっこうへ', "aller à l'école"], ['かえる', 'いえへ', 'rentrer à la maison'], ['のる', 'バスに', 'monter dans le bus'],
-    ['はいる', 'へやに', 'entrer dans la pièce'], ['する', 'スポーツを', 'faire du sport'], ['くる', 'ここへ', 'venir ici'],
-    ['あそぶ', 'ともだちと', 'jouer avec un ami'], ['およぐ', 'うみで', 'nager dans la mer'], ['はたらく', 'ぎんこうで', 'travailler à la banque'],
-    ['あう', 'ともだちに', 'rencontrer un ami'], ['おきる', 'はやく', 'se lever tôt'], ['ねる', 'はやく', 'se coucher tôt'],
-    ['おしえる', 'えいごを', "enseigner l'anglais"], ['わすれる', 'しゅくだいを', 'oublier ses devoirs', 's'], ['とる', 'しゃしんを', 'prendre une photo'],
-    ['つくる', 'りょうりを', 'préparer un repas'], ['うたう', 'うたを', 'chanter une chanson'], ['べんきょうする', '', 'étudier'],
-    ['かりる', 'ほんを', 'emprunter un livre'], ['つかう', 'でんわを', 'utiliser le téléphone'], ['よぶ', 'ともだちを', 'appeler un ami'],
-    ['やすむ', 'がっこうを', "s'absenter de l'école", 's'], ['しめる', 'まどを', 'fermer la fenêtre'], ['あける', 'まどを', 'ouvrir la fenêtre'],
-    ['もつ', 'かばんを', 'porter un sac'], ['だす', 'てがみを', 'poster une lettre'], ['かえす', 'ほんを', 'rendre un livre'],
-    ['けす', 'テレビを', 'éteindre la télévision'], ['ある', 'おかねが', "avoir de l'argent", 's'], ['わかる', 'えいごが', "comprendre l'anglais", 's'],
-  ].map(([k, pre, fr, flag]) => ({ v: VERBS.find((x) => x.k === k), pre, fr, forms: flag === 's' ? ['neg', 'negpast'] : ['neg', 'negpast', 'te'] }));
+  // Des phrases de la vie de tous les jours, écrites à la main (pas de modèle à trous), avec des structures et une
+  // place des mots qui varient. Chaque phrase contient un indice qui impose UNE forme : ください → forme en て ;
+  // ぜんぜん / あまり / なにも → négatif ; un mot de passé (きのう, おととい, せんしゅう…) + un mot négatif → passé négatif.
+  // Pas de formes polies ici : sans repère de politesse, une forme polie serait aussi juste, et la réponse ne serait
+  // plus unique. Les mauvaises réponses sont des formes fausses dans cette phrase.
+  // [forme, avant le trou, verbe, après le trou, traduction française complète]
+  const SENTENCES = [
+    // ---- forme en て : demandes de tous les jours ----
+    ['te', 'すみません、 ゆっくり ', 'はなす', ' ください。', "Excusez-moi, parlez lentement, s'il vous plaît."],
+    ['te', 'もう いちど ', 'いう', ' ください。', "Dites-le encore une fois, s'il vous plaît."],
+    ['te', 'ここに なまえを ', 'かく', ' ください。', "Écrivez votre nom ici, s'il vous plaît."],
+    ['te', 'あとで でんわを ', 'する', ' ください。', "Appelez-moi plus tard, s'il vous plaît."],
+    ['te', 'あした はやく ', 'くる', ' ください。', "Venez tôt demain, s'il vous plaît."],
+    ['te', 'さむいから、 まどを ', 'しめる', ' ください。', "Il fait froid, fermez la fenêtre, s'il vous plaît."],
+    ['te', 'べんきょうするから、 テレビを ', 'けす', ' ください。', "Je vais étudier, éteignez la télé, s'il vous plaît."],
+    ['te', 'ここで すこし ', 'まつ', ' ください。', "Attendez un peu ici, s'il vous plaît."],
+    ['te', 'ここで しゃしんを ', 'とる', ' ください。', "Prenez-nous en photo ici, s'il vous plaît."],
+    ['te', 'どうぞ、 へやに ', 'はいる', ' ください。', 'Entrez dans la pièce, je vous en prie.'],
+    ['te', 'この ほんを ', 'よむ', ' ください。', "Lisez ce livre, s'il vous plaît."],
+    ['te', 'どうぞ、 ここで ', 'やすむ', ' ください。', 'Reposez-vous ici, je vous en prie.'],
+    ['te', 'くらいから、 でんきを ', 'つける', ' ください。', "Il fait sombre, allumez la lumière, s'il vous plaît."],
+    ['te', 'ここで くつを ', 'ぬぐ', ' ください。', "Enlevez vos chaussures ici, s'il vous plaît."],
+    ['te', 'しゅくだいを ', 'だす', ' ください。', "Rendez vos devoirs, s'il vous plaît."],
+    ['te', 'わたしの かばんを ', 'もつ', ' ください。', "Tenez mon sac, s'il vous plaît."],
+    ['te', 'えいごで ', 'こたえる', ' ください。', "Répondez en anglais, s'il vous plaît."],
+    ['te', 'もっと ゆっくり ', 'あるく', ' ください。', "Marchez plus lentement, s'il vous plaît."],
+    // ---- négatif (habitudes) ----
+    ['neg', 'わたしは さかなを ぜんぜん ', 'たべる', '。', 'Je ne mange pas du tout de poisson.'],
+    ['neg', 'コーヒーは あまり ', 'のむ', '。', 'Je ne bois pas beaucoup de café.'],
+    ['neg', 'うちでは テレビを あまり ', 'みる', '。', 'À la maison, je ne regarde pas beaucoup la télé.'],
+    ['neg', 'しゅうまつは あまり いえを ', 'でる', '。', 'Le week-end, je ne sors pas beaucoup de chez moi.'],
+    ['neg', 'ともだちは ここへ ぜんぜん ', 'くる', '。', 'Mes amis ne viennent jamais ici.'],
+    ['neg', 'まだ えいごが あまり ', 'わかる', '。', "Je ne comprends pas encore beaucoup l'anglais."],
+    ['neg', 'いまは おかねが ぜんぜん ', 'ある', '。', "En ce moment, je n'ai pas du tout d'argent."],
+    ['neg', 'わたしは スポーツを ぜんぜん ', 'する', '。', 'Je ne fais pas du tout de sport.'],
+    ['neg', 'あさは あまり はやく ', 'おきる', '。', 'Le matin, je ne me lève pas très tôt.'],
+    ['neg', 'ざっしは あまり ', 'よむ', '。', 'Je ne lis pas beaucoup de magazines.'],
+    ['neg', 'わたしは うみで ぜんぜん ', 'およぐ', '。', 'Je ne nage pas du tout dans la mer.'],
+    ['neg', 'あまり おんがくを ', 'きく', '。', "Je n'écoute pas beaucoup de musique."],
+    ['neg', 'バスには あまり ', 'のる', '。', 'Je ne prends pas souvent le bus.'],
+    ['neg', 'あさは なにも ', 'たべる', '。', 'Le matin, je ne mange rien.'],
+    ['neg', 'いそがしくて、 ぜんぜん ', 'べんきょうする', '。', "Je suis occupé, je n'étudie pas du tout."],
+    // ---- passé négatif (ce qui ne s'est pas passé) ----
+    ['negpast', 'きのうの よるは ぜんぜん ', 'ねる', '。', "Hier soir, je n'ai pas du tout dormi."],
+    ['negpast', 'きのうは だれも ', 'くる', '。', "Hier, personne n'est venu."],
+    ['negpast', 'せんしゅうは あまり ', 'べんきょうする', '。', "La semaine dernière, je n'ai pas beaucoup étudié."],
+    ['negpast', 'きのうは あさから なにも ', 'たべる', '。', "Hier, je n'ai rien mangé depuis le matin."],
+    ['negpast', 'せんげつは りょこうに ぜんぜん ', 'いく', '。', "Le mois dernier, je ne suis pas du tout parti en voyage."],
+    ['negpast', 'きのうは ともだちに ぜんぜん ', 'あう', '。', "Hier, je n'ai pas du tout vu mes amis."],
+    ['negpast', 'きのうは えいごが ぜんぜん ', 'わかる', '。', "Hier, je n'ai rien compris à l'anglais."],
+    ['negpast', 'きのうは なにも ', 'のむ', '。', "Hier, je n'ai rien bu."],
+    ['negpast', 'きのうは しごとが ぜんぜん ', 'おわる', '。', "Hier, je n'ai pas du tout fini mon travail."],
+    ['negpast', 'おととい、 しゃしんを ぜんぜん ', 'とる', '。', "Avant-hier, je n'ai pas pris de photo du tout."],
+    ['negpast', 'せんしゅうは ぜんぜん ', 'およぐ', '。', "La semaine dernière, je n'ai pas du tout nagé."],
+    ['negpast', 'きのうは だれにも でんわを ', 'する', '。', "Hier, je n'ai téléphoné à personne."],
+    ['negpast', 'きのうは おかねが ぜんぜん ', 'ある', '。', "Hier, je n'avais pas du tout d'argent."],
+    ['negpast', 'おととい、 なにも ', 'かう', '。', "Avant-hier, je n'ai rien acheté."],
+    ['negpast', 'せんしゅうは しゅくだいを ぜんぜん ', 'する', '。', "La semaine dernière, je n'ai pas du tout fait mes devoirs."],
+    ['negpast', 'おとといは ざっしを あまり ', 'よむ', '。', "Avant-hier, je n'ai pas beaucoup lu de magazines."],
+  ].map(([f, before, k, after, fr]) => ({ f, before, v: VERBS.find((x) => x.k === k), after, fr }));
 
-  const CUES = {
-    neg: [
-      { head: 'わたしは あまり', gloss: 'あまり = pas beaucoup (avec un négatif)', why: 'あまり demande un négatif.' },
-      { head: 'わたしは ぜんぜん', gloss: 'ぜんぜん = pas du tout (avec un négatif)', why: 'ぜんぜん demande un négatif.' },
-    ],
-    negpast: [{ head: 'きのうは ぜんぜん', gloss: 'きのう = hier · ぜんぜん = pas du tout (avec un négatif)', why: 'きのう = passé, ぜんぜん = négatif : on veut le passé négatif.' }],
-    te: [{ head: 'ちょっと', tail: ' ください', gloss: "ちょっと = un peu · ください = s'il vous plaît (une demande)", why: 'ください demande la forme en て.' }],
-  };
+  // Mots-indices, pour la phrase d'explication affichée après une erreur
+  const NEG_CUES = ['ぜんぜん', 'あまり', 'なにも', 'だれも', 'だれにも'];
+  const TIME_CUES = ['きのうの よる', 'きのう', 'おととい', 'せんしゅう', 'せんげつ'];
+  const cueIn = (text, list) => list.find((c) => text.includes(c)) || '';
+  function why(s) {
+    const text = s.before + s.after;
+    if (s.f === 'te') return 'ください demande la forme en て.';
+    const neg = cueIn(text, NEG_CUES);
+    if (s.f === 'neg') return `${neg} demande un négatif.`;
+    return `${cueIn(text, TIME_CUES)} = passé, ${neg} = négatif : on veut le passé négatif.`;
+  }
 
   function sentenceChoices(v, f) {
     const right = conj(v, f);
@@ -312,32 +358,30 @@
     return shuffle([{ t: right, right: true }, ...bad.map((t) => ({ t, right: false }))]);
   }
 
-  function sentence(fr, f) {
-    const v = fr.v;
-    const cue = pick(CUES[f]);
-    const before = [cue.head, fr.pre].filter(Boolean).join(' ');
+  function sentence(s) {
+    const v = s.v;
     return {
-      kind: 'sent', v, f, cls: FORMS[f].cls, fam: fam(v, f), ans: conj(v, f), choices: sentenceChoices(v, f),
-      before, after: (cue.tail || '') + '。', gloss: `${cue.gloss} · ${fr.fr}`,
-      rule: `${cue.why} ${v.k} → ${conj(v, f)}. ${ruleBody(v, f)}`,
+      kind: 'sent', v, f: s.f, cls: FORMS[s.f].cls, fam: fam(v, s.f), ans: conj(v, s.f), choices: sentenceChoices(v, s.f),
+      before: s.before, after: s.after, fr: s.fr,
+      rule: `${why(s)} ${withHead(v, s.f)}`,
     };
   }
 
   function sentences(n, stat = () => ({ o: 0, k: 0 }), skipVerbs = []) {
     const used = new Set(skipVerbs);
-    const cands = [];
-    for (const fr of FRAMES) for (const f of fr.forms) cands.push({ fr, f });
     const out = [];
     let guard = 0;
     while (out.length < n && guard++ < 300) {
-      const pool = cands.filter((c) => !used.has(c.fr.v.k));
+      const pool = SENTENCES.filter((s) => !used.has(s.v.k));
       if (!pool.length) break;
-      const c = weighted(pool, pool.map((x) => weight(stat, fam(x.fr.v, x.f), FORMS[x.f].cls)));
-      used.add(c.fr.v.k);
-      out.push(sentence(c.fr, c.f));
+      const c = weighted(pool, pool.map((x) => weight(stat, fam(x.v, x.f), FORMS[x.f].cls)));
+      used.add(c.v.k);
+      out.push(sentence(c));
     }
     return out;
   }
+
+  const groupLabel = (v) => (v.g === '1' ? '1er groupe' : v.g === '2' ? '2e groupe' : '3e groupe');
 
   // Série complète : 8 questions à choix et 7 phrases à compléter, en alternance (15 questions), sans verbe répété
   function mixedSession(stat) {
@@ -348,5 +392,5 @@
     return out;
   }
 
-  FJ.conj = { VERBS, FORMS, CLS_FORMS, VISIBLE, FRAMES, conj, rule, ruleBody, question, sentence, choices, session, sentences, mixedSession, famLabel, CLS_LABEL, fam };
+  FJ.conj = { VERBS, FORMS, CLS_FORMS, VISIBLE, SENTENCES, groupLabel, conj, rule, ruleBody, question, sentence, choices, session, sentences, mixedSession, famLabel, CLS_LABEL, fam };
 })();

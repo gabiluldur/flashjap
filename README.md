@@ -38,7 +38,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Accueil, engrenage de la bulle « Réviser » → tiroir de réglages (fermé par défaut), rubrique « Leçons à réviser » (visible dès qu'une carte a une catégorie) : sélection (`settings.catPool`, `null` = toutes) qui filtre les sessions classique **et** Kanji Only (nouvelles + à réviser). Toucher une leçon depuis « Toutes » l'isole ; ensuite chaque touche ajoute/retire une leçon ; le tirage est aléatoire si « Mélanger les cartes » est actif. Tiroir fermé, une sélection active reste visible sous le bouton de révision (📚 nom des leçons, point sur l'engrenage) avec le rappel des révisions dues hors sélection et un bouton « Les inclure ».
 
 ## Organisation de l'accueil
-- Ordre : bulle **Réviser** (classique + Kanji Only ; l'engrenage ouvre le tiroir « leçons + options de session »), **Ma progression** (mémoire, compteurs, graphique par jour), **Cartes**, puis la connexion / synchronisation tout en bas.
+- Ordre : bulle **Réviser** à trois colonnes (Cartes, Kanji, Conjugaison ; l'engrenage ouvre le tiroir « leçons + options de session »), **Ma progression** (mémoire, compteurs, graphique par jour), **Cartes**, puis la connexion / synchronisation tout en bas.
 - Les réglages de session (sens, mélange, nouvelles par session, sons) s'appliquent aussi à Kanji Only, sauf le sens des cartes.
 - Ajout de carte : menu Catégorie (dernière utilisée mémorisée) + « Nouvelle catégorie… » (une catégorie créée pendant une sélection en cours rejoint cette sélection). Mes mots : filtre et affichage par catégorie.
 
@@ -108,18 +108,18 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - Environ un confetti sur trois est un sprite de Noël (`assets/xmas/` : sucre d'orge, boule, gui, flocon), plus lent et plus léger. Quelques étincelles clignotent environ une seconde au centre (`js/fx.js`).
 - Les confettis suivent le temps réel (`requestAnimationFrame` + `dt`) : même vitesse sur un écran 60 Hz et 144 Hz.
 
-## Conjugaison (QCM et phrases à compléter)
-- Bloc **Conjugaison** sur l'accueil (sous « Réviser »), avec une icône ⓘ qui ouvre la **fiche** (transformations par groupe et adjectifs, environ une page et demie sur téléphone). Une série = **15 questions** (8 QCM et 7 phrases à compléter, en alternance, sans verbe répété), environ 3 minutes, un tap par réponse.
-- **Moteur** : `js/conj.js`. On ne stocke que 70 verbes (lecture en kana, traduction, groupe) ; **toutes les formes sont calculées par des règles**. Groupes comme dans le manuel : 1er = verbes en う (godan, y compris les « faux る » : かえる, はいる, しる, はしる, わかる…), 2e = verbes en る (ichidan), 3e = する et くる. Classement vérifié sur cours-de-japonais.com et japaniste.fr.
-- **Formes demandées** : négatif neutre (ない), passé négatif neutre (なかった), forme en て, et les quatre formes polies (ます, ません, ました, ませんでした). Les polies, simples et connues, ne font que **10 %** du tirage. La forme en **た est cachée** tant qu'elle n'est pas au programme : jamais demandée, jamais proposée comme réponse (`hidden` dans `FORMS`, à retirer le moment venu). Exceptions gérées : いく → いって, ある → ない.
-- **L'énoncé ne donne pas la terminaison** (« Passé négatif neutre », sans « 〜なかった ») : on veut une réflexion, pas une lecture. Du coup, les mauvaises réponses peuvent venir de n'importe quelle autre forme du verbe, y compris la forme du dictionnaire.
-- **Pas de kanji** ; la traduction est derrière l'icône **i** (affichée d'office pour `かえる` et `いる`, ambigus sans kanji).
-- **Phrases à compléter** : trois modèles dont l'indice impose la forme (あまり / ぜんぜん → négatif ; きのう + ぜんぜん → passé négatif ; ください → て), 39 phrases de base (`FRAMES`, vocabulaire de la base publique). Pas de formes polies dans les phrases : sans repère de politesse, une forme polie serait aussi juste. Les mauvaises réponses sont des formes fausses *dans cette phrase* (mauvais temps, positif avec ぜんぜん…). L'icône i donne le sens des mots-indices et du groupe verbal.
-- **Après une erreur** : une seule ligne de règle (« のむ → のんで. Les verbes en む, ぶ, ぬ font んで. »).
+## Conjugaison (QCM et phrases à compléter) — BETA
+- **Accueil** : une grande bulle « Réviser » à **trois colonnes** : Cartes, Kanji, Conjugaison (badge **BETA**, icône ⓘ vers la fiche). La barre de progression des kanji a disparu : « Ma progression » indique en texte « Kanji révisés : N / total » et « Conjugaisons révisées : N ». Sans aucune carte, on garde l'invitation à importer, avec le bloc Conjugaison à part.
+- Une série = **15 questions** (8 QCM et 7 phrases à compléter, en alternance, sans verbe répété), environ 3 minutes, un tap par réponse.
+- **Moteur** : `js/conj.js`. 71 verbes (lecture en kana, traduction, groupe) ; **toutes les formes sont calculées par des règles**. Groupes comme dans le manuel : 1er = verbes en う (godan, y compris les « faux る »), 2e = verbes en る (ichidan), 3e = する et くる. Classement vérifié sur cours-de-japonais.com et japaniste.fr.
+- **Formes demandées** : négatif neutre (ない), passé négatif neutre (なかった), forme en て, et les quatre formes polies. Les polies ne font que 10 % du tirage des QCM. La forme en **た est cachée** tant qu'elle n'est pas au programme (`hidden` dans `FORMS`). L'énoncé ne donne pas la terminaison. Exceptions gérées : いく → いって, ある → ない.
+- **QCM** : pas de kanji, traduction derrière l'icône **i** (d'office pour `かえる` et `いる`). Après chaque réponse, le **groupe du verbe** est indiqué. Mauvaises réponses réalistes (erreur de groupe, mauvaise base, forme voisine, terminaison voisine, forme du dictionnaire).
+- **Phrases à compléter** : 49 phrases courtes **écrites à la main**, de la vie de tous les jours, aux structures et à la place des mots variées (`SENTENCES`). Chaque phrase contient un indice qui impose une seule forme : ください → て ; ぜんぜん / あまり / なにも → négatif ; mot de passé (きのう, おととい, せんしゅう…) + mot négatif → passé négatif. Pas de formes polies dans les phrases (sans repère de politesse, la réponse ne serait plus unique). Après la réponse, la phrase est complétée et sa **traduction française complète** s'affiche ; après une erreur, une ligne de règle en plus.
 - **Suivi léger** : réussites / erreurs par compétence (terminaison × type de forme) dans les compteurs synchronisés (`settings.cnt`, clés `cj:famille:type:o|k`). Les compétences où l'on se trompe reviennent plus souvent ; le bilan dit « À retravailler : … ».
 - **XP** : 8 par bonne réponse, +1 par réponse juste d'affilée (jusqu'à +4), rien en cas d'erreur. Ne compte ni dans « cartes révisées » ni dans le compteur communautaire.
+- **Fiche** (ⓘ) : ます, ない, て par groupe (la forme en た n'y figure pas), les « faux る » sous le 1er groupe, et une section adjectifs.
 - Touches : 1 à 5 pour répondre, Entrée / Espace pour la suite, Échap pour terminer.
-- À venir (une étape à la fois) : adjectifs dans le jeu, 3 bulles CARTES / KANJI / CONJUGAISONS, succès dédiés.
+- À venir (une étape à la fois) : adjectifs dans le jeu, succès dédiés.
 
 ## Mode sombre
 - **Sombre par défaut**, quel que soit le réglage de l'appareil. L'interrupteur ☀️/🌙 (tout en bas de l'**accueil** uniquement) passe en clair ; seul ce choix « clair » est retenu sur l'appareil (`localStorage`, clé `flashjap.theme`). Un petit script de `index.html` pose `data-theme` sur `<html>` avant le premier affichage, donc sans flash.
