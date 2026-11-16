@@ -117,7 +117,7 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - **Phrases à compléter** : 49 phrases courtes **écrites à la main**, de la vie de tous les jours, aux structures et à la place des mots variées (`SENTENCES`). Chaque phrase contient un indice qui impose une seule forme : ください → て ; ぜんぜん / あまり / なにも → négatif ; mot de passé (きのう, おととい, せんしゅう…) + mot négatif → passé négatif. Pas de formes polies dans les phrases (sans repère de politesse, la réponse ne serait plus unique). Après la réponse, la phrase est complétée et sa **traduction française complète** s'affiche ; après une erreur, une ligne de règle en plus.
 - **Suivi léger** : réussites / erreurs par compétence (terminaison × type de forme) dans les compteurs synchronisés (`settings.cnt`, clés `cj:famille:type:o|k`). Les compétences où l'on se trompe reviennent plus souvent ; le bilan dit « À retravailler : … ».
 - **XP** : 8 par bonne réponse, +1 par réponse juste d'affilée (jusqu'à +4), rien en cas d'erreur. Ne compte ni dans « cartes révisées » ni dans le compteur communautaire.
-- **Fiche** (ⓘ de l'accueil, ou ⓘ affiché après une erreur : elle s'ouvre alors en feuille par-dessus la série, qu'on retrouve intacte) : ます, ない, て par groupe (la forme en た n'y figure pas), les « faux る » sous le 1er groupe, et une section adjectifs.
+- **Fiche** (deux versions : une colonne sur téléphone ; deux colonnes, plus grande, sur ordinateur dès 820 px) (ⓘ de l'accueil, ou ⓘ affiché après une erreur : elle s'ouvre alors en feuille par-dessus la série, qu'on retrouve intacte) : ます, ない, て par groupe (la forme en た n'y figure pas), les « faux る » sous le 1er groupe, et une section adjectifs.
 - Touches : 1 à 5 pour répondre, Entrée / Espace pour la suite, Échap pour terminer.
 - À venir (une étape à la fois) : adjectifs dans le jeu, succès dédiés.
 
@@ -137,3 +137,6 @@ Les données (cartes + progression) sont stockées dans le `localStorage` du nav
 - **Rattrapage** : au chargement de la nouvelle version (puis quand des données arrivent d'un autre appareil, ou en fin de session), tout ce qui est déjà mérité se débloque.
 - **Stockage et synchro** : `settings.ach` (id → date) et `settings.cnt` (touchers de citrouille hérités d'Halloween, bascules de thème) dans le document de réglages ; fusion par **union** entre appareils (`js/sync-core.js`), sauf après une réinitialisation / restauration volontaire (même règle d'époque que les compteurs).
 - Ajouter un succès = une ligne dans la liste `A` de `js/achievements.js` (avec un test, ou sans test et un appel `FJ.ach.unlockId('id')` à l'endroit de l'événement).
+
+## Version 1.2.0 « Édition de Noël »
+- Annonce armée (`js/release.js`, `announce: true`) : mode Noël, succès, compteur communautaire, nouveau mode Conjugaison. Une seule fois par appareil.

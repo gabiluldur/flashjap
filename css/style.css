@@ -722,7 +722,7 @@ body:not([data-view="home"]) .theme-row { display: none; }
 .info-link.sheet-btn { flex: none; width: 36px; height: 36px; color: var(--accent); }
 .info-link.sheet-btn svg { width: 22px; height: 22px; }
 .sheet.modal { place-items: end center; padding: 0; }
-.sheet-box { width: min(560px, 100%); max-height: 88vh; max-height: 88dvh; overflow-y: auto; border-radius: var(--radius) var(--radius) 0 0; padding-bottom: calc(18px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; }
+.sheet-box { max-width: none; width: min(560px, 100%); max-height: 88vh; max-height: 88dvh; overflow-y: auto; border-radius: var(--radius) var(--radius) 0 0; padding-bottom: calc(18px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; }
 .sheet-head { position: sticky; top: -22px; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: -22px -20px 6px; padding: 14px 20px 10px; background: var(--surface); border-bottom: 1px solid var(--line); }
 .sheet-head h2 { margin: 0; font-size: 1.05rem; }
 
@@ -730,3 +730,27 @@ body:not([data-view="home"]) .theme-row { display: none; }
 .info-btn, .info-link { position: relative; }
 .info-btn::after, .info-link::after { content: ""; position: absolute; inset: -9px; }
 .info-link.sheet-btn::after { inset: -4px; }
+
+/* ---------- Fiche : deux versions, téléphone (une colonne) et ordinateur (deux colonnes, plus grande) ---------- */
+.fiche-grid { display: grid; gap: 0; }
+@media (min-width: 820px) {
+  body[data-view="fiche"] main { max-width: 1000px; }
+  .fiche-grid { grid-template-columns: 1fr 1fr; gap: 0 36px; align-items: start; }
+  .fiche table { font-size: 1.2rem; }
+  .fiche th { font-size: .85rem; padding: 6px 12px; }
+  .fiche td { padding: 9px 12px; }
+  .fiche h3.sub { font-size: 1rem; margin-top: 4px; margin-bottom: 10px; }
+  .fiche .muted.small { font-size: .95rem; }
+  .fiche-all { font-size: 1.15rem; }
+  /* en séance : la feuille devient une fenêtre centrée, large */
+  .sheet.modal { place-items: center; padding: 24px; }
+  .sheet-box { width: min(1000px, 94vw); max-height: 90vh; border-radius: var(--radius); padding: 22px 30px 28px; }
+  .sheet-head { top: -22px; margin: -22px -30px 14px; padding: 16px 30px 12px; }
+  .sheet-head h2 { font-size: 1.1rem; }
+}
+@media (min-width: 820px) {
+  .sheet-box { max-height: 94vh; }
+  .sheet-box table { font-size: 1.08rem; }
+  .sheet-box td { padding: 5px 12px; }
+  .sheet-box h3.sub { margin-top: 0; }
+}

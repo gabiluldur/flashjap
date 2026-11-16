@@ -2346,7 +2346,7 @@
   function ficheInner() {
     // [fin, base de ます, base de ない, forme en て]
     const g1 = [['う', 'い', 'わ', 'って'], ['つ', 'ち', 'た', 'って'], ['る', 'り', 'ら', 'って'], ['む', 'み', 'ま', 'んで'], ['ぶ', 'び', 'ば', 'んで'], ['ぬ', 'に', 'な', 'んで'], ['く', 'き', 'か', 'いて'], ['ぐ', 'ぎ', 'が', 'いで'], ['す', 'し', 'さ', 'して']];
-    return `
+    return `<div class="fiche-grid"><div class="fiche-col">
         <h3 class="sub">1er groupe : verbes en う (on change la dernière syllabe)</h3>
         <table>
           <tr><th>Fin</th><th>ます</th><th>ない</th><th>て</th></tr>
@@ -2354,6 +2354,7 @@
         </table>
         <p class="muted small" lang="ja">Exception : いく → いって. Le négatif de ある est ない.</p>
         <p class="muted small">Attention aux « faux る » du 1er groupe : かえる, はいる, しる, はしる, わかる, のる, つくる, なる…</p>
+        </div><div class="fiche-col">
         <h3 class="sub">2e groupe : verbes en る (on enlève る)</h3>
         <table>
           <tr><th></th><th>ます</th><th>ない</th><th>て</th></tr>
@@ -2375,7 +2376,8 @@
         </table>
         <p class="muted small" lang="ja">い-adjectifs : い → くない. Exception : いい → よくない. Les な-adjectifs et les noms : じゃない. Poli : くないです / じゃないです.</p>
         <h3 class="sub">Pour tous</h3>
-        <p class="fiche-all" lang="ja">ない → なかった<br>ます → ません · ました · ませんでした</p>`;
+        <p class="fiche-all" lang="ja">ない → なかった<br>ます → ません · ました · ませんでした</p>
+        </div></div>`;
   }
 
   function renderFiche() {

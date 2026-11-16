@@ -11,12 +11,13 @@
   // Aperçu sans rien déclencher chez les autres : ajouter ?news=1 à l'adresse de l'appli.
   FJ.release = {
     version: '1.2.0',
-    announce: false,
+    announce: true,
     title: 'Édition de Noël',
     items: [
       '🎄 Mode Noël ! Attention au bonhomme chatouilleux.',
       '🏆 Succès à débloquer',
       '🌍 Compteur communautaire : Objectif révision ensemble avant 2027 !',
+      '📖 Nouveau mode : Conjugaison ✨ Maîtrise les 5 formes 👊 (ou presque...)',
     ],
   };
 })();
